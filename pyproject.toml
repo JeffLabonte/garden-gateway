@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "garden-gateway"
+version = "0.1.0"
+description = "Gateway that integrates the sensors for the garden and the mushrooms"
+authors = ["Jeff Labonte <grimsleepless@protonmail.com>"]
+license = "GPLv3"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.26.0"
+SQLAlchemy = "^1.4.25"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
