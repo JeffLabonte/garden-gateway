@@ -2,7 +2,7 @@ from datetime import datetime
 from threading import Lock, Timer
 from time import sleep
 
-import RPI.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 POWER_RELAY_PIN = 17
 
