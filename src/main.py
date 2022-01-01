@@ -19,6 +19,8 @@ COUNTERS = {
     "darkness": 0,
 }
 
+TIMER_THREAD_INTERVAL_MINUTE = 5 * 60
+
 
 def turn_on_lamp():
     """
@@ -75,7 +77,7 @@ if __name__ == "__main__":
         if not MAIN_LOOP_LOCK.locked():
             print("start running")
             MAIN_LOOP_LOCK.acquire()
-            timer_thread = Timer(interval=1, function=main)
+            timer_thread = Timer(interval=TIMER_THREAD_INTERVAL_MINUTE, function=main)
             timer_thread.start()
             print("Everything Ran")
         sleep(10)
