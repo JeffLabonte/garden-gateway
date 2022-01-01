@@ -2,7 +2,7 @@ from datetime import datetime
 from threading import Lock, Timer
 from time import sleep
 
-# import RPI.GPIO as GPIO
+import RPI.GPIO as GPIO
 
 POWER_RELAY_PIN = 17
 
@@ -67,7 +67,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # setup_board()
+    setup_board()
     while True:
         print("******")
         if not MAIN_LOOP_LOCK.locked():
