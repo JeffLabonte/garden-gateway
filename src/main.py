@@ -21,7 +21,10 @@ COUNTERS = {
 
 
 def turn_on_lamp():
-    GPIO.ouput(POWER_RELAY_PIN, GPIO.LOW)
+    """
+    Turn on Normal ON
+    """
+    GPIO.output(POWER_RELAY_PIN, GPIO.LOW)
 
 
 def turn_off_lamp():
@@ -48,8 +51,8 @@ def main():
     now = datetime.now()
     print(f"# Current Time: {now.hour}: {now.minute}")
 
-    if (
-        end_light_datetime.hour > now.hour > start_light_datetime.hour
+    if end_light_datetime.hour > now.hour > start_light_datetime.hour or (
+        (start_light_datetime.hour == now.hour)
         and end_light_datetime.minutes > now.minute > start_light_datetime.minute
     ):
         if COUNTERS["light"] == 0:
