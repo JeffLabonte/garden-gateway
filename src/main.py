@@ -46,7 +46,7 @@ def main():
     end_light_datetime = datetime.strptime(END_LIGHT, TIME_DATETIME_FORMAT)
 
     now = datetime.now()
-    print(f"# Current Time: {now}")
+    print(f"# Current Time: {now.hour}: {now.minute}")
 
     if (
         end_light_datetime.hour > now.hour > start_light_datetime.hour
