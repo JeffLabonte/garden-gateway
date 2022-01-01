@@ -53,7 +53,7 @@ def main():
 
     if end_light_datetime.hour > now.hour > start_light_datetime.hour or (
         (start_light_datetime.hour == now.hour)
-        and end_light_datetime.minutes > now.minute > start_light_datetime.minute
+        and now.minute > start_light_datetime.minute
     ):
         if COUNTERS["light"] == 0:
             turn_on_lamp()
