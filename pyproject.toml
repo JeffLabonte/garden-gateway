@@ -9,6 +9,7 @@ license = "GPLv3"
 python = "^3.9"
 requests = "^2.26.0"
 SQLAlchemy = "^1.4.25"
+"RPi.GPIO" = {version = "^0.7.0", platform = "rpi"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
