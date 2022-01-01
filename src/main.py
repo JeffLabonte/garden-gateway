@@ -46,6 +46,7 @@ def main():
     end_light_datetime = datetime.strptime(END_LIGHT, TIME_DATETIME_FORMAT)
 
     now = datetime.now()
+    print(f"# Current Time: {now}")
 
     if (
         end_light_datetime.hour > now.hour > start_light_datetime.hour
@@ -61,8 +62,6 @@ def main():
         set_counters(key="darkness", reset_key="light")
         print("Darkness...")
 
-    print(start_light_datetime)
-    print(end_light_datetime)
     MAIN_LOOP_LOCK.release()
 
 
