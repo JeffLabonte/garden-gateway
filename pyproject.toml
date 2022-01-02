@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "garden-gateway"
-version = "0.0.1"
+version = "0.0.2"
 description = "Gateway that integrates the sensors for the garden and the mushrooms"
 authors = ["Jeff Labonte <grimsleepless@protonmail.com>"]
 license = "GPLv3"
