@@ -4,12 +4,17 @@ version = "0.1.0"
 description = "Gateway that integrates the sensors for the garden and the mushrooms"
 authors = ["Jeff Labonte <grimsleepless@protonmail.com>"]
 license = "GPLv3"
+packages = [
+         { include = "src", from="." },
+]
+
+[tool.poetry.scripts]
+garden-gateway = "src.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.26.0"
 SQLAlchemy = "^1.4.25"
-"RPi.GPIO" = {version = "^0.7.0", platform = "rpi"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
