@@ -78,7 +78,8 @@ def main():
             print("start running")
             MAIN_LOOP_LOCK.acquire()
             timer_thread = Timer(
-                interval=TIMER_THREAD_INTERVAL_MINUTE, function=run_schedule
+                interval=TIMER_THREAD_INTERVAL_MINUTE,
+                function=run_schedule,
             )
             timer_thread.start()
             print("Everything Ran")

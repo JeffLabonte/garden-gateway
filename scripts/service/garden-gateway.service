@@ -1,0 +1,18 @@
+[Unit]
+Description=Service to run garden-gateway daemon
+After=docker.service
+Requires=networking.service
+
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/garden-gateway
+ExecStop=/bin/kill -s QUIT $MAINID
+ExecReload=/bin/kill -s HUP $MAINID
+Restart=on-failure
+PIDFile=/tmp/garden-gateway.pid
+
+
+[Install]
+WantedBy=multi-user.target
