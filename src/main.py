@@ -1,8 +1,12 @@
+import logging
+
 from datetime import datetime
 from threading import Lock, Timer
 from time import sleep
 
 import RPi.GPIO as GPIO
+
+logging.basicConfig(filename="/var/log/garden-gateway.log")
 
 POWER_RELAY_PIN = 17
 
@@ -51,7 +55,7 @@ def run_schedule():
     end_light_datetime = datetime.strptime(END_LIGHT, TIME_DATETIME_FORMAT)
 
     now = datetime.now()
-    print(f"# Current Time: {now.hour}: {now.minute}")
+    logging.info(f"# Current Time: {now.hour}: {now.minute}")
 
     if end_light_datetime.hour > now.hour > start_light_datetime.hour or (
         (start_light_datetime.hour == now.hour)
@@ -60,12 +64,12 @@ def run_schedule():
         if COUNTERS["light"] == 0:
             turn_on_lamp()
         set_counters(key="light", reset_key="darkness")
-        print("Light")
+        logging.info("Light")
     else:
         if COUNTERS["darkness"] == 0:
             turn_off_lamp()
         set_counters(key="darkness", reset_key="light")
-        print("Darkness...")
+        logging.info("Darkness...")
 
     MAIN_LOOP_LOCK.release()
 
@@ -73,16 +77,15 @@ def run_schedule():
 def main():
     setup_board()
     while True:
-        print("******")
         if not MAIN_LOOP_LOCK.locked():
-            print("start running")
+            logging.info("start running")
             MAIN_LOOP_LOCK.acquire()
             timer_thread = Timer(
                 interval=TIMER_THREAD_INTERVAL_MINUTE,
                 function=run_schedule,
             )
             timer_thread.start()
-            print("Everything Ran")
+            logging.info(f"Running Timer in {TIMER_THREAD_INTERVAL_MINUTE}")
         sleep(10)
 
 
