@@ -6,7 +6,7 @@ from time import sleep
 
 import RPi.GPIO as GPIO
 
-logging.basicConfig(filename="/var/log/garden-gateway.log")
+logging.basicConfig(filename="/var/log/garden-gateway.log", level=logging.INFO)
 
 POWER_RELAY_PIN = 17
 
