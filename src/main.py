@@ -46,7 +46,7 @@ def set_counters(key: str, reset_key: str):
     COUNTERS[reset_key] = 0
 
 
-def main():
+def run_schedule():
     start_light_datetime = datetime.strptime(START_LIGHT, TIME_DATETIME_FORMAT)
     end_light_datetime = datetime.strptime(END_LIGHT, TIME_DATETIME_FORMAT)
 
@@ -70,14 +70,20 @@ def main():
     MAIN_LOOP_LOCK.release()
 
 
-if __name__ == "__main__":
+def main():
     setup_board()
     while True:
         print("******")
         if not MAIN_LOOP_LOCK.locked():
             print("start running")
             MAIN_LOOP_LOCK.acquire()
-            timer_thread = Timer(interval=TIMER_THREAD_INTERVAL_MINUTE, function=main)
+            timer_thread = Timer(
+                interval=TIMER_THREAD_INTERVAL_MINUTE, function=run_schedule
+            )
             timer_thread.start()
             print("Everything Ran")
         sleep(10)
+
+
+if __name__ == "__main__":
+    main()
