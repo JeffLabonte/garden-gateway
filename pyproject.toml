@@ -5,7 +5,7 @@ description = "Gateway that integrates the sensors for the garden and the mushro
 authors = ["Jeff Labonte <grimsleepless@protonmail.com>"]
 license = "GPLv3"
 packages = [
-         { include = "src", from="." },
+    { include = "src", from="." },
 ]
 
 [tool.poetry.scripts]

@@ -1,4 +1,5 @@
 import logging
+from logging import handlers
 
 from datetime import datetime
 from threading import Lock, Timer
@@ -6,7 +7,17 @@ from time import sleep
 
 import RPi.GPIO as GPIO
 
-logging.basicConfig(filename="/var/log/garden-gateway.log", level=logging.INFO)
+logger = logging.getLogger(f"garden-gateway.{__name__}")
+
+logger.setLevel(level=logging.INFO)
+
+log_handler = handlers.RotatingFileHandler(
+    filename="/var/log/garden-gateway.log",
+    maxBytes=500,
+    backupCount=2,
+)
+log_handler.setLevel(level=logging.INFO)
+logger.addHandler(log_handler)
 
 POWER_RELAY_PIN = 17
 
@@ -55,7 +66,7 @@ def run_schedule():
     end_light_datetime = datetime.strptime(END_LIGHT, TIME_DATETIME_FORMAT)
 
     now = datetime.now()
-    logging.info(f"# Current Time: {now.hour}: {now.minute}")
+    logger.info(f"# Current Time: {now.hour}: {now.minute}")
 
     if end_light_datetime.hour > now.hour > start_light_datetime.hour or (
         (start_light_datetime.hour == now.hour)
@@ -64,12 +75,12 @@ def run_schedule():
         if COUNTERS["light"] == 0:
             turn_on_lamp()
         set_counters(key="light", reset_key="darkness")
-        logging.info("Light")
+        logger.info("Light")
     else:
         if COUNTERS["darkness"] == 0:
             turn_off_lamp()
         set_counters(key="darkness", reset_key="light")
-        logging.info("Darkness...")
+        logger.info("Darkness...")
 
     MAIN_LOOP_LOCK.release()
 
@@ -78,14 +89,14 @@ def main():
     setup_board()
     while True:
         if not MAIN_LOOP_LOCK.locked():
-            logging.info("start running")
+            logger.info("start running")
             MAIN_LOOP_LOCK.acquire()
             timer_thread = Timer(
                 interval=TIMER_THREAD_INTERVAL_MINUTE,
                 function=run_schedule,
             )
             timer_thread.start()
-            logging.info(f"Running Timer in {TIMER_THREAD_INTERVAL_MINUTE}")
+            logger.info(f"Running Timer in {TIMER_THREAD_INTERVAL_MINUTE}")
         sleep(10)
 
 
