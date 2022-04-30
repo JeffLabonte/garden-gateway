@@ -15,6 +15,7 @@ garden-gateway = "src.main:main"
 python = "^3.9"
 requests = "^2.26.0"
 SQLAlchemy = "^1.4.25"
+pika = "^1.2.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
