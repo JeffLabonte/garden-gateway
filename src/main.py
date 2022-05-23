@@ -6,6 +6,8 @@ from threading import Lock, Timer
 from time import sleep
 
 import RPi.GPIO as GPIO
+from devices.relay_power_bar import RelayPowerBar
+
 
 logger = logging.getLogger(f"garden-gateway.{__name__}")
 
@@ -35,26 +37,6 @@ COUNTERS = {
 }
 
 TIMER_THREAD_INTERVAL_MINUTE = 5 * 60
-
-
-def turn_on_lamp():
-    """
-    Turn on Normal ON
-    """
-    GPIO.output(POWER_RELAY_PIN, GPIO.LOW)
-
-
-def turn_off_lamp():
-    """
-    Turn off lamp (Normally ON) but turns off heater (Normally OFF)
-    """
-    GPIO.output(POWER_RELAY_PIN, GPIO.HIGH)
-
-
-def setup_board():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(POWER_RELAY_PIN, GPIO.OUT)
-
 
 def set_counters(key: str, reset_key: str):
     COUNTERS[key] = COUNTERS[key] + 1
@@ -86,7 +68,6 @@ def run_schedule():
 
 
 def main():
-    setup_board()
     while True:
         if not MAIN_LOOP_LOCK.locked():
             logger.info("start running")
