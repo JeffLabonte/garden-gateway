@@ -9,7 +9,6 @@ class RelayStatus(Enum):
     STATUS_OFF = 2
 
 
-
 class RelayPowerBar:
 
     def __init__(self, pin: int = POWER_RELAY_PIN):
