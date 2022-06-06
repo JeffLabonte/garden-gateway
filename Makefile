@@ -1,2 +1,2 @@
 setup:
-	cargo install diesel_cli
+	cargo install diesel_cli --features sqlite
