@@ -5,8 +5,9 @@ pub struct RelayPowerBar {
 }
 
 impl RelayPowerBar {
-    pub fn new(&mut self, bcm_pin: u8) -> RelayPowerBar {
-        self.relay_power_pin = OutputDevice::new(bcm_pin);
+    pub fn new(bcm_pin: u8) -> RelayPowerBar {
+        let relay_power_pin = OutputDevice::new(bcm_pin);
+        RelayPowerBar { relay_power_pin }
     }
 
     pub fn turn_on(&mut self) {
