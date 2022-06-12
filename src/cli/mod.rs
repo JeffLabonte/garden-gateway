@@ -1,13 +1,11 @@
-use std::process::ExitStatusError;
-
 struct CLIArgs {
-    action: String,
-    key: String,
-    value: String,
+    pub action: String,
+    pub key: String,
+    pub value: String,
 }
 
 impl CLIArgs {
-    pub fn new(action: String, key: String, value: String) -> Result(Ok(), Err()) {
+    pub fn new(action: String, key: String, value: String) -> Self {
         match action.as_str() {
             "config" => {
                 println!("This is config")
@@ -30,8 +28,8 @@ mod tests {
 
     #[test]
     fn cli_args__new__action_config() {
-        let args = CLIArgs::new("config", "", "");
+        let args = CLIArgs::new(String::new("config"), String::new(""), String::new(""));
 
-        assert_eq!(args, Ok)
+        assert_eq!(args.action, String::new("config"))
     }
 }
