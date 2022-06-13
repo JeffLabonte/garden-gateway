@@ -13,7 +13,7 @@ impl CLIArgs {
             "run" => {
                 println!("Do nothing")
             }
-            _ => panic!("Not supposed to happen");
+            _ => panic!("Not supposed to happen"),
         }
 
         CLIArgs { action, key, value }
@@ -28,8 +28,10 @@ mod tests {
 
     #[test]
     fn cli_args__new__action_config() {
-        let args = CLIArgs::new(String::new("config"), String::new(""), String::new(""));
+        let config_action = String::from("config");
+        let empty_string = String::from("");
+        let args = CLIArgs::new(config_action, empty_string.clone(), empty_string.clone());
 
-        assert_eq!(args.action, String::new("config"))
+        assert_eq!(args.action, String::from("config"));
     }
 }
