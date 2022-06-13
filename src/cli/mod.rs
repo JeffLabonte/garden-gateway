@@ -55,14 +55,14 @@ impl CLIArgs {
 
 #[cfg(test)]
 mod tests {
-    use crate::cli::CLIArgs;
+    use crate::cli::{CLIArgs, CLIError};
 
     #[test]
-    fn cli_args_new_action_config() {
-        let config_action = String::from("run");
+    fn cli_args_new_action_run() {
+        let action = String::from("run");
         let empty_string = String::from("");
         let mut args = CLIArgs {
-            action: config_action,
+            action,
             key: empty_string.clone(),
             value: empty_string.clone(),
             errors: vec![],
@@ -70,5 +70,26 @@ mod tests {
         let _is_valid = args.is_valid();
 
         assert_eq!(_is_valid, true);
+    }
+
+    #[test]
+    fn cli_args_news_config_no_key() {
+        let action = String::from("config");
+        let empty_string = String::from("");
+        let value = String::from("1");
+
+        let mut args = CLIArgs {
+            action,
+            key: empty_string.clone(),
+            value,
+            errors: vec![],
+        };
+
+        assert_eq!(args.is_valid(), false);
+        assert_eq!(args.errors.len(), 1);
+        let error: &CLIError = args.errors.first().unwrap();
+        let expected_error: CLIError = CLIError::get_key_error();
+        assert_eq!(error.name, expected_error.name);
+        assert_eq!(error.message, expected_error.message);
     }
 }
