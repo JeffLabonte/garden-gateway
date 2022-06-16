@@ -10,3 +10,4 @@ rust_gpiozero = "0.2.1"
 lapin = "2.1.1"
 diesel = { version = "1.4.4", features = ["sqlite"] }
 dotenv = "0.15.0"
+clap = { version = "3.0", features = ["derive"] }
