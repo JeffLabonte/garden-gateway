@@ -73,20 +73,40 @@ mod tests {
     }
 
     #[test]
-    fn cli_args_news_config_no_key() {
+    fn cli_args_new_config_no_value() {
         let action = String::from("config");
-        let empty_string = String::from("");
+        let key = String::from("Key");
+        let empty_value = String::from("");
+
+        let mut args: CLIArgs = CLIArgs {
+            action,
+            key,
+            value: empty_value.clone(),
+            errors: vec![],
+        };
+
+        assert_eq!(args.is_valid(), false);
+        assert_eq!(args.errors.len(), 1);
+
+        let error: &CLIError = args.errors.first().unwrap();
+    }
+
+    #[test]
+    fn cli_args_new_config_no_key() {
+        let action = String::from("config");
+        let empty_key = String::from("");
         let value = String::from("1");
 
-        let mut args = CLIArgs {
+        let mut args: CLIArgs = CLIArgs {
             action,
-            key: empty_string.clone(),
+            key: empty_key.clone(),
             value,
             errors: vec![],
         };
 
         assert_eq!(args.is_valid(), false);
         assert_eq!(args.errors.len(), 1);
+
         let error: &CLIError = args.errors.first().unwrap();
         let expected_error: CLIError = CLIError::get_key_error();
         assert_eq!(error.name, expected_error.name);
