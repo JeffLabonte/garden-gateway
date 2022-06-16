@@ -34,6 +34,15 @@ impl CLIError {
 }
 
 impl CLIArgs {
+    pub fn new(action: String, key: String, value: String) -> Self {
+        CLIArgs {
+            action,
+            key,
+            value,
+            errors: vec![],
+        }
+    }
+
     pub fn is_valid(&mut self) -> bool {
         match self.action.as_str() {
             "config" => {
