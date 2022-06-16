@@ -6,10 +6,12 @@ mod cli;
 mod database;
 mod devices;
 
+use cli::get_cli_args;
 use database::establish_connection;
 use devices::RelayPowerBar;
 
 fn main() {
     let database = establish_connection();
     println!("It has worked");
+    get_cli_args();
 }
