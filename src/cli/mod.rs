@@ -70,15 +70,9 @@ mod tests {
     fn cli_args_new_action_run() {
         let action = String::from("run");
         let empty_string = String::from("");
-        let mut args = CLIArgs {
-            action,
-            key: empty_string.clone(),
-            value: empty_string.clone(),
-            errors: vec![],
-        };
-        let _is_valid = args.is_valid();
+        let mut args = CLIArgs::new(action, empty_string.clone(), empty_string.clone());
 
-        assert_eq!(_is_valid, true);
+        assert_eq!(args.is_valid(), true);
     }
 
     #[test]
@@ -87,17 +81,16 @@ mod tests {
         let key = String::from("Key");
         let empty_value = String::from("");
 
-        let mut args: CLIArgs = CLIArgs {
-            action,
-            key,
-            value: empty_value.clone(),
-            errors: vec![],
-        };
+        let mut args: CLIArgs = CLIArgs::new(action, key, empty_value.clone());
 
         assert_eq!(args.is_valid(), false);
         assert_eq!(args.errors.len(), 1);
 
         let error: &CLIError = args.errors.first().unwrap();
+        let expected_error = CLIError::get_value_error();
+
+        assert_eq!(error.name, expected_error.name);
+        assert_eq!(error.message, expected_error.message);
     }
 
     #[test]
@@ -106,12 +99,7 @@ mod tests {
         let empty_key = String::from("");
         let value = String::from("1");
 
-        let mut args: CLIArgs = CLIArgs {
-            action,
-            key: empty_key.clone(),
-            value,
-            errors: vec![],
-        };
+        let mut args: CLIArgs = CLIArgs::new(action, empty_key.clone(), value);
 
         assert_eq!(args.is_valid(), false);
         assert_eq!(args.errors.len(), 1);
