@@ -2,8 +2,13 @@ use clap::Parser;
 
 #[derive(Parser)]
 struct CLIArgs {
+    #[clap(short, required = true)]
     pub action: String,
+
+    #[clap(short, long, value_parser, default_value_t = String::from(""))]
     pub key: String,
+
+    #[clap(short, long, value_parser, default_value_t = String::from(""))]
     pub value: String,
 }
 
