@@ -12,6 +12,5 @@ use devices::RelayPowerBar;
 
 fn main() {
     let database = establish_connection();
-    println!("It has worked");
     get_cli_args();
 }

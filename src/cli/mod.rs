@@ -1,7 +1,7 @@
 use clap::Parser;
 
 #[derive(Parser)]
-struct CLIArgs {
+pub struct CLIArgs {
     #[clap(short, required = true)]
     pub action: String,
 
@@ -12,9 +12,15 @@ struct CLIArgs {
     pub value: String,
 }
 
-pub fn get_cli_args() {
+fn validate_action(args: CLIArgs) -> CLIArgs {
+    match args.action.as_str() {
+        "config" => args,
+        "run" => args,
+        _ => panic!("Only config and run action are allowed"),
+    }
+}
+
+pub fn get_cli_args() -> CLIArgs {
     let args = CLIArgs::parse();
-    println!("{}", args.action);
-    println!("{}", args.key);
-    println!("{}", args.value);
+    validate_action(args)
 }
