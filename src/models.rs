@@ -1,8 +1,8 @@
-use super::schema::configurations;
+use crate::schema::configurations;
 
 #[derive(Queryable, Insertable)]
-pub struct Configurations {
-    pub id: u32,
-    pub sensor_name: &'a str,
-    pub bcm_pin: u32,
+pub struct Configuration {
+    pub id: i32,
+    pub sensor_name: String,
+    pub bcm_pin: i32,
 }
