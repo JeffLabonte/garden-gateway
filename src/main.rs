@@ -16,7 +16,6 @@ use cli::get_cli_args;
 use database::establish_connection;
 use devices::RelayPowerBar;
 
-use crate::cli::CLIArgs;
 use crate::context::Context;
 
 fn main() {
