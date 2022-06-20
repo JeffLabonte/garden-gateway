@@ -15,20 +15,27 @@ pub struct CLIArgs {
     pub value: String,
 }
 
-fn validate_action(args: CLIArgs) -> CLIArgs {
+fn is_args_valid(args: &CLIArgs) -> bool {
     match args.action.as_str() {
         "config" => match args.sub_action.as_str() {
-            "list" => args,
-            "set" => args,
-            "remove" => args,
-            _ => panic!("You need to "),
+            "list" => true,
+            "set" | "remove" => {
+                if args.key.is_empty() && args.value.is_empty() {
+                    return false;
+                }
+                true
+            }
+            _ => false,
         },
-        "run" => args,
-        _ => panic!("Only config and run action are allowed"),
+        "run" => true,
+        _ => false,
     }
 }
 
-pub fn get_cli_args() -> CLIArgs {
+pub fn get_cli_args() -> Result<CLIArgs, String> {
     let args = CLIArgs::parse();
-    validate_action(args)
+    if is_args_valid(&args) {
+        return Ok(args);
+    }
+    Err(String::from("Invalid Arguments"))
 }
