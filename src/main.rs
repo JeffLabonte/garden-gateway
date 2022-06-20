@@ -12,5 +12,6 @@ use devices::RelayPowerBar;
 
 fn main() {
     let database = establish_connection();
-    get_cli_args();
+    let arguments = get_cli_args().expect("Invalid Arguments! Please use --help");
+    print!("Action: {}", arguments.action);
 }
