@@ -1,5 +1,7 @@
 use clap::Parser;
 
+pub mod actions;
+
 #[derive(Parser)]
 pub struct CLIArgs {
     #[clap(short, required = true)]
