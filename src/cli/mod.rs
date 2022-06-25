@@ -56,6 +56,19 @@ mod tests {
             value: empty_string.clone(),
         };
 
-        assert_eq!(is_args_valid(&cli_args), true)
+        assert_eq!(is_args_valid(&cli_args), true);
+    }
+
+    #[test]
+    fn config_action_no_subaction_is_not_valid() {
+        let empty_string = String::from("");
+        let cli_args = CLIArgs {
+            action: String::from("config"),
+            sub_action: empty_string.clone(),
+            key: empty_string.clone(),
+            value: empty_string.clone(),
+        };
+
+        assert_eq!(is_args_valid(&cli_args), false);
     }
 }
