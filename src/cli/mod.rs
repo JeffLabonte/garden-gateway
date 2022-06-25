@@ -41,3 +41,21 @@ pub fn get_cli_args() -> Result<CLIArgs, String> {
     }
     Err(String::from("Invalid Arguments"))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{is_args_valid, CLIArgs};
+
+    #[test]
+    fn run_action_args_is_valid() {
+        let empty_string = String::from("");
+        let cli_args = CLIArgs {
+            action: String::from("run"),
+            sub_action: empty_string.clone(),
+            key: empty_string.clone(),
+            value: empty_string.clone(),
+        };
+
+        assert_eq!(is_args_valid(&cli_args), true)
+    }
+}
