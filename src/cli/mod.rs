@@ -47,53 +47,17 @@ mod tests {
     use super::{is_args_valid, CLIArgs};
     use test_case::test_case;
 
-    #[test]
-    fn run_action_args_is_valid() {
-        let empty_string = String::from("");
-        let cli_args = CLIArgs {
-            action: String::from("run"),
-            sub_action: empty_string.clone(),
-            key: empty_string.clone(),
-            value: empty_string.clone(),
-        };
-
-        assert_eq!(is_args_valid(&cli_args), true);
-    }
-
-    #[test]
-    fn config_action_no_subaction_is_not_valid() {
-        let empty_string = String::from("");
-        let cli_args = CLIArgs {
-            action: String::from("config"),
-            sub_action: empty_string.clone(),
-            key: empty_string.clone(),
-            value: empty_string.clone(),
-        };
-
-        assert_eq!(is_args_valid(&cli_args), false);
-    }
-
-    #[test]
-    fn config_action_list_subaction_is_valid() {
-        let empty_string = String::from("");
-        let cli_args = CLIArgs {
-            action: String::from("config"),
-            sub_action: String::from("list"),
-            key: empty_string.clone(),
-            value: empty_string.clone(),
-        };
-
-        assert_eq!(is_args_valid(&cli_args), true);
-    }
-
-    #[test_case("config", "set", "", "", false ; "action: config, sub_action: set no key or value")]
-    #[test_case("config", "set", "something", "", false ; "action: config, sub_action: set no value")]
-    #[test_case("config", "set", "", "something", false ; "action: config, sub_action: set no key")]
-    #[test_case("config", "set", "something", "something", true ; "action: config, sub_action: set with key and value")]
-    #[test_case("config", "remove", "", "", false ; "action: config, sub_action: remove no key or value")]
-    #[test_case("config", "remove", "something", "", false ; "action: config, sub_action: remove no value")]
-    #[test_case("config", "remove", "", "something", false ; "action: config, sub_action: remove no key")]
-    #[test_case("config", "remove", "something", "something", true ; "action: config, sub_action: remove with key and value")]
+    #[test_case("", "", "", "", false ; "No Argument is invalid")]
+    #[test_case("run", "", "", "", true ; "action: run, sub_action: empty no key or value is valid")]
+    #[test_case("config", "list", "", "", true ; "action: config, sub_action: list no key or value is valid")]
+    #[test_case("config", "set", "", "", false ; "action: config, sub_action: set no key or value is invalid")]
+    #[test_case("config", "set", "something", "", false ; "action: config, sub_action: set no value is invalid")]
+    #[test_case("config", "set", "", "something", false ; "action: config, sub_action: set no key is invalid")]
+    #[test_case("config", "set", "something", "something", true ; "action: config, sub_action: set with key and value is valid")]
+    #[test_case("config", "remove", "", "", false ; "action: config, sub_action: remove no key or value is invalid")]
+    #[test_case("config", "remove", "something", "", false ; "action: config, sub_action: remove no value is invalid")]
+    #[test_case("config", "remove", "", "something", false ; "action: config, sub_action: remove no key is invalid")]
+    #[test_case("config", "remove", "something", "something", true ; "action: config, sub_action: remove with key and value is valid")]
     fn config_action_with_subactions_not_valid(
         action: &str,
         sub_action: &str,
