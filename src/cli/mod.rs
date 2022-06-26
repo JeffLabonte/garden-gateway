@@ -45,6 +45,7 @@ pub fn get_cli_args() -> Result<CLIArgs, String> {
 #[cfg(test)]
 mod tests {
     use super::{is_args_valid, CLIArgs};
+    use test_case::test_case;
 
     #[test]
     fn run_action_args_is_valid() {
@@ -85,14 +86,18 @@ mod tests {
         assert_eq!(is_args_valid(&cli_args), true);
     }
 
-    #[test]
-    fn config_action_set_subaction_no_key_no_value_is_not_valid() {
-        let empty_string = String::from("");
+    #[test_case("set", "", "" ; "action: config, sub_action: set no key or value")]
+    #[test_case("set", "something", "" ; "action: config, sub_action: set no value")]
+    #[test_case("set", "", "something" ; "action: config, sub_action: set no key")]
+    #[test_case("remove", "", "" ; "action: config, sub_action: remove no key or value")]
+    #[test_case("remove", "something", "" ; "action: config, sub_action: remove no value")]
+    #[test_case("remove", "", "something" ; "action: config, sub_action: remove no key")]
+    fn config_action_with_subactions_not_valid(sub_action: &str, key: &str, value: &str) {
         let cli_args = CLIArgs {
             action: String::from("config"),
-            sub_action: String::from("set"),
-            key: empty_string.clone(),
-            value: empty_string.clone(),
+            sub_action: String::from(sub_action),
+            key: String::from(key),
+            value: String::from(value),
         };
 
         assert_eq!(is_args_valid(&cli_args), false);
