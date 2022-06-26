@@ -86,20 +86,26 @@ mod tests {
         assert_eq!(is_args_valid(&cli_args), true);
     }
 
-    #[test_case("set", "", "" ; "action: config, sub_action: set no key or value")]
-    #[test_case("set", "something", "" ; "action: config, sub_action: set no value")]
-    #[test_case("set", "", "something" ; "action: config, sub_action: set no key")]
-    #[test_case("remove", "", "" ; "action: config, sub_action: remove no key or value")]
-    #[test_case("remove", "something", "" ; "action: config, sub_action: remove no value")]
-    #[test_case("remove", "", "something" ; "action: config, sub_action: remove no key")]
-    fn config_action_with_subactions_not_valid(sub_action: &str, key: &str, value: &str) {
+    #[test_case("config", "set", "", "", false ; "action: config, sub_action: set no key or value")]
+    #[test_case("config", "set", "something", "", false ; "action: config, sub_action: set no value")]
+    #[test_case("config", "set", "", "something", false ; "action: config, sub_action: set no key")]
+    #[test_case("config", "remove", "", "", false ; "action: config, sub_action: remove no key or value")]
+    #[test_case("config", "remove", "something", "", false ; "action: config, sub_action: remove no value")]
+    #[test_case("config", "remove", "", "something", false ; "action: config, sub_action: remove no key")]
+    fn config_action_with_subactions_not_valid(
+        action: &str,
+        sub_action: &str,
+        key: &str,
+        value: &str,
+        is_valid: bool,
+    ) {
         let cli_args = CLIArgs {
-            action: String::from("config"),
+            action: String::from(action),
             sub_action: String::from(sub_action),
             key: String::from(key),
             value: String::from(value),
         };
 
-        assert_eq!(is_args_valid(&cli_args), false);
+        assert_eq!(is_args_valid(&cli_args), is_valid);
     }
 }
