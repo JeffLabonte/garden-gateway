@@ -58,13 +58,7 @@ mod tests {
     #[test_case("config", "remove", "something", "", false ; "action: config, sub_action: remove no value is invalid")]
     #[test_case("config", "remove", "", "something", false ; "action: config, sub_action: remove no key is invalid")]
     #[test_case("config", "remove", "something", "something", true ; "action: config, sub_action: remove with key and value is valid")]
-    fn config_action_with_subactions_not_valid(
-        action: &str,
-        sub_action: &str,
-        key: &str,
-        value: &str,
-        is_valid: bool,
-    ) {
+    fn test_is_args_valid(action: &str, sub_action: &str, key: &str, value: &str, is_valid: bool) {
         let cli_args = CLIArgs {
             action: String::from(action),
             sub_action: String::from(sub_action),
