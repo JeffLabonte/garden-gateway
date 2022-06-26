@@ -22,7 +22,7 @@ fn is_args_valid(args: &CLIArgs) -> bool {
         "config" => match args.sub_action.as_str() {
             "list" => true,
             "set" | "remove" => {
-                if args.key.is_empty() && args.value.is_empty() {
+                if args.key.is_empty() || args.value.is_empty() {
                     return false;
                 }
                 true
