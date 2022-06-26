@@ -89,9 +89,11 @@ mod tests {
     #[test_case("config", "set", "", "", false ; "action: config, sub_action: set no key or value")]
     #[test_case("config", "set", "something", "", false ; "action: config, sub_action: set no value")]
     #[test_case("config", "set", "", "something", false ; "action: config, sub_action: set no key")]
+    #[test_case("config", "set", "something", "something", true ; "action: config, sub_action: set with key and value")]
     #[test_case("config", "remove", "", "", false ; "action: config, sub_action: remove no key or value")]
     #[test_case("config", "remove", "something", "", false ; "action: config, sub_action: remove no value")]
     #[test_case("config", "remove", "", "something", false ; "action: config, sub_action: remove no key")]
+    #[test_case("config", "remove", "something", "something", true ; "action: config, sub_action: remove with key and value")]
     fn config_action_with_subactions_not_valid(
         action: &str,
         sub_action: &str,
