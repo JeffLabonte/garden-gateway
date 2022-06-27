@@ -30,5 +30,7 @@ fn main() {
         },
     };
     let is_success = run_action(context);
-    println!("{}", is_success);
+    if !is_success {
+        eprintln!("Something went wrong");
+    }
 }
