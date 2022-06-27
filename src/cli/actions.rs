@@ -10,12 +10,12 @@ fn list_configs(database: SqliteConnection) -> bool {
 
     println!("Displaying {} configs", results.len());
 
-    println!("Configurations:");
+    println!("Configurations:\n");
     for config in results {
-        println!("\n************************\n");
+        println!("************************\n");
         println!("Sensor Name: {}", config.sensor_name);
         println!("Pin Number Configured: {}\n", config.bcm_pin);
-        println!("************************");
+        println!("************************\n");
     }
 
     true
