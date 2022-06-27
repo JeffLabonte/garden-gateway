@@ -14,7 +14,6 @@ use std::process;
 use cli::actions::run_action;
 use cli::get_cli_args;
 use database::establish_connection;
-use devices::RelayPowerBar;
 
 use crate::context::Context;
 
