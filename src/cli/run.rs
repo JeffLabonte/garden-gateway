@@ -1,3 +1,5 @@
+use std::thread::{self, JoinHandle};
+
 use crate::devices::RelayPowerBar;
 use crate::models::*;
 use diesel::prelude::*;
@@ -9,14 +11,15 @@ pub fn run(database: SqliteConnection) -> bool {
         .load::<Configuration>(&database)
         .expect("Error loading configurations");
 
-    let mut thread_handlers: Vec<&str> = Vec::new();
+    let mut thread_handlers: Vec<JoinHandle<()>> = Vec::new();
     for config in configs {
         let bcm_pin: u8 = config.bcm_pin as u8;
 
         let is_success = match config.sensor_name.as_str() {
             "relay_bar" => {
                 let relay_power_bar = RelayPowerBar::new(bcm_pin);
-                thread_handlers.push("str");
+                let handle = thread::spawn(move || {});
+                thread_handlers.push(handle);
                 true
             }
             _ => false,
