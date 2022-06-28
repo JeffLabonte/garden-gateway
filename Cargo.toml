@@ -11,7 +11,7 @@ lapin = "2.1.1"
 diesel = { version = "1.4.4", features = ["sqlite"] }
 dotenv = "0.15.0"
 clap = { version = "3.0", features = ["derive"] }
-job_scheduler = "*"
+tokio-cron-scheduler = "*"
 
 [dev-dependencies]
 test-case = "2.1.0"
