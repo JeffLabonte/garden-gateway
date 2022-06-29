@@ -10,7 +10,14 @@ table! {
     schedules (id) {
         id -> Integer,
         action -> Text,
-        configuration_id -> Integer,
         cron_string -> Text,
+        configuration_id -> Integer,
     }
 }
+
+joinable!(schedules -> configurations (configuration_id));
+
+allow_tables_to_appear_in_same_query!(
+    configurations,
+    schedules,
+);
