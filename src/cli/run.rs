@@ -1,6 +1,4 @@
-use std::thread::{self, JoinHandle};
-
-use crate::devices::RelayPowerBar;
+use crate::devices::{Devices, RelayPowerBar};
 use crate::models::*;
 use diesel::prelude::*;
 use tokio_cron_scheduler::{Job, JobScheduler, JobToRun};
