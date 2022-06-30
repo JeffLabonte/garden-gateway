@@ -1,15 +1,5 @@
 use rust_gpiozero::output_devices::OutputDevice;
 
-pub trait Devices {
-    fn is_what_type(&self) -> String;
-}
-
-impl Devices for RelayPowerBar {
-    fn is_what_type(&self) -> String {
-        String::from("RelayPowerBar")
-    }
-}
-
 pub struct RelayPowerBar {
     relay_power_pin: OutputDevice,
 }
