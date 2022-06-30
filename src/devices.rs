@@ -1,15 +1,12 @@
 use rust_gpiozero::output_devices::OutputDevice;
 
 pub trait Devices {
-    fn validate_action(&self, action_name: &str) -> bool;
+    fn is_what_type(&self) -> String;
 }
 
 impl Devices for RelayPowerBar {
-    fn validate_action(&self, action_name: &str) -> bool {
-        match action_name {
-            "turn_on" | "turn_off" => true,
-            _ => false,
-        }
+    fn is_what_type(&self) -> String {
+        String::from("RelayPowerBar")
     }
 }
 
