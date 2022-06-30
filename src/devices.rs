@@ -1,5 +1,18 @@
 use rust_gpiozero::output_devices::OutputDevice;
 
+pub trait Devices {
+    fn validate_action(&self, action_name: &str) -> bool;
+}
+
+impl Devices for RelayPowerBar {
+    fn validate_action(&self, action_name: &str) -> bool {
+        match action_name {
+            "turn_on" | "turn_off" => true,
+            _ => false,
+        }
+    }
+}
+
 pub struct RelayPowerBar {
     relay_power_pin: OutputDevice,
 }
