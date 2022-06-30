@@ -1,6 +1,6 @@
 use crate::context::Context;
 
-use super::configs::list_configs;
+use super::{configs::list_configs, run::run};
 
 pub fn run_action(context: Context) -> bool {
     let arguments = context.arguments;
@@ -10,6 +10,7 @@ pub fn run_action(context: Context) -> bool {
             "list" => list_configs(context.database),
             _ => false,
         },
+        "run" => run(context.database),
         _ => false,
     }
 }
