@@ -526,6 +526,7 @@ name = "gateway"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "cron",
  "diesel",
  "dotenv",
  "lapin",
