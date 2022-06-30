@@ -1,11 +1,9 @@
-use crate::devices::{Devices, RelayPowerBar};
+use std::str::FromStr;
+
+use crate::devices::RelayPowerBar;
 use crate::models::*;
 use diesel::prelude::*;
-use tokio_cron_scheduler::{Job, JobScheduler, JobToRun};
-
-fn get_struct_from_configuration(configuration: Configuration) -> Box<dyn Devices> {
-    Box::new(RelayPowerBar::new(configuration.bcm_pin as u8))
-}
+use tokio_cron_scheduler::{Job, JobScheduler};
 
 fn add_job_to_scheduler(
     database: &SqliteConnection,
@@ -15,20 +13,29 @@ fn add_job_to_scheduler(
     use crate::schema::schedules::dsl::{configuration_id, schedules};
 
     let config_id = configuration.id;
-    let device = get_struct_from_configuration(configuration);
-
     let results = schedules
         .filter(configuration_id.eq(config_id))
         .load::<Schedule>(database)
         .expect("Error loading schedules");
 
-    for schedule in results {
-        match device.is_what_type().as_str() {
-            "RelayPowerBar" => match schedule.action.as_str() {
-                "turn_on" => (),
-                "turn_off" => (),
-                _ => (),
-            },
+    for sched in results {
+        match configuration.sensor_name.as_str() {
+            "relay_power" => {
+                let device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                let cron_string = sched.cron_string.as_str();
+                match sched.action.as_str() {
+                    "turn_on" => {
+                        let job = Job::new(
+                            cron::Schedule::from_str(cron_string).unwrap(),
+                            |uuid, lock| println!("This is a test"),
+                        )
+                        .unwrap();
+                        let job_id = scheduler.add(job);
+                    }
+                    "turn_off" => (),
+                    _ => (),
+                };
+            }
             _ => (),
         }
     }
@@ -42,7 +49,7 @@ pub fn run(database: SqliteConnection) -> bool {
         .load::<Configuration>(&database)
         .expect("Error loading configurations");
 
-    let mut scheduler = scheduler.unwrap();
+    let scheduler = scheduler.unwrap();
     for config in configs {
         add_job_to_scheduler(&database, &scheduler, config);
     }
