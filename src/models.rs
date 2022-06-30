@@ -1,4 +1,4 @@
-use crate::schema::configurations;
+use crate::schema::{configurations, schedules};
 
 #[derive(Queryable, Insertable)]
 pub struct Configuration {
