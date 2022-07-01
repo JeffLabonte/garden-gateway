@@ -4,12 +4,13 @@ use crate::devices::RelayPowerBar;
 use crate::models::*;
 use diesel::prelude::*;
 use tokio_cron_scheduler::{Job, JobScheduler};
+use uuid::Uuid;
 
 fn add_job_to_scheduler(
     database: &SqliteConnection,
     scheduler: &JobScheduler,
     configuration: Configuration,
-) -> () {
+) -> Vec<Uuid> {
     use crate::schema::schedules::dsl::{configuration_id, schedules};
 
     let config_id = configuration.id;
@@ -18,19 +19,21 @@ fn add_job_to_scheduler(
         .load::<Schedule>(database)
         .expect("Error loading schedules");
 
+    let mut job_ids = Vec::new();
     for sched in results {
         match configuration.sensor_name.as_str() {
             "relay_power" => {
-                let device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
                 let cron_string = sched.cron_string.as_str();
                 match sched.action.as_str() {
                     "turn_on" => {
                         let job = Job::new(
                             cron::Schedule::from_str(cron_string).unwrap(),
-                            |uuid, lock| println!("This is a test"),
+                            move |_, _| device.turn_on(),
                         )
                         .unwrap();
                         let job_id = scheduler.add(job);
+                        job_ids.push(job_id.unwrap());
                     }
                     "turn_off" => (),
                     _ => (),
@@ -39,6 +42,8 @@ fn add_job_to_scheduler(
             _ => (),
         }
     }
+
+    job_ids
 }
 
 pub fn run(database: SqliteConnection) -> bool {
