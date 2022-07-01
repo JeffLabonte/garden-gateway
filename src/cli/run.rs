@@ -21,22 +21,20 @@ fn add_job_to_scheduler(
 
     let mut job_ids = Vec::new();
     for sched in results {
+        let cron_schedule = cron::Schedule::from_str(sched.cron_string.as_str()).unwrap();
         match configuration.sensor_name.as_str() {
             "relay_power" => {
                 let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
-                let cron_string = sched.cron_string.as_str();
                 match sched.action.as_str() {
                     "turn_on" => {
-                        let job = Job::new(
-                            cron::Schedule::from_str(cron_string).unwrap(),
-                            move |_, _| device.turn_on(),
-                        )
-                        .unwrap();
-                        let job_id = scheduler.add(job);
-                        job_ids.push(job_id.unwrap());
+                        let job = Job::new(cron_schedule, move |_, _| device.turn_on()).unwrap();
+                        job_ids.push(scheduler.add(job).unwrap());
                     }
-                    "turn_off" => (),
-                    _ => (),
+                    "turn_off" => {
+                        let job = Job::new(cron_schedule, move |_, _| device.turn_off()).unwrap();
+                        job_ids.push(scheduler.add(job).unwrap());
+                    }
+                    _ => panic!("Action not implemented"),
                 };
             }
             _ => (),
