@@ -27,3 +27,9 @@ It was tested on Debian Buster (Raspberry Pi OS)
 
 1. [IoT Relay](https://www.amazon.ca/gp/product/B00WV7GMA2/ref=ppx_yo_dt_b_asin_title_o05_s00?ie=UTF8&psc=1)
 
+
+### Features
+
+| Status | Feature |
+|:------:|:-------:|
+| :heavy_check_mark: | List Configurations |
