@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::Duration};
 
 use crate::devices::RelayPowerBar;
 use crate::models::*;
@@ -59,6 +59,15 @@ pub fn run(database: SqliteConnection) -> bool {
     for config in configs {
         for job_id in add_job_to_scheduler(&database, &scheduler, config) {
             job_ids.push(job_id);
+        }
+    }
+
+    loop {
+        let result = scheduler.tick();
+        if result == () {
+            std::thread::sleep(Duration::from_millis(500));
+        } else {
+            false
         }
     }
 
