@@ -46,7 +46,8 @@ fn add_job_to_scheduler(
     job_ids
 }
 
-pub fn run(database: SqliteConnection) -> bool {
+#[tokio::main]
+pub async fn run(database: SqliteConnection) -> bool {
     use crate::schema::configurations::dsl::configurations;
 
     let scheduler = JobScheduler::new();
@@ -63,13 +64,15 @@ pub fn run(database: SqliteConnection) -> bool {
     }
 
     loop {
+        if job_ids.is_empty() {
+            println!("No Jobs to run! Bye!");
+            return true;
+        }
         let result = scheduler.tick();
-        if result == () {
+        if result.unwrap() == () {
             std::thread::sleep(Duration::from_millis(500));
         } else {
-            false
+            return false;
         }
     }
-
-    true
 }
