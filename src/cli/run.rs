@@ -22,23 +22,25 @@ fn add_job_to_scheduler(
     let mut job_ids = Vec::new();
     for sched in results {
         let cron_schedule = cron::Schedule::from_str(sched.cron_string.as_str()).unwrap();
-        match configuration.sensor_name.as_str() {
-            "relay_power" => {
-                let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
-                match sched.action.as_str() {
-                    "turn_on" => {
-                        let job = Job::new(cron_schedule, move |_, _| device.turn_on()).unwrap();
-                        job_ids.push(scheduler.add(job).unwrap());
-                    }
-                    "turn_off" => {
-                        let job = Job::new(cron_schedule, move |_, _| device.turn_off()).unwrap();
-                        job_ids.push(scheduler.add(job).unwrap());
-                    }
-                    _ => panic!("Action not implemented"),
-                };
+        match sched.action.as_str() {
+            "turn_on" => {
+                let job = Job::new(cron_schedule, move |_, _| {
+                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    device.turn_on()
+                })
+                .unwrap();
+                job_ids.push(scheduler.add(job).unwrap());
             }
-            _ => (),
-        }
+            "turn_off" => {
+                let job = Job::new(cron_schedule, move |_, _| {
+                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    device.turn_off()
+                })
+                .unwrap();
+                job_ids.push(scheduler.add(job).unwrap());
+            }
+            _ => panic!("Action not implemented"),
+        };
     }
 
     job_ids
@@ -53,8 +55,11 @@ pub fn run(database: SqliteConnection) -> bool {
         .expect("Error loading configurations");
 
     let scheduler = scheduler.unwrap();
+    let mut job_ids: Vec<Uuid> = Vec::new();
     for config in configs {
-        add_job_to_scheduler(&database, &scheduler, config);
+        for job_id in add_job_to_scheduler(&database, &scheduler, config) {
+            job_ids.push(job_id);
+        }
     }
 
     true
