@@ -12,6 +12,7 @@ diesel = { version = "1.4.4", features = ["sqlite"] }
 dotenv = "0.15.0"
 clap = { version = "3.0", features = ["derive"] }
 tokio-cron-scheduler = "*"
+tokio = { version = "1", features = ["full"] }
 cron="0.10.0"
 
 [dependencies.uuid]
