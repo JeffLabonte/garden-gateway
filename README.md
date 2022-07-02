@@ -10,6 +10,13 @@ This project currently runs only on Raspberry PI.
 
 It was tested on Debian Buster (Raspberry Pi OS)
 
+## Requirements
+
+* `cargo`
+* `rust`
+* `sqlite3-dev`
+  * `sudo apt install libsqlite3-dev`
+
 ### Create .env file 
 
 1. Run `make copy_template`
