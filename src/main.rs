@@ -3,11 +3,12 @@ extern crate diesel;
 extern crate dotenv;
 
 mod cli;
-pub mod context;
+mod context;
 mod database;
 mod devices;
-pub mod models;
-pub mod schema;
+mod import;
+mod models;
+mod schema;
 
 use std::process;
 
