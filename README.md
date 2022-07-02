@@ -32,4 +32,10 @@ It was tested on Debian Buster (Raspberry Pi OS)
 
 | Status | Feature |
 |:------:|:-------:|
-| :heavy_check_mark: | List Configurations |
+| :white_check_mark: | List Configurations |
+| :white_check_mark: | Integrate IoT Relay |
+| :x: | Integrate custom board to switch Pump** |
+| :x: | Import Schedules from JSON file |
+| :x: | Import Configurations from JSON file |
+
+**Board using [BC517 transistor](https://www.digikey.ca/en/products/detail/onsemi/BC517-D74Z/976355) for the [submersible water pump.](https://www.digikey.ca/en/products/detail/adafruit-industries-llc/4547/11627730)
