@@ -1,12 +1,15 @@
-use clap::Parser;
-
 pub mod actions;
 mod configs;
+pub mod enums;
 mod run;
+
+use crate::cli::enums::ActionArgs;
+use clap::Parser;
+use std::path::PathBuf;
 
 #[derive(Parser)]
 pub struct CLIArgs {
-    #[clap(short, required = true)]
+    #[clap(long, required = true)]
     pub action: String,
 
     #[clap(short, required = false, default_value_t = String::from(""))]
@@ -17,11 +20,15 @@ pub struct CLIArgs {
 
     #[clap(short, long, value_parser, default_value_t = String::from(""))]
     pub value: String,
+
+    #[clap(short = 'i', long = "input", required = false, value_parser)]
+    pub import_json_path: PathBuf,
 }
 
 fn is_args_valid(args: &CLIArgs) -> bool {
-    match args.action.as_str() {
-        "config" => match args.sub_action.as_str() {
+    let action = ActionArgs::from_string(args.action.as_str());
+    match action {
+        Ok(ActionArgs::Config) => match args.sub_action.as_str() {
             "list" => true,
             "set" | "remove" => {
                 if args.key.is_empty() || args.value.is_empty() {
@@ -31,7 +38,7 @@ fn is_args_valid(args: &CLIArgs) -> bool {
             }
             _ => false,
         },
-        "run" => true,
+        Ok(ActionArgs::Run) => true,
         _ => false,
     }
 }
@@ -47,6 +54,7 @@ pub fn get_cli_args() -> Result<CLIArgs, String> {
 #[cfg(test)]
 mod tests {
     use super::{is_args_valid, CLIArgs};
+    use std::path::PathBuf;
     use test_case::test_case;
 
     #[test_case("", "", "", "", false ; "No Argument is invalid")]
@@ -66,6 +74,7 @@ mod tests {
             sub_action: String::from(sub_action),
             key: String::from(key),
             value: String::from(value),
+            import_json_path: PathBuf::new(),
         };
 
         assert_eq!(is_args_valid(&cli_args), is_valid);
