@@ -21,7 +21,13 @@ pub struct CLIArgs {
     #[clap(short, long, value_parser, default_value_t = String::from(""))]
     pub value: String,
 
-    #[clap(short = 'i', long = "input", required = false, value_parser)]
+    #[clap(
+        short = 'i',
+        long = "input",
+        required = false,
+        default_value = "/",
+        value_parser
+    )]
     pub import_json_path: PathBuf,
 }
 
