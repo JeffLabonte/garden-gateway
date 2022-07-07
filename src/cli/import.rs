@@ -11,7 +11,13 @@ struct ImportedSchedule {
 }
 
 pub fn import_schedule_from_json(file: PathBuf) -> bool {
-    let json_file = File::open(file).expect("No file there");
-    let schedules: Vec<ImportedSchedule> = serde_json::from_reader(json_file).expect("It failed");
+    let json_file = match File::open(file) {
+        Ok(f) => f,
+        Err(e) => panic!("Unable to read file: {}", e),
+    };
+    let schedules: Vec<ImportedSchedule> = match serde_json::from_reader(json_file) {
+        Ok(v) => v,
+        Err(e) => panic!("Unable to deserialize JSON file: {}", e),
+    };
     false
 }
