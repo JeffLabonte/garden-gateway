@@ -52,10 +52,6 @@
 	"features": {
 		"docker-in-docker": "latest",
 		"git": "latest",
-		"aws-cli": "latest",
 		"sshd": "latest",
-		"homebrew": "latest",
-		"node": "latest",
-		"python": "latest"
 	}
 }
