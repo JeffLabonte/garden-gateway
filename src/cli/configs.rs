@@ -12,6 +12,7 @@ pub fn list_configs(database: SqliteConnection) -> bool {
     println!("Configurations:\n");
     for config in results {
         println!("************************\n");
+        println!("Configuration ID: {}", config.id);
         println!("Sensor Name: {}", config.sensor_name);
         println!("Pin Number Configured: {}\n", config.bcm_pin);
         println!("************************\n");
