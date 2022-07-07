@@ -537,6 +537,8 @@ dependencies = [
  "dotenv",
  "lapin",
  "rust_gpiozero",
+ "serde",
+ "serde_json",
  "test-case",
  "tokio",
  "tokio-cron-scheduler",
