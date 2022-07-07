@@ -14,6 +14,6 @@ pub fn run_action(context: Context) -> bool {
             SubActions::List {} => list_configs(context.database),
         },
         Actions::Run {} => run(context.database),
-        Actions::Import { json_file } => todo!("Still need to create function"),
+        Actions::Import { schedule_json } => todo!("Not ready"),
     }
 }

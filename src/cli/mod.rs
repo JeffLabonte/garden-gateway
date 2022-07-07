@@ -9,30 +9,6 @@ use std::path::PathBuf;
 #[clap(name = "Garden Gateway CLI")]
 #[clap(about = "CLI to interact with Garden Gateway code.")]
 pub struct CLIArgs {
-    // #[clap(
-    //     long,
-    //     help = "Must be one of the following: config, run, import",
-    //     required = true
-    // )]
-    // pub action: String,
-
-    // #[clap(short = 's', required = false, default_value_t = String::from(""))]
-    // pub sub_action: String,
-
-    // #[clap(long = "key", help = "Key to pair with Value to set into Configurations", value_parser, default_value_t = String::from(""))]
-    // pub key: String,
-
-    // #[clap(long = "value", help = "Value to set on Key into Configurations", value_parser, default_value_t = String::from(""))]
-    // pub value: String,
-
-    // #[clap(
-    //     short = 'i',
-    //     long = "input",
-    //     required = false,
-    //     default_value = "/",
-    //     value_parser
-    // )]
-    // pub import_json_path: PathBuf,
     #[clap(subcommand)]
     pub action: Actions,
 }
@@ -46,12 +22,14 @@ pub enum Actions {
     },
 
     #[clap(arg_required_else_help = true)]
+    #[clap(help = "Run the code with the schedule and configurations")]
     Run {},
 
     #[clap(arg_required_else_help = true)]
+    #[clap(help = "Schedule to import")]
     Import {
         #[clap(value_parser)]
-        json_file: PathBuf,
+        schedule_json: PathBuf,
     },
 }
 
