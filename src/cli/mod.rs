@@ -8,6 +8,8 @@ use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Parser)]
+#[clap(name = "Garden Gateway CLI")]
+#[clap(about = "CLI to interact with Garden Gateway code.")]
 pub struct CLIArgs {
     #[clap(
         long,
