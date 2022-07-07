@@ -1,6 +1,8 @@
 use crate::context::Context;
 
-use super::{configs::list_configs, run::run, Actions, SubActions};
+use super::{
+    configs::list_configs, import::import_schedule_from_json, run::run, Actions, SubActions,
+};
 
 pub fn run_action(context: Context) -> bool {
     let arguments = context.arguments;
@@ -14,6 +16,6 @@ pub fn run_action(context: Context) -> bool {
             SubActions::List {} => list_configs(context.database),
         },
         Actions::Run {} => run(context.database),
-        Actions::Import { schedule_json } => todo!("Not ready"),
+        Actions::Import { schedule_json } => import_schedule_from_json(schedule_json),
     }
 }
