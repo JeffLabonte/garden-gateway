@@ -33,9 +33,9 @@ mod tests {
     use super::*;
 
     fn generate_imported_schedule(size: u32) -> Vec<ImportedSchedule> {
-        let imported_schedules: Vec<ImportedSchedule> = Vec::new();
+        let mut imported_schedules: Vec<ImportedSchedule> = Vec::new();
         for _ in 0..size {
-            let imported_schedule = importedImportedSchedule {
+            let imported_schedule = ImportedSchedule{
                 cron_string: String::from("* * * * *"),
                 action: String::from("turn_off"),
                 configuration_id: 1,
