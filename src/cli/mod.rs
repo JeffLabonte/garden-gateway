@@ -9,16 +9,20 @@ use std::path::PathBuf;
 
 #[derive(Parser)]
 pub struct CLIArgs {
-    #[clap(long, required = true)]
+    #[clap(
+        long,
+        help = "Must be one of the following: config, run, import",
+        required = true
+    )]
     pub action: String,
 
-    #[clap(short, required = false, default_value_t = String::from(""))]
+    #[clap(short = 's', required = false, default_value_t = String::from(""))]
     pub sub_action: String,
 
-    #[clap(short, long, value_parser, default_value_t = String::from(""))]
+    #[clap(long = "key", help = "Key to pair with Value to set into Configurations", value_parser, default_value_t = String::from(""))]
     pub key: String,
 
-    #[clap(short, long, value_parser, default_value_t = String::from(""))]
+    #[clap(long = "value", help = "Value to set on Key into Configurations", value_parser, default_value_t = String::from(""))]
     pub value: String,
 
     #[clap(
