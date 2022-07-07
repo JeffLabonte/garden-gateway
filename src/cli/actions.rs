@@ -1,16 +1,19 @@
 use crate::context::Context;
 
-use super::{configs::list_configs, run::run};
+use super::{configs::list_configs, run::run, Actions, SubActions};
 
 pub fn run_action(context: Context) -> bool {
     let arguments = context.arguments;
 
-    match arguments.action.as_str() {
-        "config" => match arguments.sub_action.as_str() {
-            "list" => list_configs(context.database),
-            _ => false,
+    match arguments.action {
+        Actions::Config { sub_action } => match sub_action {
+            SubActions::Set { key, value } => {
+                print!("Setting: {} -> {}", key, value);
+                false
+            }
+            SubActions::List {} => list_configs(context.database),
         },
-        "run" => run(context.database),
-        _ => false,
+        Actions::Run {} => run(context.database),
+        Actions::Import { json_file } => todo!("Still need to create function"),
     }
 }
