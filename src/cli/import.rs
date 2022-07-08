@@ -84,15 +84,55 @@ mod tests {
     use test_case::test_case;
     use super::*;
     use crate::database::establish_connection;
+    use crate::schema::schedules;
+    use crate::models::NewSchedule;
+    
+    fn setup() -> () {
+        let database = establish_connection();
+
+        let default_schedule = NewSchedule {
+            action: "turn_off".to_string(),
+            cron_string: "* * * * *".to_string(),
+            configuration_id: 1,
+        };
+
+        diesel::insert_into(schedules::table)
+            .values(&default_schedule)
+            .execute(&database)
+            .expect("Error Saving Schedule");
+    }
+    
+    fn teardown() -> () {
+        use crate::schema::schedules::dsl::schedules;
+
+        let database = establish_connection();
+
+        diesel::delete(schedules)
+            .execute(&database)
+            .expect("Error Deleting schedules");
+    }
+
+    fn run_test<T>(test: T) -> () 
+        where T: FnOnce() -> () {
+        setup();
+
+        test();
+
+        teardown();
+    }
+
+    fn generate_default_imported_schedule() -> ImportedSchedule {
+        ImportedSchedule {
+            cron_string: String::from("* * * * *"),
+            action: String::from("turn_off"),
+            configuration_id: 1,
+        }
+    }
 
     fn generate_imported_schedule(size: u32) -> Vec<ImportedSchedule> {
         let mut imported_schedules: Vec<ImportedSchedule> = Vec::new();
         for _ in 0..size {
-            let imported_schedule = ImportedSchedule{
-                cron_string: String::from("* * * * *"),
-                action: String::from("turn_off"),
-                configuration_id: 1,
-            };
+            let imported_schedule = generate_default_imported_schedule();
             imported_schedules.push(imported_schedule);
         }
         return imported_schedules;
@@ -111,5 +151,21 @@ mod tests {
 
         let result: bool = validate_input(database, imported_schedules);
         assert_eq!(result, is_schedules_valid);
+    }
+    
+    #[test]
+    fn imported_schedules_not_unique_with_db_should_be_invalid() {
+        run_test(|| {
+            let mut imported_schedules = generate_imported_schedule(1);
+
+            let result: bool = is_unique_with_db(establish_connection(), imported_schedules.clone());
+            assert_eq!(result, false);
+
+            imported_schedules[0].action = "turn_on".to_string();
+            
+            let result: bool = is_unique_with_db(establish_connection(), imported_schedules.clone());
+            assert_eq!(result, true);
+
+        });
     }
 }
