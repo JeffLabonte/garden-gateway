@@ -1,9 +1,10 @@
 use std::fs::File;
 use std::path::PathBuf;
+use std::collections::HashSet;
 
 use serde::Deserialize;
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Hash, PartialEq, Eq)]
 struct ImportedSchedule {
     pub cron_string: String,
     pub action: String,
@@ -22,13 +23,15 @@ fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
     }
 }
 
-fn validate_input(schedules: Vec<ImportedSchedule>) -> std::result::Result<bool, &'static str> {
+fn is_input_unique(schedules: Vec<ImportedSchedule>) -> bool {
+    let original_schedules = schedules.clone();
+    let unique_schedules: HashSet<ImportedSchedule> = schedules.into_iter().collect();
+    
+    return original_schedules.len() == unique_schedules.len();
+}
 
-    for schedule in schedules {
-        let schedules_copy: Vec<ImportedSchedule> = Vec::new();
-        schedules_copy = schedules.clone();
-    }
-    Ok(false)
+fn validate_input(schedules: Vec<ImportedSchedule>) -> bool {
+    is_input_unique(schedules)
 }
 
 pub fn import_schedule_from_json(file: PathBuf) -> bool {
@@ -57,6 +60,7 @@ mod tests {
     fn import_schedules_must_be_unique() {
         let imported_schedules = generate_imported_schedule(2);
 
-        validate_input(imported_schedules);
+        let result: bool = validate_input(imported_schedules);
+        assert_eq!(result, false)
     }
 }
