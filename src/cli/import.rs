@@ -11,7 +11,6 @@ struct ImportedSchedule {
     pub configuration_id: u32,
 }
 
-
 fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
     let json_file = match File::open(file) {
         Ok(f) => f,
@@ -41,6 +40,7 @@ pub fn import_schedule_from_json(file: PathBuf) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use test_case::test_case;
     use super::*;
 
     fn generate_imported_schedule(size: u32) -> Vec<ImportedSchedule> {
@@ -55,12 +55,17 @@ mod tests {
         }
         return imported_schedules;
     }
+    
+    #[test_case(true, true ; "When unique expect valid")]
+    #[test_case(false, false ; "When not unique expect invalid")]
+    fn import_schedules_must_be_unique(is_unique: bool, is_schedules_valid: bool) {
+        let mut imported_schedules = generate_imported_schedule(2);
 
-    #[test]
-    fn import_schedules_must_be_unique() {
-        let imported_schedules = generate_imported_schedule(2);
+        if is_unique == true {
+            imported_schedules[0].configuration_id = 2;
+        }
 
         let result: bool = validate_input(imported_schedules);
-        assert_eq!(result, false)
+        assert_eq!(result, is_schedules_valid);
     }
 }
