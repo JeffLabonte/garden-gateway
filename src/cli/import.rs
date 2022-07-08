@@ -3,12 +3,13 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 struct ImportedSchedule {
     pub cron_string: String,
     pub action: String,
     pub configuration_id: u32,
 }
+
 
 fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
     let json_file = match File::open(file) {
@@ -21,7 +22,14 @@ fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
     }
 }
 
-fn validate_input(){}
+fn validate_input(schedules: Vec<ImportedSchedule>) -> std::result::Result<bool, &'static str> {
+
+    for schedule in schedules {
+        let schedules_copy: Vec<ImportedSchedule> = Vec::new();
+        schedules_copy = schedules.clone();
+    }
+    Ok(false)
+}
 
 pub fn import_schedule_from_json(file: PathBuf) -> bool {
     let imported_schedules = read_json_schedule(file);
@@ -49,6 +57,6 @@ mod tests {
     fn import_schedules_must_be_unique() {
         let imported_schedules = generate_imported_schedule(2);
 
-        validate_input();
+        validate_input(imported_schedules);
     }
 }
