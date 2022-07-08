@@ -1,14 +1,16 @@
 use std::fs::File;
 use std::path::PathBuf;
 use std::collections::HashSet;
+use crate::models::*;
 
+use diesel::prelude::*;
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone, Hash, PartialEq, Eq)]
 struct ImportedSchedule {
     pub cron_string: String,
     pub action: String,
-    pub configuration_id: u32,
+    pub configuration_id: i32,
 }
 
 fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
