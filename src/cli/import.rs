@@ -47,13 +47,13 @@ fn is_unique_with_db(database: SqliteConnection, imported_schedules: Vec<Importe
             )
             .load::<Schedule>(&database)
             .expect("Error Loading Configurations");
-
-        if db_schedules.is_empty() == false {
-            return false;
+        
+        if db_schedules.is_empty() {
+            return true;
         }
     }
 
-    true
+    false
 }
 
 fn validate_input(database: SqliteConnection, schedules: Vec<ImportedSchedule>) -> bool {
