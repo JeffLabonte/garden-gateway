@@ -6,3 +6,7 @@ copy_env_template:
 
 copy_schedule_template:
 	cp --backup templates/import_schedule.json.template import_schedule.json
+
+test:
+	DATABASE_URL=test_gateway_garden.sqlite diesel migration redo
+	DATABASE_URL=test_gateway_garden.sqlite cargo test
