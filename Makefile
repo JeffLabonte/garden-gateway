@@ -1,4 +1,5 @@
 setup:
+	sudo apt install libsqlite3-dev -y
 	cargo install diesel_cli --no-default-features --features sqlite
 
 copy_env_template:
@@ -7,6 +8,6 @@ copy_env_template:
 copy_schedule_template:
 	cp --backup templates/import_schedule.json.template import_schedule.json
 
-test:
+test: setup
 	DATABASE_URL=test_gateway_garden.sqlite diesel migration redo
 	DATABASE_URL=test_gateway_garden.sqlite cargo test
