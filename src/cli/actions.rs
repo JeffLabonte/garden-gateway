@@ -16,6 +16,8 @@ pub fn run_action(context: Context) -> bool {
             SubActions::List {} => list_configs(context.database),
         },
         Actions::Run {} => run(context.database),
-        Actions::Import { schedule_json } => import_schedule_from_json(context.database, schedule_json),
+        Actions::Import { schedule_json } => {
+            import_schedule_from_json(context.database, schedule_json)
+        }
     }
 }

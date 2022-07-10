@@ -2,8 +2,8 @@
 extern crate diesel;
 extern crate dotenv;
 
-pub mod context;
 mod cli;
+pub mod context;
 mod database;
 mod devices;
 mod import;
