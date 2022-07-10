@@ -71,7 +71,6 @@ pub async fn run(database: SqliteConnection) -> bool {
             println!("No Jobs to run! Bye!");
             return true;
         }
-        let now = chrono::Local::now();
         match scheduler.tick() {
             Ok(_) => std::thread::sleep(Duration::from_millis(1000)),
             Err(e) => {
