@@ -71,6 +71,10 @@ fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<Imported
             configurations.filter(id.eq(schedule_clone.configuration_id)),
         ))
         .get_result(database);
+
+        if !has_config.unwrap() {
+            return false;
+        }
     }
 
     true
@@ -85,6 +89,8 @@ fn validate_input(database: &SqliteConnection, schedules: Vec<ImportedSchedule>)
     if !is_unique_with_db(database, &schedules) {
         return false;
     }
+
+    if !is_input_valid(database, &schedules) {}
 
     true
 }
@@ -104,10 +110,17 @@ fn import_schedule(
             }
             Ok(_) => {
                 let new_schedule = NewSchedule::from_imported_schedule(schedule_clone);
-                diesel::insert_into(schedules::table)
+                let result = diesel::insert_into(schedules::table)
                     .values(&new_schedule)
-                    .execute(database)
-                    .unwrap();
+                    .execute(database);
+
+                match result {
+                    Ok(_) => continue,
+                    Err(e) => {
+                        eprintln!("Unexpected error with database: {}", e);
+                        return false;
+                    }
+                }
             }
         }
     }

@@ -2,11 +2,11 @@
     {
         "cron_string" : "0 7 * * *",
         "action": "turn_on",
-        "configuration_id": 1,
+        "configuration_id": 1
     },
     {
         "cron_string" : "0 19 * * *",
         "action": "turn_off",
-        "configuration_id": 1,
+        "configuration_id": 1
     }
 ]
