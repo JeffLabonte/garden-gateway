@@ -531,6 +531,7 @@ checksum = "21163e139fa306126e6eedaf49ecdb4588f939600f0b1e770f4205ee4b7fa868"
 name = "gateway"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "clap",
  "cron",
  "diesel",
