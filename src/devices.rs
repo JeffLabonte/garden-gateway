@@ -13,14 +13,14 @@ impl RelayPowerBar {
     pub fn turn_on(&mut self) {
         println!("Turning on pin to RelayPowerBar");
         if !self.relay_power_pin.is_active() {
-            self.relay_power_pin.on();
+            self.relay_power_pin.off();
         }
     }
 
     pub fn turn_off(&mut self) {
         println!("Turning off pin to RelayPowerBar");
         if self.relay_power_pin.is_active() {
-            self.relay_power_pin.off();
+            self.relay_power_pin.on();
         }
     }
 }
