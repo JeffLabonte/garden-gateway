@@ -72,7 +72,6 @@ pub async fn run(database: SqliteConnection) -> bool {
             return true;
         }
         let now = chrono::Local::now();
-        println!("{} - Running ...", now.format("%b %-d, %-I:%M:%s").to_string());
         match scheduler.tick() {
             Ok(_) => std::thread::sleep(Duration::from_millis(1000)),
             Err(e) => {
