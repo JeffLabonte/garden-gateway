@@ -34,7 +34,7 @@ It was tested on Debian Buster (Raspberry Pi OS)
 |:------:|:-------:|
 | :white_check_mark: | List Configurations |
 | :white_check_mark: | Integrate IoT Relay |
-| :x: | Import Schedules from JSON file |
+| :white_check_mark: | Import Schedules from JSON file |
 | :x: | Integrate custom board to switch Pump** |
 | :x: | Import Configurations from JSON file |
 
