@@ -11,14 +11,14 @@ impl RelayPowerBar {
     }
 
     pub fn turn_on(&mut self) {
-        if !self.relay_power_pin.is_active() {
-            self.relay_power_pin.on();
-        }
+        let now = chrono::Local::now();
+        println!("{} - Running: Turning ON pin to RelayPowerBar", now.format("%b %-d, %-I:%M:%s").to_string());
+        self.relay_power_pin.off();
     }
 
     pub fn turn_off(&mut self) {
-        if self.relay_power_pin.is_active() {
-            self.relay_power_pin.off();
-        }
+        let now = chrono::Local::now();
+        println!("{} - Running: Turning OFF pin to RelayPowerBar", now.format("%b %-d, %-I:%M:%s").to_string());
+        self.relay_power_pin.on();
     }
 }

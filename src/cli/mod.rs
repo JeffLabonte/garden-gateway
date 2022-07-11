@@ -1,6 +1,6 @@
 pub mod actions;
 mod configs;
-mod import;
+pub mod import;
 mod run;
 
 use clap::{Parser, Subcommand};

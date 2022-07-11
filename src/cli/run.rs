@@ -22,8 +22,10 @@ fn add_job_to_scheduler(
     let mut job_ids = Vec::new();
     for sched in results {
         let cron_schedule = cron::Schedule::from_str(sched.cron_string.as_str()).unwrap();
+        println!("This schedule will run at {}", cron_schedule);
         match sched.action.as_str() {
             "turn_on" => {
+                println!("Adding turn_on for configuration {}", sched.configuration_id);
                 let job = Job::new(cron_schedule, move |_, _| {
                     let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
                     device.turn_on()
@@ -32,6 +34,7 @@ fn add_job_to_scheduler(
                 job_ids.push(scheduler.add(job).unwrap());
             }
             "turn_off" => {
+                println!("Adding turn_off for configuration {}", sched.configuration_id);
                 let job = Job::new(cron_schedule, move |_, _| {
                     let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
                     device.turn_off()
@@ -62,7 +65,7 @@ pub async fn run(database: SqliteConnection) -> bool {
             job_ids.push(job_id);
         }
     }
-
+    
     loop {
         if job_ids.is_empty() {
             println!("No Jobs to run! Bye!");
