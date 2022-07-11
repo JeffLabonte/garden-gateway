@@ -1,4 +1,4 @@
-use std::{str::FromStr, time::Duration};
+use std::time::Duration;
 
 use crate::devices::RelayPowerBar;
 use crate::models::*;
@@ -21,12 +21,12 @@ fn add_job_to_scheduler(
 
     let mut job_ids = Vec::new();
     for sched in results {
-        let cron_schedule = cron::Schedule::from_str(sched.cron_string.as_str()).unwrap();
-        println!("This schedule will run at {}", cron_schedule);
+        let cron_schedule_str = sched.cron_string.as_str();
+        println!("This schedule will run at {}", cron_schedule_str);
         match sched.action.as_str() {
             "turn_on" => {
                 println!("Adding turn_on for configuration {}", sched.configuration_id);
-                let job = Job::new(cron_schedule, move |_, _| {
+                let job = Job::new(cron_schedule_str, move |_, _| {
                     let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
                     device.turn_on()
                 })
@@ -35,7 +35,7 @@ fn add_job_to_scheduler(
             }
             "turn_off" => {
                 println!("Adding turn_off for configuration {}", sched.configuration_id);
-                let job = Job::new(cron_schedule, move |_, _| {
+                let job = Job::new(cron_schedule_str, move |_, _| {
                     let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
                     device.turn_off()
                 })
