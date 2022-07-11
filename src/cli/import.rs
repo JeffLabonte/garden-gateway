@@ -90,7 +90,9 @@ fn validate_input(database: &SqliteConnection, schedules: Vec<ImportedSchedule>)
         return false;
     }
 
-    if !is_input_valid(database, &schedules) {}
+    if !is_input_valid(database, &schedules) {
+        return false;
+    }
 
     true
 }
@@ -132,7 +134,7 @@ pub fn import_schedule_from_json(database: SqliteConnection, file: PathBuf) -> b
     let imported_schedules = read_json_schedule(file);
     let is_valid = validate_input(&database, imported_schedules.clone());
 
-    if is_valid == false {
+    if !is_valid {
         return is_valid;
     }
 
@@ -148,7 +150,7 @@ mod tests {
     use diesel::result::Error;
     use test_case::test_case;
 
-    fn setup(database: &SqliteConnection) -> () {
+    fn setup(database: &SqliteConnection) {
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
@@ -161,7 +163,7 @@ mod tests {
             .unwrap();
     }
 
-    fn teardown(database: &SqliteConnection) -> () {
+    fn teardown(database: &SqliteConnection) {
         use crate::schema::schedules::dsl::schedules;
 
         diesel::delete(schedules).execute(database).unwrap();
@@ -181,7 +183,8 @@ mod tests {
             let imported_schedule = generate_default_imported_schedule();
             imported_schedules.push(imported_schedule);
         }
-        return imported_schedules;
+
+        imported_schedules
     }
 
     #[test_case(true, true; "When unique expect valid")]
@@ -191,7 +194,7 @@ mod tests {
         let database = &establish_connection();
 
         database.test_transaction::<_, Error, _>(|| {
-            if is_unique == true {
+            if is_unique {
                 imported_schedules[0].configuration_id = 2;
             }
 
