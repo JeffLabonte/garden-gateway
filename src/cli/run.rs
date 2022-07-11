@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::devices::RelayPowerBar;
 use crate::models::*;
 use diesel::prelude::*;
@@ -76,6 +74,7 @@ pub async fn run(database: SqliteConnection) -> bool {
                 match scheduler.time_till_next_job() {
                     Ok(v) => match v {
                         Some(time) => {
+                            println!("Waiting for {:?}", time);
                             std::thread::sleep(time);
                         },
                         None => {
