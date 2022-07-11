@@ -385,6 +385,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "cron"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d76219e9243e100d5a37676005f08379297f8addfebc247613299600625c734d"
+dependencies = [
+ "chrono",
+ "nom",
+ "once_cell",
+]
+
+[[package]]
 name = "crypto-common"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -533,7 +544,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
- "cron",
+ "cron 0.11.0",
  "diesel",
  "dotenv",
  "lapin",
@@ -1376,7 +1387,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38b76a315858dc814343060f70de9cfac3e2611c87bb691503fba05dc13936a6"
 dependencies = [
  "chrono",
- "cron",
+ "cron 0.10.1",
  "num-derive",
  "num-traits",
  "time",
