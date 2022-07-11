@@ -3,6 +3,7 @@ use crate::models::*;
 use diesel::prelude::*;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
+use std::time::Duration;
 
 fn add_job_to_scheduler(
     database: &SqliteConnection,
@@ -74,8 +75,8 @@ pub async fn run(database: SqliteConnection) -> bool {
                 match scheduler.time_till_next_job() {
                     Ok(v) => match v {
                         Some(time) => {
-                            println!("Waiting for {:?}", time);
-                            std::thread::sleep(time);
+                            println!("Next job in :{:?}", time);
+                            std::thread::sleep(Duration::from_millis(500));
                         },
                         None => {
                             job_ids.clear();
