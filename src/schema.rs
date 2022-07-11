@@ -17,4 +17,7 @@ table! {
 
 joinable!(schedules -> configurations (configuration_id));
 
-allow_tables_to_appear_in_same_query!(configurations, schedules,);
+allow_tables_to_appear_in_same_query!(
+    configurations,
+    schedules,
+);

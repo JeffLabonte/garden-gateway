@@ -157,16 +157,16 @@ mod tests {
             configuration_id: 1,
         };
 
-        diesel::insert_into(schedules::table)
+       match  diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database)
-            .unwrap();
-    }
-
-    fn teardown(database: &SqliteConnection) {
-        use crate::schema::schedules::dsl::schedules;
-
-        diesel::delete(schedules).execute(database).unwrap();
+        {
+            Ok(_) => (), 
+            Err(e) => {
+                eprintln!("{}", e);
+            }
+        
+        }
     }
 
     fn generate_default_imported_schedule() -> ImportedSchedule {
@@ -191,17 +191,12 @@ mod tests {
     #[test_case(false, false ; "When not unique expect invalid")]
     fn import_schedules_must_be_unique(is_unique: bool, is_schedules_valid: bool) {
         let mut imported_schedules = generate_imported_schedule(2);
-        let database = &establish_connection();
+        if is_unique {
+            imported_schedules[0].configuration_id = 2;
+        }
 
-        database.test_transaction::<_, Error, _>(|| {
-            if is_unique {
-                imported_schedules[0].configuration_id = 2;
-            }
-
-            let result: bool = validate_input(database, imported_schedules);
-            assert_eq!(result, is_schedules_valid);
-            Ok(())
-        });
+        let result: bool = is_input_unique(&imported_schedules);
+        assert_eq!(result, is_schedules_valid);
     }
 
     #[test]
@@ -220,8 +215,6 @@ mod tests {
             let result: bool = is_unique_with_db(database, &imported_schedules);
             assert_eq!(result, true);
 
-            teardown(database);
-
             Ok(())
         });
     }
@@ -239,7 +232,7 @@ mod tests {
             let result: bool = import_schedule(database, &imported_schedules);
 
             assert_eq!(result, false);
-            teardown(database);
+
             Ok(())
         });
     }
