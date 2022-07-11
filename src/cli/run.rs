@@ -72,7 +72,7 @@ pub async fn run(database: SqliteConnection) -> bool {
             return true;
         }
         match scheduler.tick() {
-            Ok(_) => std::thread::sleep(Duration::from_millis(1000)),
+            Ok(_) => std::thread::sleep(Duration::from_millis(500)),
             Err(e) => {
                 eprintln!("Something went wrong during runtime: {}", e);
                 return false;
