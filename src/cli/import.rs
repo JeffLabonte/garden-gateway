@@ -31,7 +31,7 @@ fn is_input_unique(schedules: &Vec<ImportedSchedule>) -> bool {
     let unique_schedules: HashSet<ImportedSchedule> =
         original_schedules.clone().into_iter().collect();
 
-    return original_schedules.len() == unique_schedules.len();
+    original_schedules.len() == unique_schedules.len()
 }
 
 fn is_unique_with_db(
