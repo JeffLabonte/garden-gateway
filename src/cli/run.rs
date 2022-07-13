@@ -49,18 +49,18 @@ fn add_job_to_scheduler(
 }
 
 #[tokio::main]
-pub async fn run(database: SqliteConnection) -> bool {
+pub async fn run(database: &SqliteConnection) -> bool {
     use crate::schema::configurations::dsl::configurations;
 
     let scheduler = JobScheduler::new();
     let configs = configurations
-        .load::<Configuration>(&database)
+        .load::<Configuration>(database)
         .expect("Error loading configurations");
 
     let mut scheduler = scheduler.unwrap();
     let mut job_ids: Vec<Uuid> = Vec::new();
     for config in configs {
-        for job_id in add_job_to_scheduler(&database, &scheduler, config) {
+        for job_id in add_job_to_scheduler(database, &scheduler, config) {
             job_ids.push(job_id);
         }
     }
@@ -68,8 +68,9 @@ pub async fn run(database: SqliteConnection) -> bool {
     loop {
         if job_ids.is_empty() {
             println!("No Jobs to run! Bye!");
-            return true;
+            return false;
         }
+
         match scheduler.tick() {
             Ok(_) =>{
                 match scheduler.time_till_next_job() {
@@ -81,12 +82,7 @@ pub async fn run(database: SqliteConnection) -> bool {
                             std::thread::sleep(Duration::from_millis(500));
                         },
                         None => {
-                            job_ids.clear();
-                            for config in configurations.load::<Configuration>(&database).unwrap() {
-                                for job_id in add_job_to_scheduler(&database, &scheduler, config) {
-                                    job_ids.push(job_id);
-                                }
-                            }
+                            return true;
                         }
                     },
                     Err(_) => {
