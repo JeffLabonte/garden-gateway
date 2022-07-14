@@ -76,16 +76,18 @@ pub async fn run(database: &SqliteConnection) -> bool {
                 match scheduler.time_till_next_job() {
                     Ok(v) => match v {
                         Some(time) => {
-                            if time.as_secs() % 5 == 0 {
+                            if time.as_millis() % 10000 == 0 {
                                 println!("Next job in :{:?}", time);
                             }
                             std::thread::sleep(Duration::from_millis(500));
                         },
                         None => {
+                            println!("Nothing to run next, returning true");
                             return true;
                         }
                     },
-                    Err(_) => {
+                    Err(e) => {
+                        eprintln!("Couldn't retrieve the time till next job: {}", e);
                         return false;
                     }
                 }

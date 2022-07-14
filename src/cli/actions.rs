@@ -17,9 +17,12 @@ pub fn run_action(context: Context) -> bool {
         },
         Actions::Run {} => loop {
             match run(&context.database) {
-                true => continue,
+                true => {
+                    println!("Run Completed! Let's reload");
+                    continue;
+                },
                 false => {
-                    eprintln!("We are done");
+                    println!("We are done\nStopping now!");
                     return false;
                 }
             };
