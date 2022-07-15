@@ -87,13 +87,13 @@ pub async fn run(database: &SqliteConnection) -> bool {
                         }
                     },
                     Err(e) => {
-                        eprintln!("Couldn't retrieve the time till next job: {}", e);
+                        println!("Couldn't retrieve the time till next job: {}", e);
                         return false;
                     }
                 }
             },
             Err(e) => {
-                eprintln!("Something went wrong during runtime: {}", e);
+                println!("Something went wrong during runtime: {}", e);
                 return false;
             }
         };
