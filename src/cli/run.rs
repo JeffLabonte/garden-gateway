@@ -88,7 +88,7 @@ pub async fn run(database: &SqliteConnection) -> bool {
                     },
                     Err(e) => {
                         println!("Couldn't retrieve the time till next job: {}", e);
-                        return false;
+                        return true;
                     }
                 }
             },
