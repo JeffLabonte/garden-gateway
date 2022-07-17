@@ -31,6 +31,13 @@ pub enum Actions {
         #[clap(value_parser)]
         schedule_json: PathBuf,
     },
+
+    #[clap(help = "Allow you to test your electronic setup")]
+    Test {
+        #[clap(short = 's')]
+        sensor: String,
+        action: String,
+    },
 }
 
 #[derive(Subcommand)]
