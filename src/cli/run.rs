@@ -65,10 +65,11 @@ pub async fn run(database: &SqliteConnection) -> bool {
         }
     }
     
+    let mut run_again: bool = false;
     loop {
         if job_ids.is_empty() {
             println!("No Jobs to run! Bye!");
-            return false;
+            break;
         }
 
         match scheduler.tick() {
@@ -79,20 +80,23 @@ pub async fn run(database: &SqliteConnection) -> bool {
                             std::thread::sleep(Duration::from_millis(500));
                         },
                         None => {
-                            println!("Nothing to run next, returning true");
-                            return true;
+                            run_again = true;
+                            break;
                         }
                     },
                     Err(e) => {
                         println!("Couldn't retrieve the time till next job: {}", e);
-                        return true;
+                        run_again = true;
+                        break;
                     }
                 }
             },
             Err(e) => {
                 println!("Something went wrong during runtime: {}", e);
-                return false;
+                break;
             }
         };
     }
+
+    run_again
 }
