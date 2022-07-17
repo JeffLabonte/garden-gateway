@@ -23,7 +23,7 @@ pub fn run_action(context: Context) -> bool {
                 },
                 false => {
                     println!("We are done\nStopping now!");
-                    return false;
+                    return true;
                 }
             };
         },
