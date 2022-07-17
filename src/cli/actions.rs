@@ -19,7 +19,6 @@ pub fn run_action(context: Context) -> bool {
             match run(&context.database) {
                 true => {
                     println!("Run Completed! Let's reload");
-                    continue;
                 },
                 false => {
                     println!("We are done\nStopping now!");
