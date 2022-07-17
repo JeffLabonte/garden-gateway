@@ -75,7 +75,7 @@ pub async fn run(database: &SqliteConnection) -> bool {
             Ok(_) =>{
                 match scheduler.time_till_next_job() {
                     Ok(v) => match v {
-                        Some(time) => {
+                        Some(_) => {
                             std::thread::sleep(Duration::from_millis(500));
                         },
                         None => {
