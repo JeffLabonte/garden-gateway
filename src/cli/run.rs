@@ -93,6 +93,7 @@ pub async fn run(database: &SqliteConnection) -> bool {
             },
             Err(e) => {
                 println!("Something went wrong during runtime: {}", e);
+                run_again = true;
                 break;
             }
         };
