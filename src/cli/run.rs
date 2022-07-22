@@ -26,7 +26,8 @@ fn add_job_to_scheduler(
             "turn_on" => {
                 println!("Adding turn_on for configuration {}", sched.configuration_id);
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    let device_pin = configuration_object.bcm_pin as u8;
+                    let mut device: RelayPowerBar = Sensors::new(device_pin);
                     device.turn_on()
                 })
                 .unwrap();
@@ -35,7 +36,7 @@ fn add_job_to_scheduler(
             "turn_off" => {
                 println!("Adding turn_off for configuration {}", sched.configuration_id);
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    let mut device: RelayPowerBar = Sensors::new(configuration.bcm_pin as u8);
                     device.turn_off()
                 })
                 .unwrap();

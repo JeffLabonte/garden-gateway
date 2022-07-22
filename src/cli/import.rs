@@ -208,12 +208,12 @@ mod tests {
             let mut imported_schedules = generate_imported_schedule(1);
 
             let result: bool = is_unique_with_db(database, &imported_schedules);
-            assert_eq!(result, false);
+            assert!(!result);
 
             imported_schedules[0].action = "turn_on".to_string();
 
             let result: bool = is_unique_with_db(database, &imported_schedules);
-            assert_eq!(result, true);
+            assert!(result);
 
             Ok(())
         });
