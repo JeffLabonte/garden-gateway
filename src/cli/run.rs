@@ -1,15 +1,22 @@
-use crate::devices::RelayPowerBar;
+use crate::devices::{RelayPowerBar, Sensor, WaterPump};
 use crate::models::*;
 use diesel::prelude::*;
+use std::time::Duration;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
-use std::time::Duration;
+
+const WATER_PUMP_SENSOR_NAME: &str = "";
+const RELAY_POWER_SENSOR_NAME: &str = "relay_power";
+
+const TURN_ON_ACTION: &str = "turn_on";
+const TURN_OFF_ACTION: &str = "turn_off";
 
 fn add_job_to_scheduler(
     database: &SqliteConnection,
     scheduler: &JobScheduler,
     configuration: Configuration,
 ) -> Vec<Uuid> {
+    use crate::schema::configurations::dsl::configurations;
     use crate::schema::schedules::dsl::{configuration_id, schedules};
 
     let config_id = configuration.id;
@@ -22,22 +29,32 @@ fn add_job_to_scheduler(
     for sched in results {
         let cron_schedule_str = sched.cron_string.as_str();
         println!("This schedule will run at {}", cron_schedule_str);
+        let configuration_object: Configuration = configurations
+            .find(sched.configuration_id)
+            .first(database)
+            .expect("Error while retrieving configuration");
+
         match sched.action.as_str() {
-            "turn_on" => {
-                println!("Adding turn_on for configuration {}", sched.configuration_id);
+            TURN_ON_ACTION => {
+                println!(
+                    "Adding turn_on for configuration {}",
+                    sched.configuration_id
+                );
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let device_pin = configuration_object.bcm_pin as u8;
-                    let mut device: RelayPowerBar = Sensors::new(device_pin);
-                    device.turn_on()
+                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    device.turn_on();
                 })
                 .unwrap();
                 job_ids.push(scheduler.add(job).unwrap());
             }
-            "turn_off" => {
-                println!("Adding turn_off for configuration {}", sched.configuration_id);
+            TURN_OFF_ACTION => {
+                println!(
+                    "Adding turn_off for configuration {}",
+                    sched.configuration_id
+                );
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let mut device: RelayPowerBar = Sensors::new(configuration.bcm_pin as u8);
-                    device.turn_off()
+                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    device.turn_off();
                 })
                 .unwrap();
                 job_ids.push(scheduler.add(job).unwrap());
@@ -65,7 +82,7 @@ pub async fn run(database: &SqliteConnection) -> bool {
             job_ids.push(job_id);
         }
     }
-    
+
     let mut run_again: bool = false;
     loop {
         if job_ids.is_empty() {
@@ -74,22 +91,20 @@ pub async fn run(database: &SqliteConnection) -> bool {
         }
 
         match scheduler.tick() {
-            Ok(_) =>{
-                match scheduler.time_till_next_job() {
-                    Ok(v) => match v {
-                        Some(_) => {
-                            std::thread::sleep(Duration::from_millis(500));
-                        },
-                        None => {
-                            run_again = true;
-                            break;
-                        }
-                    },
-                    Err(e) => {
-                        println!("Couldn't retrieve the time till next job: {}", e);
+            Ok(_) => match scheduler.time_till_next_job() {
+                Ok(v) => match v {
+                    Some(_) => {
+                        std::thread::sleep(Duration::from_millis(500));
+                    }
+                    None => {
                         run_again = true;
                         break;
                     }
+                },
+                Err(e) => {
+                    println!("Couldn't retrieve the time till next job: {}", e);
+                    run_again = true;
+                    break;
                 }
             },
             Err(e) => {
