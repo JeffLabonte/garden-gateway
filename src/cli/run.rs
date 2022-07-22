@@ -1,4 +1,4 @@
-use crate::devices::{RelayPowerBar, Sensor, WaterPump};
+use crate::devices::{RelayPowerBar, WaterPump};
 use crate::models::*;
 use diesel::prelude::*;
 use std::time::Duration;
