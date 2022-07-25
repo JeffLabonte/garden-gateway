@@ -9,7 +9,7 @@ const RELAY_POWER_BAR: &str = "RelayPowerBar";
 const WATER_PUMP: &str = "WaterPump";
 
 pub struct RelayPowerBar {
-    relay_power_pin: OutputDevice,
+    relay_power_device: OutputDevice,
 }
 
 pub struct WateringSystem {
@@ -27,18 +27,18 @@ pub struct WaterPump {
 
 impl RelayPowerBar {
     pub fn new(bcm_pin: u8) -> RelayPowerBar {
-        let relay_power_pin = OutputDevice::new(bcm_pin);
-        RelayPowerBar { relay_power_pin }
+        let relay_power_device = OutputDevice::new(bcm_pin);
+        RelayPowerBar { relay_power_device }
     }
 
     pub fn turn_on(&mut self) {
         println_now(TURN_ON_STRING, RELAY_POWER_BAR);
-        self.relay_power_pin.off();
+        self.relay_power_device.off();
     }
 
     pub fn turn_off(&mut self) {
         println_now(TURN_OFF_STRING, RELAY_POWER_BAR);
-        self.relay_power_pin.on();
+        self.relay_power_device.on();
     }
 }
 
@@ -67,12 +67,12 @@ impl WaterPump {
 
     pub fn turn_on(&mut self) {
         println_now(TURN_ON_STRING, WATER_PUMP);
-        self.gpio_pin.on();
+        self.gpio_device.on();
     }
 
     pub fn turn_off(&mut self) {
         println_now(TURN_OFF_STRING, WATER_PUMP);
-        self.gpio_pin.off();
+        self.gpio_device.off();
     }
 }
 
