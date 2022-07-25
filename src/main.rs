@@ -6,6 +6,7 @@ mod cli;
 pub mod context;
 mod database;
 mod devices;
+mod helpers;
 mod import;
 mod models;
 mod schema;

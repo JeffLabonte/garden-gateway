@@ -1,23 +1,11 @@
 use rust_gpiozero::output_devices::OutputDevice;
+use crate::helpers::println_now;
 
 const TURN_ON_STRING: &str = "TURN ON";
 const TURN_OFF_STRING: &str = "TURN OFF";
 
 const RELAY_POWER_BAR: &str = "RelayPowerBar";
 const WATER_PUMP: &str = "Water Pump";
-const DATETIME_FORMAT: &str = "%b %-d, %-I:%M:%s";
-
-fn println_now(action: &str, board: &str) {
-    let now = chrono::Local::now();
-    let now_utc = chrono::Utc::now();
-    println!(
-        "{} - Running: {} pin to {}",
-        now.format(DATETIME_FORMAT),
-        action,
-        board,
-    );
-    print!("Time in UTC: {}", now_utc.format(DATETIME_FORMAT));
-}
 
 pub struct RelayPowerBar {
     relay_power_pin: OutputDevice,
