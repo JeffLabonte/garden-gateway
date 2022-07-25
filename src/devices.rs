@@ -1,12 +1,12 @@
-use rust_gpiozero::{output_devices::OutputDevice, InputDevice};
 use crate::helpers::println_now;
+use rust_gpiozero::{output_devices::OutputDevice, InputDevice};
+use std::time::Duration;
 
 const TURN_ON_STRING: &str = "TURN ON";
 const TURN_OFF_STRING: &str = "TURN OFF";
 
 const RELAY_POWER_BAR: &str = "RelayPowerBar";
 const WATER_PUMP: &str = "WaterPump";
-
 
 pub struct RelayPowerBar {
     relay_power_pin: OutputDevice,
@@ -42,6 +42,23 @@ impl RelayPowerBar {
     }
 }
 
+impl WateringSystem {
+    pub fn new(water_detector_pin: u8, water_pump_pin: u8) -> WateringSystem {
+        WateringSystem {
+            water_pump: WaterPump::new(water_pump_pin),
+            water_detector: WaterDetector::new(water_detector_pin),
+        }
+    }
+
+    pub fn water_until_filled(&mut self) {
+        while !self.water_detector.has_water() {
+            self.water_pump.turn_on();
+            std::thread::sleep(Duration::from_secs(1));
+            self.water_pump.turn_off();
+        }
+    }
+}
+
 impl WaterPump {
     pub fn new(gpio_pin: u8) -> WaterPump {
         let gpio_device = OutputDevice::new(gpio_pin);
@@ -65,7 +82,7 @@ impl WaterDetector {
         WaterDetector { input_device }
     }
 
-    pub fn is_active(&mut self) -> bool{
+    pub fn has_water(&mut self) -> bool {
         self.input_device.is_active()
     }
 }
