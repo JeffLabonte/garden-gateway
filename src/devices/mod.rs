@@ -1,12 +1,10 @@
+mod constants;
+
 use crate::helpers::println_now;
 use rust_gpiozero::{output_devices::OutputDevice, InputDevice};
 use std::time::Duration;
 
-const TURN_ON_STRING: &str = "TURN ON";
-const TURN_OFF_STRING: &str = "TURN OFF";
-
-const RELAY_POWER_BAR: &str = "RelayPowerBar";
-const WATER_PUMP: &str = "WaterPump";
+use self::constants::{WATER_PUMP, RELAY_POWER_BAR, TURN_ON_STRING, TURN_OFF_STRING};
 
 pub struct RelayPowerBar {
     relay_power_device: OutputDevice,
