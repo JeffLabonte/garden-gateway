@@ -1,4 +1,5 @@
 mod constants;
+pub mod watering_system;
 
 use crate::helpers::println_now;
 use rust_gpiozero::{output_devices::OutputDevice, InputDevice};
@@ -10,18 +11,6 @@ pub struct RelayPowerBar {
     relay_power_device: OutputDevice,
 }
 
-pub struct WateringSystem {
-    water_pump: WaterPump,
-    water_detector: WaterDetector,
-}
-
-pub struct WaterDetector {
-    input_device: InputDevice,
-}
-
-pub struct WaterPump {
-    gpio_device: OutputDevice,
-}
 
 impl RelayPowerBar {
     pub fn new(bcm_pin: u8) -> RelayPowerBar {
