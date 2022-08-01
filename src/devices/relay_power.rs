@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use rust_gpiozero::OutputDevice;
 
 use crate::helpers::println_now;
@@ -11,8 +13,9 @@ pub struct RelayPowerBar {
 
 
 impl Device for RelayPowerBar {
-    fn new(bcm_pin: u8) -> RelayPowerBar {
-        let relay_power_device = OutputDevice::new(bcm_pin);
+    fn new(sensor_pins: HashMap<&str, u8>) -> RelayPowerBar {
+        let relay_power_pin : u8 = *sensor_pins.get(&"relay_power_pin").unwrap();
+        let relay_power_device = OutputDevice::new(relay_power_pin);
         RelayPowerBar { relay_power_device }
     }
 
