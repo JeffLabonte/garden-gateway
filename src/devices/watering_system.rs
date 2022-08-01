@@ -21,8 +21,9 @@ pub struct WaterPump {
 }
 
 impl Device for WateringSystem {
-    pub fn new(sensor_pins: HashMap<&str, u8>) -> WateringSystem {
+    fn new(sensor_pins: HashMap<&str, u8>) -> WateringSystem {
         let water_pump_pin = *sensor_pins.get("water_pump_pin").unwrap();
+        let water_detector_pin = *sensor_pins.get("water_detector_pin").unwrap();
         WateringSystem {
             water_pump: WaterPump::new(water_pump_pin),
             water_detector: WaterDetector::new(water_detector_pin),
