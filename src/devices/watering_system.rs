@@ -1,10 +1,11 @@
 use rust_gpiozero::{OutputDevice, InputDevice};
 
-use std::time::Duration;
+use core::panic;
+use std::{time::Duration, collections::HashMap};
 
 use crate::helpers::println_now;
 
-use super::constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP};
+use super::{constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP}, Device};
 
 pub struct WateringSystem {
     water_pump: WaterPump,
@@ -19,20 +20,27 @@ pub struct WaterPump {
     gpio_device: OutputDevice,
 }
 
-impl WateringSystem {
-    pub fn new(water_detector_pin: u8, water_pump_pin: u8) -> WateringSystem {
+impl Device for WateringSystem {
+    pub fn new(sensor_pins: HashMap<&str, u8>) -> WateringSystem {
+        let water_pump_pin = *sensor_pins.get("water_pump_pin").unwrap();
         WateringSystem {
             water_pump: WaterPump::new(water_pump_pin),
             water_detector: WaterDetector::new(water_detector_pin),
         }
     }
 
-    pub fn water_until_filled(&mut self) {
+    // Water the plant until water is detected
+    fn turn_on(&mut self) {
         while !self.water_detector.has_water() {
             self.water_pump.turn_on();
             std::thread::sleep(Duration::from_secs(1));
             self.water_pump.turn_off();
         }
+    }
+
+    // Will panic since you can't really turn it off
+    fn turn_off(&mut self) {
+        panic!("This device doesn't implement turn_off")
     }
 }
 
