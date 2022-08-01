@@ -6,6 +6,12 @@ use rust_gpiozero::{output_devices::OutputDevice};
 
 use self::constants::{RELAY_POWER_BAR, TURN_ON_STRING, TURN_OFF_STRING};
 
+trait Device {
+    fn new(bcm_pin: u8) -> Self;
+    fn turn_on(&mut self);
+    fn turn_off(&mut self);
+}
+
 pub struct RelayPowerBar {
     relay_power_device: OutputDevice,
 }
