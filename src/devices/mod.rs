@@ -1,5 +1,6 @@
 mod constants;
 pub mod watering_system;
+pub mod relay_power;
 
 use crate::helpers::println_now;
 use rust_gpiozero::{output_devices::OutputDevice};
@@ -10,26 +11,4 @@ trait Device {
     fn new(bcm_pin: u8) -> Self;
     fn turn_on(&mut self);
     fn turn_off(&mut self);
-}
-
-pub struct RelayPowerBar {
-    relay_power_device: OutputDevice,
-}
-
-
-impl RelayPowerBar {
-    pub fn new(bcm_pin: u8) -> RelayPowerBar {
-        let relay_power_device = OutputDevice::new(bcm_pin);
-        RelayPowerBar { relay_power_device }
-    }
-
-    pub fn turn_on(&mut self) {
-        println_now(TURN_ON_STRING, RELAY_POWER_BAR);
-        self.relay_power_device.off();
-    }
-
-    pub fn turn_off(&mut self) {
-        println_now(TURN_OFF_STRING, RELAY_POWER_BAR);
-        self.relay_power_device.on();
-    }
 }
