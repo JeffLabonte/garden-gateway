@@ -1,6 +1,7 @@
-use crate::devices::RelayPowerBar;
+use crate::devices::{relay_power::RelayPowerBar, Device};
 use crate::models::*;
 use diesel::prelude::*;
+use std::collections::HashMap;
 use std::time::Duration;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
@@ -41,7 +42,10 @@ fn add_job_to_scheduler(
                     sched.configuration_id
                 );
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    let pins = HashMap::from([
+                        ("relay_power_pin", configuration.bcm_pin as u8),
+                    ]);
+                    let mut device = RelayPowerBar::new(pins);
                     device.turn_on();
                 })
                 .unwrap();
@@ -53,7 +57,10 @@ fn add_job_to_scheduler(
                     sched.configuration_id
                 );
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let mut device = RelayPowerBar::new(configuration.bcm_pin as u8);
+                    let pins = HashMap::from([
+                        ("relay_power_pin", configuration.bcm_pin as u8),
+                    ]);
+                    let mut device = RelayPowerBar::new(pins);
                     device.turn_off();
                 })
                 .unwrap();
