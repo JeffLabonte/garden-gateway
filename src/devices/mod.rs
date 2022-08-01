@@ -2,9 +2,9 @@ mod constants;
 pub mod watering_system;
 
 use crate::helpers::println_now;
-use rust_gpiozero::{output_devices::OutputDevice, InputDevice};
+use rust_gpiozero::{output_devices::OutputDevice};
 
-use self::constants::{WATER_PUMP, RELAY_POWER_BAR, TURN_ON_STRING, TURN_OFF_STRING};
+use self::constants::{RELAY_POWER_BAR, TURN_ON_STRING, TURN_OFF_STRING};
 
 pub struct RelayPowerBar {
     relay_power_device: OutputDevice,
