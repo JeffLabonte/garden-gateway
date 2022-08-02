@@ -30,8 +30,8 @@ pub struct NewSchedule {
 }
 
 #[derive(Identifiable, Queryable, Associations)]
-#[belongs_to(Schedule)]
-#[belongs_to(Configuration)]
+#[belongs_to(Schedule, foreign_key = "schedule_id")]
+#[belongs_to(Configuration, foreign_key = "configuration_id")]
 struct ScheduleConfiguration {
     pub id: i32,
     pub schedule_id: i32,
