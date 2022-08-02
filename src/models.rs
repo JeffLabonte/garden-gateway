@@ -20,7 +20,6 @@ pub struct Schedule {
     pub id: i32,
     pub action: String,
     pub cron_string: String,
-    pub configuration_id: i32,
 }
 
 #[derive(Insertable)]
