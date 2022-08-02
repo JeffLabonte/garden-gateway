@@ -23,6 +23,7 @@ table! {
 }
 
 joinable!(schedule_configurations -> configurations (configuration_id));
+joinable!(schedule_configurations -> schedules (schedule_id));
 
 allow_tables_to_appear_in_same_query!(
     configurations,
