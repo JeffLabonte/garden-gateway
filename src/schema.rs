@@ -7,27 +7,25 @@ table! {
 }
 
 table! {
-    schedules (id) {
+    schedule_configurations (id) {
         id -> Integer,
-        action -> Text,
-        cron_string -> Text,
         configuration_id -> Integer,
+        schedule_id -> Integer,
     }
 }
 
 table! {
-    schedule_configurations (id) {
+    schedules (id) {
         id -> Integer,
-        schedule_id -> Integer,
-        configuration_id -> Integer,
+        action -> Text,
+        cron_string -> Text,
     }
 }
 
-joinable!(schedule_configurations -> schedules (schedule_id));
 joinable!(schedule_configurations -> configurations (configuration_id));
 
 allow_tables_to_appear_in_same_query!(
     configurations,
-    schedules,
     schedule_configurations,
+    schedules,
 );
