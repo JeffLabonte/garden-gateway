@@ -1,5 +1,5 @@
 use crate::cli::import::ImportedSchedule;
-use crate::schema::{configurations, schedules, schedule_configurations};
+use crate::schema::{configurations, schedule_configurations, schedules};
 
 #[derive(Queryable)]
 pub struct Configuration {
@@ -33,10 +33,17 @@ pub struct NewSchedule {
 #[derive(Identifiable, Queryable, Associations)]
 #[belongs_to(Schedule)]
 #[belongs_to(Configuration)]
-struct ScheduleConfiguration{
+struct ScheduleConfiguration {
     pub id: i32,
     pub schedule_id: i32,
-    pub configuration_id: i32
+    pub configuration_id: i32,
+}
+
+#[derive(Insertable)]
+#[table_name = "schedule_configurations"]
+struct NewConfigurationConfiguration {
+    pub schedule_id: i32,
+    pub configuration_id: i32,
 }
 
 impl NewSchedule {
