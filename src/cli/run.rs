@@ -17,12 +17,13 @@ fn add_job_to_scheduler(
     scheduler: &JobScheduler,
     configuration: Configuration,
 ) -> Vec<Uuid> {
+    // TODO Implement with new tables
     use crate::schema::configurations::dsl::configurations;
-    use crate::schema::schedules::dsl::{configuration_id, schedules};
+    use crate::schema::schedules::dsl::{schedules};
 
     let config_id = configuration.id;
     let results = schedules
-        .filter(configuration_id.eq(config_id))
+        // .filter(configuration_id.eq(config_id))
         .load::<Schedule>(database)
         .expect("Error loading schedules");
 
@@ -31,7 +32,7 @@ fn add_job_to_scheduler(
         let cron_schedule_str = sched.cron_string.as_str();
         println!("This schedule will run at {}", cron_schedule_str);
         let configuration_object: Configuration = configurations
-            .find(sched.configuration_id)
+            // .find(sched.configuration_id)
             .first(database)
             .expect("Error while retrieving configuration");
 
@@ -39,7 +40,7 @@ fn add_job_to_scheduler(
             TURN_ON_ACTION => {
                 println!(
                     "Adding turn_on for configuration {}",
-                    sched.configuration_id
+                    0 // sched.configuration_id
                 );
                 let job = Job::new(cron_schedule_str, move |_, _| {
                     let pins = HashMap::from([
@@ -54,7 +55,7 @@ fn add_job_to_scheduler(
             TURN_OFF_ACTION => {
                 println!(
                     "Adding turn_off for configuration {}",
-                    sched.configuration_id
+                    0 //sched.configuration_id
                 );
                 let job = Job::new(cron_schedule_str, move |_, _| {
                     let pins = HashMap::from([

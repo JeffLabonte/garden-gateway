@@ -38,13 +38,12 @@ fn is_unique_with_db(
     database: &SqliteConnection,
     imported_schedules: &Vec<ImportedSchedule>,
 ) -> bool {
-    use crate::schema::schedules::dsl::{action, configuration_id, cron_string, schedules};
+    use crate::schema::schedules::dsl::{action, cron_string, schedules};
 
     for imported_schedule in imported_schedules {
         let schedule = imported_schedule.clone();
         let db_schedules = schedules
             .filter(cron_string.eq(schedule.cron_string))
-            .filter(configuration_id.eq(schedule.configuration_id))
             .filter(action.eq(schedule.action))
             .load::<Schedule>(database)
             .expect("Error Loading Configurations");
@@ -103,6 +102,7 @@ fn import_schedule(
 ) -> bool {
     use crate::schema::schedules;
 
+    // TODO Fix Logic 
     for imported_schedule in imported_schedules {
         let schedule_clone: ImportedSchedule = imported_schedule.clone();
         match cron::Schedule::from_str(schedule_clone.cron_string.as_str()) {
