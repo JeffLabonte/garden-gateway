@@ -1,5 +1,5 @@
 use crate::cli::import::ImportedSchedule;
-use crate::schema::{configurations, schedules};
+use crate::schema::{configurations, schedules, schedule_configurations};
 
 #[derive(Queryable)]
 pub struct Configuration {
@@ -28,7 +28,15 @@ pub struct Schedule {
 pub struct NewSchedule {
     pub action: String,
     pub cron_string: String,
-    pub configuration_id: i32,
+}
+
+#[derive(Identifiable, Queryable, Associations)]
+#[belongs_to(Schedule)]
+#[belongs_to(Configuration)]
+struct ScheduleConfiguration{
+    pub id: i32,
+    pub schedule_id: i32,
+    pub configuration_id: i32
 }
 
 impl NewSchedule {
