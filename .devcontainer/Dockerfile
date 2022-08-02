@@ -6,7 +6,6 @@ FROM mcr.microsoft.com/vscode/devcontainers/rust:0-${VARIANT}
 
 # [Optional] Uncomment this section to install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends zsh neofetch bash-completion
+    && apt-get -y install --no-install-recommends zsh neofetch bash-completion wget unzip build-essential make fontconfig
 
-RUN cd workspaces/garden_gateway/ && make copy_env_template && make setup \
-    && diesel migration run
+RUN  cd /usr/share/fonts/ && wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip && unzip Hack.zip && fc-cache -v -f
