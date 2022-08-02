@@ -4,5 +4,4 @@ CREATE TABLE schedules (
     action TEXT NOT NULL,
     cron_string TEXT NOT NULL,
     configuration_id INTEGER NOT NULL,
-    FOREIGN KEY (configuration_id) REFERENCES configurations (id) ON DELETE CASCADE
 )
