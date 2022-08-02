@@ -154,7 +154,7 @@ mod tests {
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
-            configuration_id: 1,
+            // configuration_id: 1,
         };
 
        match  diesel::insert_or_ignore_into(schedules::table)
