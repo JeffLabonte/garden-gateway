@@ -44,7 +44,6 @@ impl NewSchedule {
         Self {
             action: imported_schedule.action,
             cron_string: imported_schedule.cron_string,
-            configuration_id: imported_schedule.configuration_id,
         }
     }
 }
