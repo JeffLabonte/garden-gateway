@@ -174,7 +174,7 @@ mod tests {
         ImportedSchedule {
             cron_string: String::from("* * * * *"),
             action: String::from("turn_off"),
-            configuration_id: 1,
+            configurations: vec![1]
         }
     }
 
@@ -193,7 +193,7 @@ mod tests {
     fn import_schedules_must_be_unique(is_unique: bool, is_schedules_valid: bool) {
         let mut imported_schedules = generate_imported_schedule(2);
         if is_unique {
-            imported_schedules[0].configuration_id = 2;
+            imported_schedules[0].configurations = vec![2];
         }
 
         let result: bool = is_input_unique(&imported_schedules);
