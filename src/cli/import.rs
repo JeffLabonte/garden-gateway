@@ -232,7 +232,7 @@ mod tests {
 
             let result: bool = import_schedule(database, &imported_schedules);
 
-            assert_eq!(result, false);
+            assert!(!result);
 
             Ok(())
         });
