@@ -12,7 +12,7 @@ use serde::Deserialize;
 pub struct ImportedSchedule {
     pub cron_string: String,
     pub action: String,
-    pub configuration_id: i32,
+    pub configurations: Vec<i32>,
 }
 
 fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
@@ -65,14 +65,15 @@ fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<Imported
         if schedule_clone.action.is_empty() {
             return false;
         }
+        for config_id in schedule_clone.configurations{
+            let has_config: Result<bool, diesel::result::Error> = diesel::select(exists(
+                configurations.filter(id.eq(config_id)),
+            ))
+            .get_result(database);
 
-        let has_config: Result<bool, diesel::result::Error> = diesel::select(exists(
-            configurations.filter(id.eq(schedule_clone.configuration_id)),
-        ))
-        .get_result(database);
-
-        if !has_config.unwrap() {
-            return false;
+            if !has_config.unwrap() {
+                return false;
+            }
         }
     }
 
