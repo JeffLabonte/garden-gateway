@@ -2,16 +2,16 @@
     {
         "cron_string" : "*/30 * 7-19 * * * *",
         "action": "turn_on",
-        "configuration_id": 1
+        "configurations": [1]
     },
     {
         "cron_string" : "*/30 * 19-23 * * * *",
         "action": "turn_off",
-        "configuration_id": 1
+        "configurations": [1]
     },
     {
         "cron_string" : "*/30 * 0-7 * * * *",
         "action": "turn_off",
-        "configuration_id": 1
+        "configurations": [1]
     }
 ]
