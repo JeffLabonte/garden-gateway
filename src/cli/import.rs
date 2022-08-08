@@ -165,34 +165,49 @@ mod tests {
     use super::*;
     use crate::database::establish_connection;
     use crate::models::NewSchedule;
-    use crate::schema::schedules;
+    use crate::schema::{schedule_configurations, schedules};
     use diesel::result::Error;
     use test_case::test_case;
 
     fn setup(database: &SqliteConnection) {
+        let configuration_id: i32 = 1;
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
-            // configuration_id: 1,
         };
 
-       match  diesel::insert_or_ignore_into(schedules::table)
+        match diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database)
         {
-            Ok(_) => (), 
+            Ok(schedule_id) => {
+                let default_schedule_configurations: NewScheduleConfiguration =
+                    NewScheduleConfiguration::from_schedule_and_configuration_id(
+                        schedule_id as i32,
+                        configuration_id,
+                    );
+                let result = diesel::insert_into(schedule_configurations::table)
+                    .values(default_schedule_configurations)
+                    .execute(database);
+
+                match result {
+                    Ok(_) => (),
+                    Err(e) => eprintln!("{}", e)
+                };
+            }
             Err(e) => {
                 eprintln!("{}", e);
             }
-        
         }
+
+        ()
     }
 
     fn generate_default_imported_schedule() -> ImportedSchedule {
         ImportedSchedule {
             cron_string: String::from("* * * * *"),
             action: String::from("turn_off"),
-            configurations: vec![1]
+            configurations: vec![1],
         }
     }
 
