@@ -12,7 +12,7 @@ use serde::Deserialize;
 pub struct ImportedSchedule {
     pub cron_string: String,
     pub action: String,
-    pub configuration_id: i32,
+    pub configurations: Vec<i32>,
 }
 
 fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
@@ -65,46 +65,50 @@ fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<Imported
         if schedule_clone.action.is_empty() {
             return false;
         }
+        for config_id in schedule_clone.configurations {
+            let has_config: Result<bool, diesel::result::Error> =
+                diesel::select(exists(configurations.filter(id.eq(config_id))))
+                    .get_result(database);
 
-        let has_config: Result<bool, diesel::result::Error> = diesel::select(exists(
-            configurations.filter(id.eq(schedule_clone.configuration_id)),
-        ))
-        .get_result(database);
-
-        if !has_config.unwrap() {
-            return false;
+            if !has_config.unwrap() {
+                return false;
+            }
         }
     }
 
     true
 }
 
-fn validate_input(database: &SqliteConnection, schedules: Vec<ImportedSchedule>) -> bool {
+fn validate_input(
+    database: &SqliteConnection,
+    schedules: Vec<ImportedSchedule>,
+) -> Result<(), &str> {
     // TODO Use a list of function to loop on
     if !is_input_unique(&schedules) {
-        return false;
+        return Err("The Schedules you are trying to import are not unique");
     }
 
     if !is_unique_with_db(database, &schedules) {
-        return false;
+        return Err("Your data that you are trying to import isn't unique with the database");
     }
 
     if !is_input_valid(database, &schedules) {
-        return false;
+        return Err("Invalid data in the configurations");
     }
 
-    true
+    Ok(())
 }
 
 fn import_schedule(
     database: &SqliteConnection,
     imported_schedules: &Vec<ImportedSchedule>,
 ) -> bool {
-    use crate::schema::schedules;
+    use crate::schema::{schedule_configurations, schedules};
 
-    // TODO Fix Logic 
     for imported_schedule in imported_schedules {
         let schedule_clone: ImportedSchedule = imported_schedule.clone();
+        let configurations = schedule_clone.configurations.clone();
+
         match cron::Schedule::from_str(schedule_clone.cron_string.as_str()) {
             Err(e) => {
                 eprintln!("Something went wrong during import: {}", e);
@@ -117,7 +121,22 @@ fn import_schedule(
                     .execute(database);
 
                 match result {
-                    Ok(_) => continue,
+                    Ok(schedule_id) => {
+                        for configuration_id in configurations {
+                            let new_schedule_configuration =
+                                NewScheduleConfiguration::from_schedule_and_configuration_id(
+                                    schedule_id as i32,
+                                    configuration_id,
+                                );
+                            match diesel::insert_into(schedule_configurations::table)
+                                .values(&new_schedule_configuration)
+                                .execute(database)
+                            {
+                                Ok(_) => continue,
+                                Err(_) => return false,
+                            }
+                        }
+                    }
                     Err(e) => {
                         eprintln!("Unexpected error with database: {}", e);
                         return false;
@@ -132,13 +151,13 @@ fn import_schedule(
 
 pub fn import_schedule_from_json(database: SqliteConnection, file: PathBuf) -> bool {
     let imported_schedules = read_json_schedule(file);
-    let is_valid = validate_input(&database, imported_schedules.clone());
-
-    if !is_valid {
-        return is_valid;
+    match validate_input(&database, imported_schedules.clone()) {
+        Ok(_) => import_schedule(&database, &imported_schedules),
+        Err(err) => {
+            println!("{}", err);
+            false
+        }
     }
-
-    import_schedule(&database, &imported_schedules)
 }
 
 #[cfg(test)]
@@ -146,34 +165,49 @@ mod tests {
     use super::*;
     use crate::database::establish_connection;
     use crate::models::NewSchedule;
-    use crate::schema::schedules;
+    use crate::schema::{schedule_configurations, schedules};
     use diesel::result::Error;
     use test_case::test_case;
 
     fn setup(database: &SqliteConnection) {
+        let configuration_id: i32 = 1;
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
-            // configuration_id: 1,
         };
 
-       match  diesel::insert_or_ignore_into(schedules::table)
+        match diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database)
         {
-            Ok(_) => (), 
+            Ok(schedule_id) => {
+                let default_schedule_configurations: NewScheduleConfiguration =
+                    NewScheduleConfiguration::from_schedule_and_configuration_id(
+                        schedule_id as i32,
+                        configuration_id,
+                    );
+                let result = diesel::insert_into(schedule_configurations::table)
+                    .values(default_schedule_configurations)
+                    .execute(database);
+
+                match result {
+                    Ok(_) => (),
+                    Err(e) => eprintln!("{}", e)
+                };
+            }
             Err(e) => {
                 eprintln!("{}", e);
             }
-        
         }
+
+        ()
     }
 
     fn generate_default_imported_schedule() -> ImportedSchedule {
         ImportedSchedule {
             cron_string: String::from("* * * * *"),
             action: String::from("turn_off"),
-            configuration_id: 1,
+            configurations: vec![1],
         }
     }
 
@@ -192,7 +226,7 @@ mod tests {
     fn import_schedules_must_be_unique(is_unique: bool, is_schedules_valid: bool) {
         let mut imported_schedules = generate_imported_schedule(2);
         if is_unique {
-            imported_schedules[0].configuration_id = 2;
+            imported_schedules[0].configurations = vec![2];
         }
 
         let result: bool = is_input_unique(&imported_schedules);
@@ -231,7 +265,7 @@ mod tests {
 
             let result: bool = import_schedule(database, &imported_schedules);
 
-            assert_eq!(result, false);
+            assert!(!result);
 
             Ok(())
         });

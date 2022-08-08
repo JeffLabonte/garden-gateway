@@ -32,7 +32,7 @@ pub struct NewSchedule {
 #[derive(Identifiable, Queryable, Associations)]
 #[belongs_to(Schedule, foreign_key = "schedule_id")]
 #[belongs_to(Configuration, foreign_key = "configuration_id")]
-struct ScheduleConfiguration {
+pub struct ScheduleConfiguration {
     pub id: i32,
     pub schedule_id: i32,
     pub configuration_id: i32,
@@ -40,7 +40,7 @@ struct ScheduleConfiguration {
 
 #[derive(Insertable)]
 #[table_name = "schedule_configurations"]
-struct NewConfigurationConfiguration {
+pub struct NewScheduleConfiguration {
     pub schedule_id: i32,
     pub configuration_id: i32,
 }
@@ -50,6 +50,15 @@ impl NewSchedule {
         Self {
             action: imported_schedule.action,
             cron_string: imported_schedule.cron_string,
+        }
+    }
+}
+
+impl NewScheduleConfiguration {
+    pub fn from_schedule_and_configuration_id(schedule_id: i32, configuration_id: i32) -> Self {
+        Self {
+            schedule_id,
+            configuration_id,
         }
     }
 }
