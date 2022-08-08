@@ -79,21 +79,24 @@ fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<Imported
     true
 }
 
-fn validate_input(database: &SqliteConnection, schedules: Vec<ImportedSchedule>) -> bool {
+fn validate_input(
+    database: &SqliteConnection,
+    schedules: Vec<ImportedSchedule>,
+) -> Result<(), &str> {
     // TODO Use a list of function to loop on
     if !is_input_unique(&schedules) {
-        return false;
+        return Err("The Schedules you are trying to import are not unique");
     }
 
     if !is_unique_with_db(database, &schedules) {
-        return false;
+        return Err("Your data that you are trying to import isn't unique with the database");
     }
 
     if !is_input_valid(database, &schedules) {
-        return false;
+        return Err("Invalid data in the configurations");
     }
 
-    true
+    Ok(())
 }
 
 fn import_schedule(
