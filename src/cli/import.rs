@@ -151,13 +151,13 @@ fn import_schedule(
 
 pub fn import_schedule_from_json(database: SqliteConnection, file: PathBuf) -> bool {
     let imported_schedules = read_json_schedule(file);
-    let is_valid = validate_input(&database, imported_schedules.clone());
-
-    if !is_valid {
-        return is_valid;
+    match validate_input(&database, imported_schedules.clone()) {
+        Ok(_) => import_schedule(&database, &imported_schedules),
+        Err(err) => {
+            println!("{}", err);
+            false
+        }
     }
-
-    import_schedule(&database, &imported_schedules)
 }
 
 #[cfg(test)]
