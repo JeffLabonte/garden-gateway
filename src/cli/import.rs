@@ -65,11 +65,10 @@ fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<Imported
         if schedule_clone.action.is_empty() {
             return false;
         }
-        for config_id in schedule_clone.configurations{
-            let has_config: Result<bool, diesel::result::Error> = diesel::select(exists(
-                configurations.filter(id.eq(config_id)),
-            ))
-            .get_result(database);
+        for config_id in schedule_clone.configurations {
+            let has_config: Result<bool, diesel::result::Error> =
+                diesel::select(exists(configurations.filter(id.eq(config_id))))
+                    .get_result(database);
 
             if !has_config.unwrap() {
                 return false;
