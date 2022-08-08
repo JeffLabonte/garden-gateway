@@ -103,11 +103,12 @@ fn import_schedule(
     database: &SqliteConnection,
     imported_schedules: &Vec<ImportedSchedule>,
 ) -> bool {
-    use crate::schema::schedules;
+    use crate::schema::{schedule_configurations, schedules};
 
-    // TODO Fix Logic 
     for imported_schedule in imported_schedules {
         let schedule_clone: ImportedSchedule = imported_schedule.clone();
+        let configurations = schedule_clone.configurations.clone();
+
         match cron::Schedule::from_str(schedule_clone.cron_string.as_str()) {
             Err(e) => {
                 eprintln!("Something went wrong during import: {}", e);
@@ -120,7 +121,22 @@ fn import_schedule(
                     .execute(database);
 
                 match result {
-                    Ok(_) => continue,
+                    Ok(schedule_id) => {
+                        for configuration_id in configurations {
+                            let new_schedule_configuration =
+                                NewScheduleConfiguration::from_schedule_and_configuration_id(
+                                    schedule_id as i32,
+                                    configuration_id,
+                                );
+                            match diesel::insert_into(schedule_configurations::table)
+                                .values(&new_schedule_configuration)
+                                .execute(database)
+                            {
+                                Ok(_) => continue,
+                                Err(_) => return false,
+                            }
+                        }
+                    }
                     Err(e) => {
                         eprintln!("Unexpected error with database: {}", e);
                         return false;
