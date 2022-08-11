@@ -1407,9 +1407,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-cron-scheduler"
-version = "0.7.6"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7234a86e3b6c9b889c0f0fda06199cf166db3089419ea4134d7ed457d351c946"
+checksum = "a45da4f9d610c20f66a15c1b050f9b884e53f88d6db24ec495e1e6f6dc8368f4"
 dependencies = [
  "chrono",
  "cron 0.10.1",
