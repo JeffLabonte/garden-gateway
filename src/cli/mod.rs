@@ -22,6 +22,12 @@ pub enum Actions {
         sub_action: SubActions,
     },
 
+    #[clap(arg_required_else_help = true)]
+    Schedule {
+        #[clap(subcommand)]
+        sub_action: SubActions,
+    },
+
     #[clap(help = "Run the code with the schedule and configurations")]
     Run {},
 
