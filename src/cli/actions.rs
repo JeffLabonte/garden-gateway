@@ -15,11 +15,18 @@ pub fn run_action(context: Context) -> bool {
             }
             SubActions::List {} => list_configs(context.database),
         },
+        Actions::Schedule { sub_action } => match sub_action {
+            SubActions::Set { key, value } => {
+                print!("Setting: {} -> {}", key, value);
+                false
+            }
+            SubActions::List {} => false, // TODO List schedules
+        },
         Actions::Run {} => loop {
             match run(&context.database) {
                 true => {
                     println!("Run Completed! Let's reload");
-                },
+                }
                 false => {
                     println!("We are done\nStopping now!");
                     return true;
@@ -28,7 +35,7 @@ pub fn run_action(context: Context) -> bool {
         },
         Actions::Import { schedule_json } => {
             import_schedule_from_json(context.database, schedule_json)
-        },
+        }
         Actions::Test { sensor, action } => {
             println!("Running test");
             true
