@@ -13,7 +13,7 @@ pub fn run_action(context: Context) -> bool {
                 print!("Setting: {} -> {}", key, value);
                 false
             }
-            SubActions::List {} => list_configs(context.database),
+            SubActions::List {} => list_configs(&context.database),
         },
         Actions::Schedule { sub_action } => match sub_action {
             SubActions::Set { key, value } => {
