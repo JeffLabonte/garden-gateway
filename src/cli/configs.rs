@@ -7,6 +7,7 @@ pub fn list_configs(database: SqliteConnection) -> bool {
         .load::<Configuration>(&database)
         .expect("Error loading configurations");
 
+pub fn list_configs(database: &SqliteConnection) -> bool {
     println!("Displaying {} configs", results.len());
 
     println!("Configurations:\n");
