@@ -1,5 +1,5 @@
 pub mod actions;
-mod configs;
+pub mod configs;
 pub mod import;
 mod run;
 
