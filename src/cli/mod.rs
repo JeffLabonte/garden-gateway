@@ -2,6 +2,7 @@ pub mod actions;
 pub mod configs;
 pub mod import;
 mod run;
+pub mod schedules;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
