@@ -1,7 +1,8 @@
 use crate::context::Context;
 
 use super::{
-    configs::list_configs, import::import_schedule_from_json, run::run, Actions, SubActions,
+    configs::list_configs, import::import_schedule_from_json, run::run, schedules::list_schedules,
+    Actions, SubActions,
 };
 
 pub fn run_action(context: Context) -> bool {
@@ -20,7 +21,7 @@ pub fn run_action(context: Context) -> bool {
                 print!("Setting: {} -> {}", key, value);
                 false
             }
-            SubActions::List {} => false, // TODO List schedules
+            SubActions::List {} => list_schedules(&context.database), // TODO List schedules
         },
         Actions::Run {} => loop {
             match run(&context.database) {
