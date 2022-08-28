@@ -116,16 +116,24 @@ fn import_schedule(
             }
             Ok(_) => {
                 let new_schedule = NewSchedule::from_imported_schedule(schedule_clone);
-                let result = diesel::insert_into(schedules::table)
+                diesel::insert_into(schedules::table)
                     .values(&new_schedule)
-                    .execute(database);
+                    .execute(database)
+                    .expect("Unable to create new schedule");
 
-                match result {
-                    Ok(schedule_id) => {
+                let last_inserted_schedule = schedules::dsl::schedules
+                    .select(schedules::dsl::id)
+                    .filter(schedules::dsl::cron_string.eq(new_schedule.cron_string))
+                    .filter(schedules::dsl::action.eq(new_schedule.action))
+                    .order_by(schedules::dsl::id.desc())
+                    .first(database);
+
+                match last_inserted_schedule {
+                    Ok(inserted_schedule) => {
                         for configuration_id in configurations {
                             let new_schedule_configuration =
                                 NewScheduleConfiguration::from_schedule_and_configuration_id(
-                                    schedule_id as i32,
+                                    inserted_schedule,
                                     configuration_id,
                                 );
                             match diesel::insert_into(schedule_configurations::table)
