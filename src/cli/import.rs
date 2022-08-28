@@ -128,7 +128,7 @@ fn import_schedule(
                                     schedule_id as i32,
                                     configuration_id,
                                 );
-                            match diesel::insert_or_ignore_into(schedule_configurations::table)
+                            match diesel::insert_into(schedule_configurations::table)
                                 .values(&new_schedule_configuration)
                                 .execute(database)
                             {
