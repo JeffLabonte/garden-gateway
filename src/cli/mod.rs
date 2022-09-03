@@ -1,7 +1,7 @@
 pub mod actions;
 pub mod configs;
 pub mod import;
-mod run;
+mod run_schedule;
 pub mod schedules;
 
 use clap::{Parser, Subcommand};

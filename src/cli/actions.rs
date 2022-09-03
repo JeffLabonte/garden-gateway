@@ -1,7 +1,7 @@
 use crate::context::Context;
 
 use super::{
-    configs::list_configs, import::import_schedule_from_json, run::run, schedules::list_schedules,
+    configs::list_configs, import::import_schedule_from_json, run_schedule::run, schedules::list_schedules,
     Actions, SubActions,
 };
 
