@@ -8,6 +8,7 @@ pub fn retrieve_schedules_from_config_id(config_id: u32) -> Vec<Schedule> {
 mod tests {
     use diesel::SqliteConnection;
 
+    use crate::diesel::RunQueryDsl;
     use crate::{models::NewSchedule, schema::schedules};
 
     fn create_base_data(database: &SqliteConnection) {
@@ -17,12 +18,10 @@ mod tests {
             cron_string: "* * * * *".to_string(),
         };
         let result = diesel::insert_or_ignore_into(schedules::table)
-            .values(default_schedule)
-            .execute(database)
-            .expect("Unable to insert Schedule");
-
-        
+            .values(&default_schedule)
+            .execute(database);
     }
+
     #[test]
     fn test_retrieve_schedules_from_config_id() {}
 }
