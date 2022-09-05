@@ -187,12 +187,12 @@ mod tests {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
         };
-
+        
         match diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database)
         {
-            Ok(schedule_id) => {
+            Ok(schedule_id) => { // TODO This isn't the ID in there but the number of row inserted
                 let default_schedule_configurations: NewScheduleConfiguration =
                     NewScheduleConfiguration::from_schedule_and_configuration_id(
                         schedule_id as i32,
