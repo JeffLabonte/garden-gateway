@@ -19,15 +19,14 @@ mod tests {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
         };
-        let result = diesel::insert_or_ignore_into(schedules::table)
+        diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database);
 
-        let schedule_result = schedules::dsl::schedules
+        let last_inserted_schedule = schedules::dsl::schedules
             .order_by(schedules::dsl::id.desc())
             .first::<Schedule>(database)
             .expect("Unable to retrieve the latest Schedule");
-
     }
 
     #[test]
