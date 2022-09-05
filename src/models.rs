@@ -1,35 +1,35 @@
 use crate::cli::import::ImportedSchedule;
 use crate::schema::{configurations, schedule_configurations, schedules};
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug)]
 pub struct Configuration {
     pub id: i32,
     pub sensor_name: String,
     pub bcm_pin: i32,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Debug)]
 #[table_name = "configurations"]
 pub struct NewConfiguration {
     pub sensor_name: String,
     pub bcm_pin: i32,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug)]
 pub struct Schedule {
     pub id: i32,
     pub action: String,
     pub cron_string: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Debug)]
 #[table_name = "schedules"]
 pub struct NewSchedule {
     pub action: String,
     pub cron_string: String,
 }
 
-#[derive(Identifiable, Queryable, Associations)]
+#[derive(Identifiable, Queryable, Associations, Debug)]
 #[belongs_to(Schedule, foreign_key = "schedule_id")]
 #[belongs_to(Configuration, foreign_key = "configuration_id")]
 pub struct ScheduleConfiguration {
@@ -38,7 +38,7 @@ pub struct ScheduleConfiguration {
     pub configuration_id: i32,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Debug)]
 #[table_name = "schedule_configurations"]
 pub struct NewScheduleConfiguration {
     pub schedule_id: i32,
