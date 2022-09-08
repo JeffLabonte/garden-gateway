@@ -10,6 +10,7 @@ mod tests {
     use super::*;
     use diesel::SqliteConnection;
 
+    use crate::database::establish_connection;
     use crate::diesel::RunQueryDsl;
     use crate::models::{NewConfiguration, Configuration, NewScheduleConfiguration};
     use crate::schema::{configurations, schedule_configurations};
@@ -57,5 +58,16 @@ mod tests {
     }
 
     #[test]
-    fn test_retrieve_schedules_from_config_id() {}
+    fn test_retrieve_schedules_from_config_id() {
+        let database = establish_connection();
+        database.test_transaction::<_, diesel::result::Error, _>(|| {
+            create_base_data(&database);
+
+            let schedules = retrieve_schedules_from_config_id(1);
+
+            Ok(())
+        });
+
+
+    }
 }
