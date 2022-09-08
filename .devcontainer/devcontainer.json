@@ -7,7 +7,7 @@
 		"args": {
 			// Use the VARIANT arg to pick a Debian OS version: buster, bullseye
 			// Use bullseye when on local on arm64/Apple Silicon.
-			"VARIANT": "buster"
+			"VARIANT": "bullseye"
 		}
 	},
 	"runArgs": [
@@ -51,6 +51,6 @@
 	"remoteUser": "vscode",
 	"features": {
 		"git": "latest",
-		"sshd": "latest",
+		"rust": "latest"
 	}
 }
