@@ -6,7 +6,7 @@ use crate::{
 use diesel::prelude::*;
 
 pub fn retrieve_schedules_from_config_id(
-    database: &SqliteConnection,
+    database: &mut SqliteConnection,
     config_id: i32,
 ) -> Vec<Schedule> {
     let schedule_config_vec = schedule_configurations::table
@@ -38,7 +38,7 @@ mod tests {
     use crate::schema::{configurations, schedule_configurations};
     use crate::{models::NewSchedule, models::Schedule, schema::schedules};
 
-    fn create_base_data(database: &SqliteConnection) {
+    fn create_base_data(database: &mut SqliteConnection) {
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
