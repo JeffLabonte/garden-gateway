@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     configurations (id) {
         id -> Integer,
         sensor_name -> Text,
@@ -6,7 +8,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     schedule_configurations (id) {
         id -> Integer,
         configuration_id -> Integer,
@@ -14,7 +16,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     schedules (id) {
         id -> Integer,
         action -> Text,
@@ -22,10 +24,10 @@ table! {
     }
 }
 
-joinable!(schedule_configurations -> configurations (configuration_id));
-joinable!(schedule_configurations -> schedules (schedule_id));
+diesel::joinable!(schedule_configurations -> configurations (configuration_id));
+diesel::joinable!(schedule_configurations -> schedules (schedule_id));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     configurations,
     schedule_configurations,
     schedules,
