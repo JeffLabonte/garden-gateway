@@ -1,7 +1,7 @@
 use crate::models::*;
 use diesel::{associations::HasTable, prelude::*};
 
-pub fn list_schedules(database: &SqliteConnection) -> bool {
+pub fn list_schedules(database: &mut SqliteConnection) -> bool {
     use crate::schema::configurations::dsl::{bcm_pin, configurations, id, sensor_name};
     use crate::schema::schedule_configurations::dsl::{schedule_configurations, schedule_id};
     use crate::schema::schedules::dsl::schedules;

@@ -35,7 +35,7 @@ mod tests {
     use crate::database::establish_connection;
     use crate::diesel::RunQueryDsl;
     use crate::models::{Configuration, NewConfiguration, NewScheduleConfiguration};
-    use crate::schema::{configurations, schedule_configurations};
+    // use crate::schema::{configurations, schedule_configurations};
     use crate::{models::NewSchedule, models::Schedule, schema::schedules};
 
     fn create_base_data(database: &mut SqliteConnection) {

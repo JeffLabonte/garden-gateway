@@ -35,7 +35,7 @@ fn is_input_unique(schedules: &Vec<ImportedSchedule>) -> bool {
 }
 
 fn is_unique_with_db(
-    database: &SqliteConnection,
+    database: &mut SqliteConnection,
     imported_schedules: &Vec<ImportedSchedule>,
 ) -> bool {
     use crate::schema::schedules::dsl::{action, cron_string, schedules};
@@ -56,7 +56,10 @@ fn is_unique_with_db(
     false
 }
 
-fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<ImportedSchedule>) -> bool {
+fn is_input_valid(
+    database: &mut SqliteConnection,
+    imported_schedules: &Vec<ImportedSchedule>,
+) -> bool {
     use crate::schema::configurations::dsl::{configurations, id};
     use diesel::dsl::exists;
 
@@ -80,7 +83,7 @@ fn is_input_valid(database: &SqliteConnection, imported_schedules: &Vec<Imported
 }
 
 fn validate_input(
-    database: &SqliteConnection,
+    database: &mut SqliteConnection,
     schedules: Vec<ImportedSchedule>,
 ) -> Result<(), &str> {
     // TODO Use a list of function to loop on
@@ -100,7 +103,7 @@ fn validate_input(
 }
 
 fn import_schedule(
-    database: &SqliteConnection,
+    database: &mut SqliteConnection,
     imported_schedules: &Vec<ImportedSchedule>,
 ) -> bool {
     use crate::schema::{schedule_configurations, schedules};
@@ -161,10 +164,10 @@ fn import_schedule(
     true
 }
 
-pub fn import_schedule_from_json(database: SqliteConnection, file: PathBuf) -> bool {
+pub fn import_schedule_from_json(database: &mut SqliteConnection, file: PathBuf) -> bool {
     let imported_schedules = read_json_schedule(file);
-    match validate_input(&database, imported_schedules.clone()) {
-        Ok(_) => import_schedule(&database, &imported_schedules),
+    match validate_input(database, imported_schedules.clone()) {
+        Ok(_) => import_schedule(database, &imported_schedules),
         Err(err) => {
             println!("{}", err);
             false
@@ -181,18 +184,19 @@ mod tests {
     use diesel::result::Error;
     use test_case::test_case;
 
-    fn setup(database: &SqliteConnection) {
+    fn setup(database: &mut SqliteConnection) {
         let configuration_id: i32 = 1;
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
         };
-        
+
         match diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database)
         {
-            Ok(schedule_id) => { // TODO This isn't the ID in there but the number of row inserted
+            Ok(schedule_id) => {
+                // TODO This isn't the ID in there but the number of row inserted
                 let default_schedule_configurations: NewScheduleConfiguration =
                     NewScheduleConfiguration::from_schedule_and_configuration_id(
                         schedule_id as i32,
@@ -247,7 +251,7 @@ mod tests {
 
     #[test]
     fn imported_schedules_not_unique_with_db_should_be_invalid() {
-        let database = &establish_connection();
+        let database = &mut establish_connection();
 
         database.test_transaction::<_, Error, _>(|| {
             setup(database);
@@ -267,7 +271,7 @@ mod tests {
 
     #[test]
     fn imported_schedules_not_valid_cron_should_fail_import() {
-        let database = &establish_connection();
+        let database = &mut establish_connection();
 
         database.test_transaction::<_, Error, _>(|| {
             setup(database);

@@ -18,7 +18,7 @@ use database::establish_connection;
 use crate::context::Context;
 
 fn main() {
-    let context = Context {
+    let mut context = Context {
         database: establish_connection(),
         arguments: get_cli_args(),
     };

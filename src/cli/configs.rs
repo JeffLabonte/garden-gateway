@@ -2,13 +2,12 @@ use crate::models::*;
 use diesel::prelude::*;
 use diesel::result::Error;
 
-pub fn get_configs(database: &SqliteConnection) -> Result<Vec<Configuration>, Error>{
+pub fn get_configs(database: &mut SqliteConnection) -> Result<Vec<Configuration>, Error> {
     use crate::schema::configurations::dsl::configurations;
     configurations.load::<Configuration>(database)
 }
 
-
-pub fn list_configs(database: &SqliteConnection) -> bool {
+pub fn list_configs(database: &mut SqliteConnection) -> bool {
     let results = get_configs(database).unwrap();
     println!("Displaying {} configs", results.len());
 
