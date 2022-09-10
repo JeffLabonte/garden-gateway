@@ -24,7 +24,7 @@ mod tests {
 
     use crate::database::establish_connection;
     use crate::diesel::RunQueryDsl;
-    use crate::models::{NewConfiguration, Configuration, NewScheduleConfiguration};
+    use crate::models::{Configuration, NewConfiguration, NewScheduleConfiguration};
     use crate::schema::{configurations, schedule_configurations};
     use crate::{models::NewSchedule, models::Schedule, schema::schedules};
 
@@ -58,7 +58,7 @@ mod tests {
             .first::<Configuration>(database)
             .expect("Unable to retrieve the lastest Configuration");
 
-        let schedule_configuration =  NewScheduleConfiguration {
+        let schedule_configuration = NewScheduleConfiguration {
             schedule_id: last_inserted_schedule.id,
             configuration_id: last_inserted_config.id,
         };
@@ -77,9 +77,9 @@ mod tests {
 
             let schedules = retrieve_schedules_from_config_id(1);
 
+            assert_eq!(schedules.len(), 1);
+
             Ok(())
         });
-
-
     }
 }
