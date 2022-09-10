@@ -1,7 +1,7 @@
 use crate::{
     models::{Schedule, ScheduleConfiguration},
-    schema::schedule_configurations,
     schema::schedule_configurations::dsl::configuration_id,
+    schema::{schedule_configurations, schedules},
 };
 use diesel::prelude::*;
 
@@ -10,11 +10,21 @@ pub fn retrieve_schedules_from_config_id(
     config_id: i32,
 ) -> Vec<Schedule> {
     let schedule_configurations = schedule_configurations::table
-        .filter(schedule_configurations::configuration_id.eq(config_id))
+        .filter(configuration_id.eq(config_id))
         .load::<ScheduleConfiguration>(database)
         .expect("Error Loading Schedule Configurations");
 
-    vec![]
+    let schedules_ids = schedule_configurations
+        .iter()
+        .map(|schedule_configuration| schedule_configuration.schedule_id)
+        .collect::<Vec<i32>>();
+
+    let scheds = schedules::table
+        .filter(schedules::dsl::id.eq_any(schedules_ids))
+        .load::<Schedule>(database)
+        .expect("Error Loading Schedules");
+
+    scheds
 }
 
 #[cfg(test)]
@@ -75,7 +85,12 @@ mod tests {
         database.test_transaction::<_, diesel::result::Error, _>(|| {
             create_base_data(&database);
 
-            let schedules = retrieve_schedules_from_config_id(1);
+            let last_inserted_config = configurations::dsl::configurations
+                .order_by(configurations::dsl::id.desc())
+                .first::<Configuration>(&database)
+                .expect("Unable to retrieve the lastest Configuration");
+
+            let schedules = retrieve_schedules_from_config_id(&database, last_inserted_config.id);
 
             assert_eq!(schedules.len(), 1);
 
