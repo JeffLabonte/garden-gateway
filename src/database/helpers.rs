@@ -1,7 +1,19 @@
-use crate::models::Schedule;
+use crate::{
+    models::{Schedule, ScheduleConfiguration},
+    schema::schedule_configurations,
+    schema::schedule_configurations::dsl::configuration_id,
+};
 use diesel::prelude::*;
 
-pub fn retrieve_schedules_from_config_id(config_id: u32) -> Vec<Schedule> {
+pub fn retrieve_schedules_from_config_id(
+    database: &SqliteConnection,
+    config_id: i32,
+) -> Vec<Schedule> {
+    let schedule_configurations = schedule_configurations::table
+        .filter(schedule_configurations::configuration_id.eq(config_id))
+        .load::<ScheduleConfiguration>(database)
+        .expect("Error Loading Schedule Configurations");
+
     vec![]
 }
 
