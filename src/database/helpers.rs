@@ -9,14 +9,14 @@ pub fn retrieve_schedules_from_config_id(
     database: &SqliteConnection,
     config_id: i32,
 ) -> Vec<Schedule> {
-    let schedule_configurations = schedule_configurations::table
+    let schedule_config_vec = schedule_configurations::table
         .filter(configuration_id.eq(config_id))
         .load::<ScheduleConfiguration>(database)
         .expect("Error Loading Schedule Configurations");
 
-    let schedules_ids = schedule_configurations
+    let schedules_ids = schedule_config_vec
         .iter()
-        .map(|schedule_configuration| schedule_configuration.schedule_id)
+        .map(|schedule_config| schedule_config.schedule_id)
         .collect::<Vec<i32>>();
 
     let scheds = schedules::table
