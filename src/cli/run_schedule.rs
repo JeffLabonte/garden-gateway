@@ -13,13 +13,13 @@ const TURN_ON_ACTION: &str = "turn_on";
 const TURN_OFF_ACTION: &str = "turn_off";
 
 fn add_job_to_scheduler(
-    database: &SqliteConnection,
+    database: &mut SqliteConnection,
     scheduler: &JobScheduler,
     configuration: Configuration,
 ) -> Vec<Uuid> {
     // TODO Implement with new tables
     use crate::schema::configurations::dsl::configurations;
-    use crate::schema::schedules::dsl::{schedules};
+    use crate::schema::schedules::dsl::schedules;
 
     let config_id = configuration.id;
     let results = schedules
@@ -43,9 +43,7 @@ fn add_job_to_scheduler(
                     0 // sched.configuration_id
                 );
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let pins = HashMap::from([
-                        ("relay_power_pin", configuration.bcm_pin as u8),
-                    ]);
+                    let pins = HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
                     let mut device = RelayPowerBar::new(pins);
                     device.turn_on();
                 })
@@ -58,9 +56,7 @@ fn add_job_to_scheduler(
                     0 //sched.configuration_id
                 );
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let pins = HashMap::from([
-                        ("relay_power_pin", configuration.bcm_pin as u8),
-                    ]);
+                    let pins = HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
                     let mut device = RelayPowerBar::new(pins);
                     device.turn_off();
                 })
@@ -75,7 +71,7 @@ fn add_job_to_scheduler(
 }
 
 #[tokio::main]
-pub async fn run(database: &SqliteConnection) -> bool {
+pub async fn run(database: &mut SqliteConnection) -> bool {
     use crate::schema::configurations::dsl::configurations;
 
     let scheduler = JobScheduler::new();

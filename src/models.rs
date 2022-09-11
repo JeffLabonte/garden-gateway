@@ -9,7 +9,7 @@ pub struct Configuration {
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "configurations"]
+#[diesel(table_name = configurations)]
 pub struct NewConfiguration {
     pub sensor_name: String,
     pub bcm_pin: i32,
@@ -23,15 +23,15 @@ pub struct Schedule {
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "schedules"]
+#[diesel(table_name = schedules)]
 pub struct NewSchedule {
     pub action: String,
     pub cron_string: String,
 }
 
 #[derive(Identifiable, Queryable, Associations, Debug)]
-#[belongs_to(Schedule, foreign_key = "schedule_id")]
-#[belongs_to(Configuration, foreign_key = "configuration_id")]
+#[diesel(belongs_to(Schedule, foreign_key = schedule_id))]
+#[diesel(belongs_to(Configuration, foreign_key = configuration_id))]
 pub struct ScheduleConfiguration {
     pub id: i32,
     pub schedule_id: i32,
@@ -39,7 +39,7 @@ pub struct ScheduleConfiguration {
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "schedule_configurations"]
+#[diesel(table_name = schedule_configurations)]
 pub struct NewScheduleConfiguration {
     pub schedule_id: i32,
     pub configuration_id: i32,
