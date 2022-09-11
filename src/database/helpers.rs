@@ -35,7 +35,7 @@ mod tests {
     use crate::database::establish_connection;
     use crate::diesel::RunQueryDsl;
     use crate::models::{Configuration, NewConfiguration, NewScheduleConfiguration};
-    // use crate::schema::{configurations, schedule_configurations};
+    use crate::schema::configurations;
     use crate::{models::NewSchedule, models::Schedule, schema::schedules};
 
     fn create_base_data(database: &mut SqliteConnection) {
@@ -81,16 +81,16 @@ mod tests {
 
     #[test]
     fn test_retrieve_schedules_from_config_id() {
-        let database = establish_connection();
-        database.test_transaction::<_, diesel::result::Error, _>(|| {
-            create_base_data(&database);
+        let mut database = establish_connection();
+        database.test_transaction::<_, diesel::result::Error, _>(|db: &mut SqliteConnection| {
+            create_base_data(db);
 
             let last_inserted_config = configurations::dsl::configurations
                 .order_by(configurations::dsl::id.desc())
-                .first::<Configuration>(&database)
+                .first::<Configuration>(db)
                 .expect("Unable to retrieve the lastest Configuration");
 
-            let schedules = retrieve_schedules_from_config_id(&database, last_inserted_config.id);
+            let schedules = retrieve_schedules_from_config_id(db, last_inserted_config.id);
 
             assert_eq!(schedules.len(), 1);
 

@@ -251,18 +251,17 @@ mod tests {
 
     #[test]
     fn imported_schedules_not_unique_with_db_should_be_invalid() {
-        let database = &mut establish_connection();
-
-        database.test_transaction::<_, Error, _>(|| {
-            setup(database);
+        let mut database = establish_connection();
+        database.test_transaction::<_, Error, _>(|db: &mut SqliteConnection| {
+            setup(db);
             let mut imported_schedules = generate_imported_schedule(1);
 
-            let result: bool = is_unique_with_db(database, &imported_schedules);
+            let result: bool = is_unique_with_db(db, &imported_schedules);
             assert!(!result);
 
             imported_schedules[0].action = "turn_on".to_string();
 
-            let result: bool = is_unique_with_db(database, &imported_schedules);
+            let result: bool = is_unique_with_db(db, &imported_schedules);
             assert!(result);
 
             Ok(())
@@ -271,15 +270,14 @@ mod tests {
 
     #[test]
     fn imported_schedules_not_valid_cron_should_fail_import() {
-        let database = &mut establish_connection();
-
-        database.test_transaction::<_, Error, _>(|| {
-            setup(database);
+        let mut database = establish_connection();
+        database.test_transaction::<_, Error, _>(|db: &mut SqliteConnection| {
+            setup(db);
 
             let mut imported_schedules = generate_imported_schedule(1);
             imported_schedules[0].cron_string = "faillure".to_string();
 
-            let result: bool = import_schedule(database, &imported_schedules);
+            let result: bool = import_schedule(db, &imported_schedules);
 
             assert!(!result);
 
