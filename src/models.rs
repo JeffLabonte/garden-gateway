@@ -32,6 +32,7 @@ pub struct NewSchedule {
 #[derive(Identifiable, Queryable, Associations, Debug)]
 #[diesel(belongs_to(Schedule, foreign_key = schedule_id))]
 #[diesel(belongs_to(Configuration, foreign_key = configuration_id))]
+#[diesel(primary_key(schedule_id, configuration_id))]
 pub struct ScheduleConfiguration {
     pub id: i32,
     pub schedule_id: i32,
