@@ -170,22 +170,22 @@ pub fn import_schedule_from_json(file: PathBuf) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::database::establish_connection;
     use crate::models::NewSchedule;
     use crate::schema::{schedule_configurations, schedules};
     use diesel::result::Error;
     use test_case::test_case;
 
-    fn setup(database: &mut SqliteConnection) {
+    fn setup() {
         let configuration_id: i32 = 1;
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
         };
-
+        let mut database_connection: &mut SqliteConnection =
+            &mut DATABASE_CONNECTION.lock().unwrap();
         match diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
-            .execute(database)
+            .execute(database_connection)
         {
             Ok(schedule_id) => {
                 // TODO This isn't the ID in there but the number of row inserted
@@ -196,7 +196,7 @@ mod tests {
                     );
                 let result = diesel::insert_into(schedule_configurations::table)
                     .values(default_schedule_configurations)
-                    .execute(database);
+                    .execute(database_connection);
 
                 match result {
                     Ok(_) => (),
@@ -243,37 +243,27 @@ mod tests {
 
     #[test]
     fn imported_schedules_not_unique_with_db_should_be_invalid() {
-        let mut database = establish_connection();
-        database.test_transaction::<_, Error, _>(|db: &mut SqliteConnection| {
-            setup(db);
-            let mut imported_schedules = generate_imported_schedule(1);
+        setup();
+        let mut imported_schedules = generate_imported_schedule(1);
 
-            let result: bool = is_unique_with_db(db, &imported_schedules);
-            assert!(!result);
+        let result: bool = is_unique_with_db(&imported_schedules);
+        assert!(!result);
 
-            imported_schedules[0].action = "turn_on".to_string();
+        imported_schedules[0].action = "turn_on".to_string();
 
-            let result: bool = is_unique_with_db(db, &imported_schedules);
-            assert!(result);
-
-            Ok(())
-        });
+        let result: bool = is_unique_with_db(&imported_schedules);
+        assert!(result);
     }
 
     #[test]
     fn imported_schedules_not_valid_cron_should_fail_import() {
-        let mut database = establish_connection();
-        database.test_transaction::<_, Error, _>(|db: &mut SqliteConnection| {
-            setup(db);
+        setup();
 
-            let mut imported_schedules = generate_imported_schedule(1);
-            imported_schedules[0].cron_string = "faillure".to_string();
+        let mut imported_schedules = generate_imported_schedule(1);
+        imported_schedules[0].cron_string = "faillure".to_string();
 
-            let result: bool = import_schedule(db, &imported_schedules);
+        let result: bool = import_schedule(&imported_schedules);
 
-            assert!(!result);
-
-            Ok(())
-        });
+        assert!(!result);
     }
 }
