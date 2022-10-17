@@ -10,15 +10,23 @@ mod helpers;
 mod models;
 mod schema;
 
+use lazy_static::lazy_static;
+use std::sync::Mutex;
+
 use cli::actions::run_action;
 use cli::get_cli_args;
 use database::establish_connection;
+use diesel::SqliteConnection;
 
 use crate::context::Context;
 
+lazy_static! {
+    pub static ref DATABASE_CONNECTION: Mutex<SqliteConnection> =
+        Mutex::new(establish_connection());
+}
+
 fn main() {
     let context = Context {
-        database: establish_connection(),
         arguments: get_cli_args(),
     };
     let is_success = run_action(context);

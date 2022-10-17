@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::models::*;
+use crate::{models::*, DATABASE_CONNECTION};
 use std::collections::HashSet;
 use std::fs::File;
 use std::path::PathBuf;
@@ -34,18 +34,15 @@ fn is_input_unique(schedules: &Vec<ImportedSchedule>) -> bool {
     original_schedules.len() == unique_schedules.len()
 }
 
-fn is_unique_with_db(
-    database: &mut SqliteConnection,
-    imported_schedules: &Vec<ImportedSchedule>,
-) -> bool {
+fn is_unique_with_db(imported_schedules: &Vec<ImportedSchedule>) -> bool {
     use crate::schema::schedules::dsl::{action, cron_string, schedules};
-
+    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     for imported_schedule in imported_schedules {
         let schedule = imported_schedule.clone();
         let db_schedules = schedules
             .filter(cron_string.eq(schedule.cron_string))
             .filter(action.eq(schedule.action))
-            .load::<Schedule>(database)
+            .load::<Schedule>(database_connection)
             .expect("Error Loading Configurations");
 
         if db_schedules.is_empty() {
@@ -56,13 +53,11 @@ fn is_unique_with_db(
     false
 }
 
-fn is_input_valid(
-    database: &mut SqliteConnection,
-    imported_schedules: &Vec<ImportedSchedule>,
-) -> bool {
+fn is_input_valid(imported_schedules: &Vec<ImportedSchedule>) -> bool {
     use crate::schema::configurations::dsl::{configurations, id};
     use diesel::dsl::exists;
 
+    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     for imported_schedule in imported_schedules {
         let schedule_clone = imported_schedule.clone();
         if schedule_clone.action.is_empty() {
@@ -71,7 +66,7 @@ fn is_input_valid(
         for config_id in schedule_clone.configurations {
             let has_config: Result<bool, diesel::result::Error> =
                 diesel::select(exists(configurations.filter(id.eq(config_id))))
-                    .get_result(database);
+                    .get_result(database_connection);
 
             if !has_config.unwrap() {
                 return false;
@@ -82,32 +77,29 @@ fn is_input_valid(
     true
 }
 
-fn validate_input(
-    database: &mut SqliteConnection,
-    schedules: Vec<ImportedSchedule>,
-) -> Result<(), &str> {
+fn validate_input(schedules: Vec<ImportedSchedule>) -> Result<(), String> {
     // TODO Use a list of function to loop on
     if !is_input_unique(&schedules) {
-        return Err("The Schedules you are trying to import are not unique");
+        return Err("The Schedules you are trying to import are not unique".to_string());
     }
 
-    if !is_unique_with_db(database, &schedules) {
-        return Err("Your data that you are trying to import isn't unique with the database");
+    if !is_unique_with_db(&schedules) {
+        return Err(
+            "Your data that you are trying to import isn't unique with the database".to_string(),
+        );
     }
 
-    if !is_input_valid(database, &schedules) {
-        return Err("Invalid data in the configurations");
+    if !is_input_valid(&schedules) {
+        return Err("Invalid data in the configurations".to_string());
     }
 
     Ok(())
 }
 
-fn import_schedule(
-    database: &mut SqliteConnection,
-    imported_schedules: &Vec<ImportedSchedule>,
-) -> bool {
+fn import_schedule(imported_schedules: &Vec<ImportedSchedule>) -> bool {
     use crate::schema::{schedule_configurations, schedules};
 
+    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     for imported_schedule in imported_schedules {
         let schedule_clone: ImportedSchedule = imported_schedule.clone();
         let configurations = schedule_clone.configurations.clone();
@@ -121,7 +113,7 @@ fn import_schedule(
                 let new_schedule = NewSchedule::from_imported_schedule(schedule_clone);
                 diesel::insert_into(schedules::table)
                     .values(&new_schedule)
-                    .execute(database)
+                    .execute(database_connection)
                     .expect("Unable to create new schedule");
 
                 let last_inserted_schedule = schedules::dsl::schedules
@@ -129,7 +121,7 @@ fn import_schedule(
                     .filter(schedules::dsl::cron_string.eq(new_schedule.cron_string))
                     .filter(schedules::dsl::action.eq(new_schedule.action))
                     .order_by(schedules::dsl::id.desc())
-                    .first(database);
+                    .first(database_connection);
 
                 match last_inserted_schedule {
                     Ok(inserted_schedule) => {
@@ -141,7 +133,7 @@ fn import_schedule(
                                 );
                             match diesel::insert_into(schedule_configurations::table)
                                 .values(&new_schedule_configuration)
-                                .execute(database)
+                                .execute(database_connection)
                             {
                                 Ok(_) => continue,
                                 Err(e) => {
@@ -164,10 +156,10 @@ fn import_schedule(
     true
 }
 
-pub fn import_schedule_from_json(database: &mut SqliteConnection, file: PathBuf) -> bool {
+pub fn import_schedule_from_json(file: PathBuf) -> bool {
     let imported_schedules = read_json_schedule(file);
-    match validate_input(database, imported_schedules.clone()) {
-        Ok(_) => import_schedule(database, &imported_schedules),
+    match validate_input(imported_schedules.clone()) {
+        Ok(_) => import_schedule(&imported_schedules),
         Err(err) => {
             println!("{}", err);
             false
