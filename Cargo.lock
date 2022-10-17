@@ -553,6 +553,7 @@ dependencies = [
  "diesel",
  "dotenv",
  "lapin",
+ "lazy_static",
  "rust_gpiozero",
  "serde",
  "serde_json",
