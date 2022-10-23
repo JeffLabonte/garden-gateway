@@ -78,19 +78,19 @@ mod tests {
             .expect("Unable to insert the new Schedule Configuration");
     }
 
-    fn get_last_inserted_schedule() -> Schedule {
+    fn get_last_inserted_config() -> Configuration {
         let database: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
-        schedules::dsl::schedules
-            .order_by(schedules::dsl::id.desc())
-            .first::<Schedule>(database)
-            .expect("Unable to retrieve the latest Schedule")
+        configurations::dsl::configurations
+            .order_by(configurations::dsl::id.desc())
+            .first::<Configuration>(database)
+            .expect("Unable to retrieve the lastest Configuration")
     }
 
     #[test]
     fn test_retrieve_schedules_from_config_id() {
         create_base_data();
 
-        let last_inserted_config = get_last_inserted_schedule();
+        let last_inserted_config = get_last_inserted_config();
         let schedules = retrieve_schedules_from_config_id(last_inserted_config.id);
 
         assert_eq!(schedules.len(), 1);
