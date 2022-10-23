@@ -1,5 +1,6 @@
 use crate::devices::{relay_power::RelayPowerBar, Device};
 use crate::models::*;
+use crate::DATABASE_CONNECTION;
 use diesel::prelude::*;
 use std::collections::HashMap;
 use std::time::Duration;
@@ -12,19 +13,16 @@ const RELAY_POWER_SENSOR_NAME: &str = "relay_power";
 const TURN_ON_ACTION: &str = "turn_on";
 const TURN_OFF_ACTION: &str = "turn_off";
 
-fn add_job_to_scheduler(
-    database: &mut SqliteConnection,
-    scheduler: &JobScheduler,
-    configuration: Configuration,
-) -> Vec<Uuid> {
+fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) -> Vec<Uuid> {
     // TODO Implement with new tables
     use crate::schema::configurations::dsl::configurations;
     use crate::schema::schedules::dsl::schedules;
 
+    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     let config_id = configuration.id;
     let results = schedules
         // .filter(configuration_id.eq(config_id))
-        .load::<Schedule>(database)
+        .load::<Schedule>(database_connection)
         .expect("Error loading schedules");
 
     let mut job_ids = Vec::new();
@@ -33,7 +31,7 @@ fn add_job_to_scheduler(
         println!("This schedule will run at {}", cron_schedule_str);
         let configuration_object: Configuration = configurations
             // .find(sched.configuration_id)
-            .first(database)
+            .first(database_connection)
             .expect("Error while retrieving configuration");
 
         match sched.action.as_str() {
@@ -71,18 +69,19 @@ fn add_job_to_scheduler(
 }
 
 #[tokio::main]
-pub async fn run(database: &mut SqliteConnection) -> bool {
+pub async fn run() -> bool {
     use crate::schema::configurations::dsl::configurations;
 
+    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     let scheduler = JobScheduler::new();
     let configs = configurations
-        .load::<Configuration>(database)
+        .load::<Configuration>(database_connection)
         .expect("Error loading configurations");
 
     let mut scheduler = scheduler.unwrap();
     let mut job_ids: Vec<Uuid> = Vec::new();
     for config in configs {
-        for job_id in add_job_to_scheduler(database, &scheduler, config) {
+        for job_id in add_job_to_scheduler(&scheduler, config) {
             job_ids.push(job_id);
         }
     }
