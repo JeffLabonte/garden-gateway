@@ -56,7 +56,7 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
 pub async fn run() -> bool {
     use crate::schema::configurations::dsl::configurations;
 
-    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     let scheduler = JobScheduler::new();
     let configs = configurations
         .load::<Configuration>(database_connection)
