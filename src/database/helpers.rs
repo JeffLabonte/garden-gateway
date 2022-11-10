@@ -7,7 +7,7 @@ use crate::{
 use diesel::prelude::*;
 
 pub fn retrieve_schedules_from_config_id(config_id: i32) -> Vec<Schedule> {
-    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     let schedule_config_vec = schedule_configurations::table
         .filter(configuration_id.eq(config_id))
         .load::<ScheduleConfiguration>(database_connection)

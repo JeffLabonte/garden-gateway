@@ -7,7 +7,7 @@ pub fn list_schedules() -> bool {
     use crate::schema::schedule_configurations::dsl::{schedule_configurations, schedule_id};
     use crate::schema::schedules::dsl::schedules;
 
-    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     let schedule_vec = schedules
         .load::<Schedule>(database_connection)
         .expect("Something went wrong");
