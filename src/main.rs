@@ -29,8 +29,8 @@ fn main() {
     let context = Context {
         arguments: get_cli_args(),
     };
-    let is_success = run_action(context);
-    if !is_success {
+
+    if !run_action(context) {
         eprintln!("Something went wrong");
     }
 }
