@@ -1,6 +1,13 @@
 setup:
-	sudo apt install libsqlite3-dev -y
 	cargo install diesel_cli --no-default-features --features sqlite
+
+setup-ubuntu:
+	sudo apt install libsqlite3-dev -y
+	make setup
+
+setup-arch:
+	yay -S sqlite
+	make setup
 
 copy_env_template:
 	cp --backup templates/env.template .env
