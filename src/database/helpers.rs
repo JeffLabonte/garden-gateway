@@ -1,3 +1,4 @@
+use crate::models::Configuration;
 use crate::DATABASE_CONNECTION;
 use crate::{
     models::{Schedule, ScheduleConfiguration},
@@ -28,6 +29,15 @@ pub fn retrieve_schedules_from_config_id(config_id: i32) -> Vec<Schedule> {
 
 pub fn get_database_connection() -> std::sync::MutexGuard<'static, SqliteConnection> {
     DATABASE_CONNECTION.lock().unwrap()
+}
+
+pub fn get_all_configurations() -> Vec<Configuration> {
+    use crate::schema::configurations::dsl::configurations;
+
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    configurations
+        .load::<Configuration>(database_connection)
+        .expect("Error loading configurations")
 }
 
 #[cfg(test)]
