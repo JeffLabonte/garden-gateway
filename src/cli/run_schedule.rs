@@ -1,4 +1,4 @@
-use crate::database::helpers::retrieve_schedules_from_config_id;
+use crate::database::helpers::{get_database_connection, retrieve_schedules_from_config_id};
 use crate::devices::{relay_power::RelayPowerBar, Device};
 use crate::models::*;
 use crate::DATABASE_CONNECTION;
@@ -56,7 +56,7 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
 pub async fn run() -> bool {
     use crate::schema::configurations::dsl::configurations;
 
-    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let scheduler = JobScheduler::new();
     let configs = configurations
         .load::<Configuration>(database_connection)
