@@ -1,4 +1,6 @@
-use crate::database::helpers::{get_database_connection, retrieve_schedules_from_config_id};
+use crate::database::helpers::{
+    get_all_configurations, get_database_connection, retrieve_schedules_from_config_id,
+};
 use crate::devices::{relay_power::RelayPowerBar, Device};
 use crate::models::*;
 use crate::DATABASE_CONNECTION;
@@ -54,17 +56,13 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
 
 #[tokio::main]
 pub async fn run() -> bool {
-    use crate::schema::configurations::dsl::configurations;
-
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let scheduler = JobScheduler::new();
-    let configs = configurations
-        .load::<Configuration>(database_connection)
-        .expect("Error loading configurations");
+    let configurations: Vec<Configuration> = get_all_configurations();
 
     let mut scheduler = scheduler.unwrap();
     let mut job_ids: Vec<Uuid> = Vec::new();
-    for config in configs {
+
+    for config in configurations {
         for job_id in add_job_to_scheduler(&scheduler, config) {
             job_ids.push(job_id);
         }
