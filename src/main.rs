@@ -9,6 +9,7 @@ mod devices;
 mod helpers;
 mod models;
 mod schema;
+mod constants;
 
 use lazy_static::lazy_static;
 use std::sync::Mutex;
