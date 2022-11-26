@@ -36,7 +36,7 @@ fn is_input_unique(schedules: &Vec<ImportedSchedule>) -> bool {
 
 fn is_unique_with_db(imported_schedules: &Vec<ImportedSchedule>) -> bool {
     use crate::schema::schedules::dsl::{action, cron_string, schedules};
-    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     for imported_schedule in imported_schedules {
         let schedule = imported_schedule.clone();
         let db_schedules = schedules
