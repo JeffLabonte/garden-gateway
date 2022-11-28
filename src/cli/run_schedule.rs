@@ -2,13 +2,6 @@ use crate::helpers::populate_job_ids;
 use std::time::Duration;
 use tokio_cron_scheduler::JobScheduler;
 
-const WATER_PUMP_SENSOR_NAME: &str = "";
-const RELAY_POWER_SENSOR_NAME: &str = "relay_power";
-
-const TURN_ON_ACTION: &str = "turn_on";
-const TURN_OFF_ACTION: &str = "turn_off";
-
-
 #[tokio::main]
 pub async fn run() -> bool {
     let mut scheduler = JobScheduler::new().unwrap();
