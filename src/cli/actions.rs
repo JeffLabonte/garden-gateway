@@ -5,7 +5,7 @@ use super::{
     schedules::list_schedules, Actions, SubActions,
 };
 
-pub fn run_action(mut context: Context) -> bool {
+pub fn run_action(context: Context) -> bool {
     let arguments = context.arguments;
 
     match arguments.action {
