@@ -21,7 +21,7 @@ pub fn run_action(mut context: Context) -> bool {
                 print!("Setting: {} -> {}", key, value);
                 false
             }
-            SubActions::List {} => list_schedules(), // TODO List schedules
+            SubActions::List {} => list_schedules(),
         },
         Actions::Run {} => loop {
             match run() {
