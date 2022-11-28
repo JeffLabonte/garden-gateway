@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use tokio_cron_scheduler::{JobScheduler, Job};
+use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
 
 use crate::{
