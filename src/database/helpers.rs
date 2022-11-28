@@ -51,7 +51,7 @@ mod tests {
     use crate::{models::NewSchedule, models::Schedule, schema::schedules};
 
     fn create_base_data() {
-        let database: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+        let database: &mut SqliteConnection = &mut get_database_connection();
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
