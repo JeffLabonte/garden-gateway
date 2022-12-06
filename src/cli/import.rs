@@ -173,6 +173,7 @@ mod tests {
     use crate::database::helpers::get_database_connection;
     use crate::models::NewSchedule;
     use crate::schema::{schedule_configurations, schedules};
+    use test_case::test_case;
 
     fn setup() {
         let configuration_id: i32 = 1;
@@ -180,7 +181,7 @@ mod tests {
             action: "turn_off".to_string(),
             cron_string: "* * * * *".to_string(),
         };
-        let mut database_connection: &mut SqliteConnection = &mut get_database_connection();
+        let database_connection: &mut SqliteConnection = &mut get_database_connection();
         match diesel::insert_or_ignore_into(schedules::table)
             .values(&default_schedule)
             .execute(database_connection)
