@@ -9,6 +9,9 @@ setup-arch:
 	yay -S sqlite
 	make setup
 
+setup-nixos: 
+	nix-shell
+
 copy_env_template:
 	cp --backup templates/env.template .env
 
