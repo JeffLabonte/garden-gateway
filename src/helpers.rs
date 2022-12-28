@@ -7,7 +7,7 @@ use crate::{
     constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
     database::helpers::{get_all_configurations, retrieve_schedules_from_config_id},
     devices::relay_power::RelayPowerBar,
-    devices::Device,
+    devices::{build_device, Device},
     models::Configuration,
 };
 
@@ -32,16 +32,16 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
     let mut job_ids = Vec::new();
     for schedule in schedules {
         let cron_schedule_str = schedule.cron_string.as_str();
+        // HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
+
+        // let device: Box<dyn Device> = build_device(configuration.sensor_name, pins);
         println!("This schedule will run at {}", cron_schedule_str);
 
         match schedule.action.as_str() {
             TURN_ON_ACTION => {
                 println!("Adding turn_on for configuration {}", 0);
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    let pins = HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
-                    // TODO Use new device
-                    //let mut device = &RelayPowerBar::new(pins);
-                    //device.turn_on();
+                    // let pins: HashMap<&str, u8> =
                 })
                 .unwrap();
                 job_ids.push(scheduler.add(job).unwrap());
