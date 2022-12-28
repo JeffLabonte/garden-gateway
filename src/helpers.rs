@@ -27,21 +27,21 @@ pub fn println_now(action: &str, board: &str) {
 
 fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) -> Vec<Uuid> {
     // TODO Implement with new tables
-    let config_id = configuration.id;
-    let results = retrieve_schedules_from_config_id(config_id);
+    let schedules = retrieve_schedules_from_config_id(configuration.id);
 
     let mut job_ids = Vec::new();
-    for sched in results {
-        let cron_schedule_str = sched.cron_string.as_str();
+    for schedule in schedules {
+        let cron_schedule_str = schedule.cron_string.as_str();
         println!("This schedule will run at {}", cron_schedule_str);
 
-        match sched.action.as_str() {
+        match schedule.action.as_str() {
             TURN_ON_ACTION => {
                 println!("Adding turn_on for configuration {}", 0);
                 let job = Job::new(cron_schedule_str, move |_, _| {
                     let pins = HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
-                    let mut device = RelayPowerBar::new(pins);
-                    device.turn_on();
+                    // TODO Use new device
+                    //let mut device = &RelayPowerBar::new(pins);
+                    //device.turn_on();
                 })
                 .unwrap();
                 job_ids.push(scheduler.add(job).unwrap());
@@ -50,8 +50,8 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
                 println!("Adding turn_off for configuration {}", 0);
                 let job = Job::new(cron_schedule_str, move |_, _| {
                     let pins = HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
-                    let mut device = RelayPowerBar::new(pins);
-                    device.turn_off();
+                    // let mut device: &RelayPowerBar = &RelayPowerBar::new(pins);
+                    // device.turn_off();
                 })
                 .unwrap();
                 job_ids.push(scheduler.add(job).unwrap());
