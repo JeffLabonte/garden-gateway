@@ -10,6 +10,9 @@ use super::{
     Device,
 };
 
+const WATER_PUMP_PIN_KEY: &str = "water_pump_pin";
+const WATER_DETECTOR_PIN_KEY: &str = "water_detector_pin";
+
 pub struct WateringSystem {
     water_pump: WaterPump,
     water_detector: WaterDetector,
@@ -25,8 +28,8 @@ pub struct WaterPump {
 
 impl WateringSystem {
     pub fn new(sensor_pins: HashMap<&str, u8>) -> WateringSystem {
-        let water_pump_pin: u8 = *sensor_pins.get(&"water_pump_pin").unwrap();
-        let water_detector_pin: u8 = *sensor_pins.get(&"water_detector_pin").unwrap();
+        let water_pump_pin: u8 = *sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap();
+        let water_detector_pin: u8 = *sensor_pins.get(WATER_DETECTOR_PIN_KEY).unwrap();
         let water_pump = WaterPump::new(water_pump_pin);
         let water_detector = WaterDetector::new(water_detector_pin);
         WateringSystem {
