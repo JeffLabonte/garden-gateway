@@ -40,8 +40,10 @@ impl WateringSystem {
 }
 
 impl Device for WateringSystem {
-    // Water the plant until water is detected
     fn turn_on(&mut self) {
+        //
+        // Let the water pump run untill the water detector detects water.
+        //
         while !self.water_detector.has_water() {
             self.water_pump.turn_on();
             std::thread::sleep(Duration::from_secs(1));
@@ -49,9 +51,8 @@ impl Device for WateringSystem {
         }
     }
 
-    // Will panic since you can't really turn it off
     fn turn_off(&mut self) {
-        panic!("This device doesn't implement turn_off")
+        self.water_pump.turn_off();
     }
 }
 
