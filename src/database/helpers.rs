@@ -1,4 +1,5 @@
 use crate::models::Configuration;
+use crate::schema::configurations;
 use crate::DATABASE_CONNECTION;
 use crate::{
     models::{Schedule, ScheduleConfiguration},
@@ -27,6 +28,31 @@ pub fn retrieve_schedules_from_config_id(config_id: i32) -> Vec<Schedule> {
     scheds
 }
 
+pub fn get_configurations_by_schedule_id(schedule_id: i32) -> Vec<Configuration> {
+    use crate::schema::configurations::dsl::id;
+
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    let schedule_config_vec = schedule_configurations::table
+        .filter(schedule_configurations::dsl::schedule_id.eq(schedule_id))
+        .load::<ScheduleConfiguration>(database_connection)
+        .expect("Error Loading Schedule Configurations");
+
+    println!("Schedule Configurations: {:?}", schedule_config_vec);
+
+    let config_ids = schedule_config_vec
+        .iter()
+        .map(|schedule_config| schedule_config.configuration_id)
+        .collect::<Vec<i32>>();
+
+    println!("Config ids: {:?}", config_ids);
+    let configs = configurations::table
+        .filter(id.eq_any(config_ids))
+        .load::<Configuration>(database_connection)
+        .expect("Error Loading Configurations");
+
+    configs
+}
+
 pub fn get_database_connection() -> std::sync::MutexGuard<'static, SqliteConnection> {
     DATABASE_CONNECTION.lock().unwrap()
 }
@@ -42,71 +68,37 @@ pub fn get_all_configurations() -> Vec<Configuration> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use diesel::SqliteConnection;
+    use diesel::prelude::*;
+    use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
 
-    use crate::diesel::RunQueryDsl;
-    use crate::models::{Configuration, NewConfiguration, NewScheduleConfiguration};
-    use crate::schema::configurations;
-    use crate::{models::NewSchedule, models::Schedule, schema::schedules};
+    use crate::models::{Configuration, NewConfiguration};
 
-    fn create_base_data() {
-        let database: &mut SqliteConnection = &mut get_database_connection();
-        let default_schedule = NewSchedule {
-            action: "turn_off".to_string(),
-            cron_string: "* * * * *".to_string(),
-        };
-        let default_configuration = NewConfiguration {
-            bcm_pin: 1,
-            sensor_name: "Test Sensor".to_string(),
+    use super::get_database_connection;
+
+    fn create_configuration(sensor_name: String, device_pin: i32) -> Configuration {
+        use crate::schema;
+        let database_connection: &mut SqliteConnection = &mut get_database_connection();
+        let new_configuration: NewConfiguration = NewConfiguration {
+            sensor_name,
+            bcm_pin: device_pin,
         };
 
-        diesel::insert_or_ignore_into(schedules::table)
-            .values(&default_schedule)
-            .execute(database)
-            .expect("Unable to insert the new Schedule");
+        let inserted_rows = diesel::insert_into(schema::configurations::table)
+            .values(new_configuration)
+            .execute(database_connection)
+            .unwrap();
 
-        diesel::insert_or_ignore_into(configurations::table)
-            .values(&default_configuration)
-            .execute(database)
-            .expect("Unable to insert the new Configuration");
+        assert_eq!(inserted_rows, 1);
 
-        let last_inserted_schedule = schedules::dsl::schedules
-            .order_by(schedules::dsl::id.desc())
-            .first::<Schedule>(database)
-            .expect("Unable to retrieve the latest Schedule");
-
-        let last_inserted_config = configurations::dsl::configurations
-            .order_by(configurations::dsl::id.desc())
-            .first::<Configuration>(database)
-            .expect("Unable to retrieve the lastest Configuration");
-
-        let schedule_configuration = NewScheduleConfiguration {
-            schedule_id: last_inserted_schedule.id,
-            configuration_id: last_inserted_config.id,
-        };
-
-        diesel::insert_or_ignore_into(schedule_configurations::table)
-            .values(schedule_configuration)
-            .execute(database)
-            .expect("Unable to insert the new Schedule Configuration");
-    }
-
-    fn get_last_inserted_config() -> Configuration {
-        let database: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
-        configurations::dsl::configurations
-            .order_by(configurations::dsl::id.desc())
-            .first::<Configuration>(database)
-            .expect("Unable to retrieve the lastest Configuration")
+        schema::configurations::dsl::configurations
+            .filter(schema::configurations::dsl::bcm_pin.eq(device_pin))
+            .first::<Configuration>(database_connection)
+            .unwrap()
     }
 
     #[test]
-    fn test_retrieve_schedules_from_config_id() {
-        create_base_data();
-
-        let last_inserted_config = get_last_inserted_config();
-        let schedules = retrieve_schedules_from_config_id(last_inserted_config.id);
-
-        assert_eq!(schedules.len(), 1);
+    fn given_get_all_configurations__when_has_five_configurations__then_should_return_5_configs() {
+        let stone_configuration = create_configuration("Stone".to_string(), 1);
+        panic!("Stone Configuration: {:?}", stone_configuration);
     }
 }
