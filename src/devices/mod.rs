@@ -11,9 +11,9 @@ pub trait Device {
     fn turn_off(&mut self);
 }
 
-pub fn build_device(action: &str, sensor_pins: HashMap<&str, u8>) -> Box<dyn Device> {
-    match action {
-        constants::TURN_ON_STRING => Box::new(RelayPowerBar::new(sensor_pins)),
+pub fn build_device(sensor_name: String, sensor_pins: HashMap<&str, u8>) -> Box<dyn Device> {
+    match sensor_name.as_str() {
+        constants::RELAY_POWER_BAR => Box::new(RelayPowerBar::new(sensor_pins)),
         constants::WATER_PUMP => Box::new(WateringSystem::new(sensor_pins)),
         _ => panic!("Unknown action"),
     }
