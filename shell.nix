@@ -23,7 +23,6 @@ in
         pkgconfig 
         openssl 
         sqlite
-        cargo
         rustc
         gnumake
         git
@@ -34,6 +33,7 @@ in
     packages = with nixpkgs; [
       clippy
       python310
+      cargo
     ];
     # Set Environment Variables
     RUST_BACKTRACE = 1;
