@@ -36,6 +36,7 @@ features = [
 
 [dev-dependencies]
 test-case = "2.2.2"
+diesel_cli = { version = "2.0.1", features = ["sqlite"], default-features = false }
 
 [profile.dev]
 opt-level = 0
