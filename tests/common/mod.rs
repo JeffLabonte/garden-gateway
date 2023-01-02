@@ -1,8 +1,14 @@
 use diesel::prelude::*;
 use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
 use gateway::database::helpers::get_database_connection;
-use gateway::models::{Configuration, NewConfiguration, Schedule, NewSchedule, NewScheduleConfiguration};
+use gateway::models::{
+    Configuration, NewConfiguration, NewSchedule, NewScheduleConfiguration, Schedule,
+};
 use gateway::schema::{self, schedules};
+
+pub fn teardown_database() {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+}
 
 pub fn create_configuration(sensor_name: String, device_pin: i32) -> Configuration {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
