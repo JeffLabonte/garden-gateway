@@ -1,3 +1,7 @@
+use gateway::database::helpers::get_all_configurations;
+
+use crate::common::{create_configuration, create_schedule, link_configuration_to_schedule};
+
 #[test]
 fn given_get_all_configurations__when_has_five_configurations__then_should_return_five_configs()
 {

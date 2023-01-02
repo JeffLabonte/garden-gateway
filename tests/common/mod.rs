@@ -1,9 +1,10 @@
 use diesel::prelude::*;
 use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
 use gateway::database::helpers::get_database_connection;
-use gateway::models::Configuration;
+use gateway::models::{Configuration, NewConfiguration, Schedule, NewSchedule, NewScheduleConfiguration};
+use gateway::schema::{self, schedules};
 
-fn create_configuration(sensor_name: String, device_pin: i32) -> Configuration {
+pub fn create_configuration(sensor_name: String, device_pin: i32) -> Configuration {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let new_configuration: NewConfiguration = NewConfiguration {
         sensor_name,
@@ -23,9 +24,9 @@ fn create_configuration(sensor_name: String, device_pin: i32) -> Configuration {
         .unwrap()
 }
 
-fn create_schedule(cron: String, action: String) -> Schedule {
+pub fn create_schedule(cron: String, action: String) -> Schedule {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
-    let new_schedule = NewSchedule {
+    let new_schedule: NewSchedule = NewSchedule {
         cron_string: cron.to_string(),
         action,
     };
@@ -35,22 +36,20 @@ fn create_schedule(cron: String, action: String) -> Schedule {
         .execute(database_connection)
         .expect("Unable to create schedule");
 
-    crate::schema::schedules::dsl::schedules
-        .filter(crate::schema::schedules::dsl::cron_string.eq(cron))
+    schedules::dsl::schedules
+        .filter(schedules::dsl::cron_string.eq(cron))
         .first::<Schedule>(database_connection)
         .unwrap()
 }
 
-fn link_configuration_to_schedule(schedule_id: i32, configuration_id: i32) {
-    use crate::schema::schedule_configurations;
-
+pub fn link_configuration_to_schedule(schedule_id: i32, configuration_id: i32) {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
-    let new_schedule_configuration = crate::models::NewScheduleConfiguration {
+    let new_schedule_configuration = NewScheduleConfiguration {
         schedule_id,
         configuration_id,
     };
 
-    diesel::insert_into(schedule_configurations::table)
+    diesel::insert_into(schema::schedule_configurations::table)
         .values(new_schedule_configuration)
         .execute(database_connection)
         .expect("Unable to create schedule configuration");
