@@ -34,6 +34,7 @@ in
       clippy
       python310
       cargo
+      ripgrep
     ];
     # Set Environment Variables
     RUST_BACKTRACE = 1;
