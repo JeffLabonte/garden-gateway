@@ -249,27 +249,34 @@ mod tests {
 
     #[test]
     fn imported_schedules_not_unique_with_db_should_be_invalid() {
-        setup();
-        let mut imported_schedules = generate_imported_schedule(1);
+        get_database_connection().test_transaction::<_, Error, _>(|connection| {
+            setup(connection);
+            let mut imported_schedules = generate_imported_schedule(1);
 
-        let result: bool = is_unique_with_db(&imported_schedules);
-        assert!(!result);
+            let result: bool = is_unique_with_db(&imported_schedules, connection);
+            assert!(!result);
 
-        imported_schedules[0].action = "turn_on".to_string();
+            imported_schedules[0].action = "turn_on".to_string();
 
-        let result: bool = is_unique_with_db(&imported_schedules);
-        assert!(result);
+            let result: bool = is_unique_with_db(&imported_schedules, connection);
+            assert!(result);
+
+            Ok(())
+        });
     }
 
     #[test]
     fn imported_schedules_not_valid_cron_should_fail_import() {
-        setup();
+        get_database_connection().test_transaction::<_, Error, _>(|connection| {
+            setup(connection);
 
-        let mut imported_schedules = generate_imported_schedule(1);
-        imported_schedules[0].cron_string = "faillure".to_string();
+            let mut imported_schedules = generate_imported_schedule(1);
+            imported_schedules[0].cron_string = "faillure".to_string();
 
-        let result: bool = import_schedule(&imported_schedules);
+            let result: bool = import_schedule(&imported_schedules, connection);
 
-        assert!(!result);
+            assert!(!result);
+            Ok(())
+        });
     }
 }
