@@ -57,10 +57,9 @@ pub fn get_database_connection() -> std::sync::MutexGuard<'static, SqliteConnect
     DATABASE_CONNECTION.lock().unwrap()
 }
 
-pub fn get_all_configurations() -> Vec<Configuration> {
+pub fn get_all_configurations(database_connection: &mut SqliteConnection) -> Vec<Configuration> {
     use crate::schema::configurations::dsl::configurations;
 
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     configurations
         .load::<Configuration>(database_connection)
         .expect("Error loading configurations")

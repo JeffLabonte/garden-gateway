@@ -5,7 +5,9 @@ use uuid::Uuid;
 
 use crate::{
     constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
-    database::helpers::{get_all_configurations, retrieve_schedules_from_config_id},
+    database::helpers::{
+        get_all_configurations, get_database_connection, retrieve_schedules_from_config_id,
+    },
     devices::relay_power::RelayPowerBar,
     devices::{build_device, Device},
     models::Configuration,
@@ -65,7 +67,7 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
 
 pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
     let mut job_ids: Vec<Uuid> = Vec::new();
-    let configurations: Vec<Configuration> = get_all_configurations();
+    let configurations: Vec<Configuration> = get_all_configurations(&mut get_database_connection());
 
     for config in configurations {
         for job_id in add_job_to_scheduler(&scheduler, config) {
