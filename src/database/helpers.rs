@@ -28,10 +28,12 @@ pub fn retrieve_schedules_from_config_id(config_id: i32) -> Vec<Schedule> {
     scheds
 }
 
-pub fn get_configurations_by_schedule_id(schedule_id: i32) -> Vec<Configuration> {
+pub fn get_configurations_by_schedule_id(
+    schedule_id: i32,
+    database_connection: &mut SqliteConnection,
+) -> Vec<Configuration> {
     use crate::schema::configurations::dsl::id;
 
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let schedule_config_vec = schedule_configurations::table
         .filter(schedule_configurations::dsl::schedule_id.eq(schedule_id))
         .load::<ScheduleConfiguration>(database_connection)
