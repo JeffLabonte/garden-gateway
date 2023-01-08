@@ -37,14 +37,22 @@ pub fn get_configurations_by_schedule_id(
         .expect("Error Loading Configurations")
 }
 
-pub fn get_database_connection() -> std::sync::MutexGuard<'static, SqliteConnection> {
-    DATABASE_CONNECTION.lock().unwrap()
-}
-
 pub fn get_all_configurations(database_connection: &mut SqliteConnection) -> Vec<Configuration> {
     use crate::schema::configurations::dsl::configurations;
 
     configurations
         .load::<Configuration>(database_connection)
         .expect("Error loading configurations")
+}
+
+pub fn get_all_schedules(database_connection: &mut SqliteConnection) -> Vec<Schedule> {
+    use crate::schema::schedules::dsl::schedules;
+
+    schedules
+        .load::<Schedule>(database_connection)
+        .expect("Unable to retrieve schedules")
+}
+
+pub fn get_database_connection() -> std::sync::MutexGuard<'static, SqliteConnection> {
+    DATABASE_CONNECTION.lock().unwrap()
 }
