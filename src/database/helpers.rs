@@ -12,23 +12,15 @@ pub fn get_schedules_from_config_id(
     config_id: i32,
     database_connection: &mut SqliteConnection,
 ) -> Vec<Schedule> {
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
-    let schedule_config_vec = schedule_configurations::table
-        .filter(configuration_id.eq(config_id))
-        .load::<ScheduleConfiguration>(database_connection)
-        .expect("Error Loading Schedule Configurations");
-
-    let schedules_ids = schedule_config_vec
-        .iter()
-        .map(|schedule_config| schedule_config.schedule_id)
-        .collect::<Vec<i32>>();
-
-    let scheds = schedules::table
-        .filter(schedules::dsl::id.eq_any(schedules_ids))
+    schedules::table
+        .inner_join(
+            schedule_configurations::table
+                .on(schedule_configurations::dsl::schedule_id.eq(schedules::dsl::id)),
+        )
+        .filter(schedule_configurations::dsl::configuration_id.eq(config_id))
+        .select(schedules::all_columns)
         .load::<Schedule>(database_connection)
-        .expect("Error Loading Schedules");
-
-    scheds
+        .expect("Unable to load schedules")
 }
 
 pub fn get_configurations_by_schedule_id(
