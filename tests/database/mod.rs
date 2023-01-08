@@ -1,8 +1,8 @@
 use diesel::result::Error;
 use diesel::Connection;
 use gateway::database::helpers::{
-    get_all_configurations, get_configurations_by_schedule_id, get_database_connection,
-    get_schedules_from_config_id,
+    get_all_configurations, get_all_schedules, get_configurations_by_schedule_id,
+    get_database_connection, get_schedules_from_config_id,
 };
 
 use crate::common::{create_configuration, create_schedule, link_configuration_to_schedule};
@@ -130,6 +130,41 @@ fn given_get_schedules_from_config_id_when_multiple_schedule_on_one_device_shoul
             true
         );
 
+        Ok(())
+    });
+}
+
+#[test]
+fn given_get_all_schedules_when_multiple_schedules_should_return_all_schedules() {
+    get_database_connection().test_transaction::<_, Error, _>(|connection| {
+        let schedule_a = create_schedule(
+            "* * * * * * *".to_string(),
+            "turn_off".to_string(),
+            connection,
+        );
+
+        let schedule_b = create_schedule(
+            "* * * * * * *".to_string(),
+            "turn_on".to_string(),
+            connection,
+        );
+
+        let schedules = get_all_schedules(connection);
+
+        assert_eq!(schedules.len(), 2);
+
+        assert_eq!(
+            schedules
+                .iter()
+                .any(|schedule| schedule.id == schedule_a.id),
+            true
+        );
+        assert_eq!(
+            schedules
+                .iter()
+                .any(|schedule| schedule.id == schedule_b.id),
+            true
+        );
         Ok(())
     });
 }
