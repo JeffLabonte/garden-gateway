@@ -15,7 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Build
-        run: cargo build --verbose
+      - uses: cachix/install-nix-action@v17
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
       - name: Run tests
-        run: make test
+        run: nix-shell --run "make test"
