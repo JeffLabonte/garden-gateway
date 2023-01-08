@@ -2,8 +2,7 @@ use crate::models::Configuration;
 use crate::schema::configurations;
 use crate::DATABASE_CONNECTION;
 use crate::{
-    models::{Schedule, ScheduleConfiguration},
-    schema::schedule_configurations::dsl::configuration_id,
+    models::Schedule,
     schema::{schedule_configurations, schedules},
 };
 use diesel::prelude::*;
