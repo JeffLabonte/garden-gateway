@@ -8,7 +8,10 @@ use crate::{
 };
 use diesel::prelude::*;
 
-pub fn get_schedules_from_config_id(config_id: i32) -> Vec<Schedule> {
+pub fn get_schedules_from_config_id(
+    config_id: i32,
+    database_connection: &mut SqliteConnection,
+) -> Vec<Schedule> {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let schedule_config_vec = schedule_configurations::table
         .filter(configuration_id.eq(config_id))
