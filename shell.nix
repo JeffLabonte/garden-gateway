@@ -17,11 +17,10 @@ with nixpkgs;
 stdenv.mkDerivation {
   name = "Garden Gateway";
   buildInputs = [
-    cargo
-    cargo-tarpaulin
     rustup
     rust
     rust-analyzer
+    cargo-tarpaulin
     pkgconfig
     openssl
     sqlite
@@ -35,6 +34,7 @@ stdenv.mkDerivation {
   packages = with nixpkgs; [
     clippy
     python310
+    cargo
     ripgrep
     nerdfonts
   ];
