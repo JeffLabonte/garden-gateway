@@ -9,7 +9,6 @@ use crate::{
     database::helpers::{
         get_all_configurations, get_database_connection, get_schedules_from_config_id,
     },
-    devices::relay_power::RelayPowerBar,
     devices::{build_device, Device},
     models::Configuration,
 };
