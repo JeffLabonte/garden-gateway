@@ -76,6 +76,20 @@ fn given_get_confgurations_from_schedule_id_when_two_configuration_linked_config
         let configurations = get_configurations_by_schedule_id(schedule.id, connection);
         assert_eq!(configurations.len(), 2);
 
+        assert_eq!(
+            configurations
+                .iter()
+                .any(|config| config.id == sensor_a_configuration.id),
+            true
+        );
+
+        assert_eq!(
+            configurations
+                .iter()
+                .any(|config| config.id == sensor_b_configuration.id),
+            true
+        );
+
         Ok(())
     });
 }
