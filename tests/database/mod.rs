@@ -1,7 +1,8 @@
+use diesel::result::Error;
 use diesel::Connection;
-use diesel::{result::Error, SqliteConnection};
 use gateway::database::helpers::{
     get_all_configurations, get_configurations_by_schedule_id, get_database_connection,
+    get_schedules_from_config_id,
 };
 
 use crate::common::{create_configuration, create_schedule, link_configuration_to_schedule};
@@ -87,6 +88,45 @@ fn given_get_confgurations_from_schedule_id_when_two_configuration_linked_config
             configurations
                 .iter()
                 .any(|config| config.id == sensor_b_configuration.id),
+            true
+        );
+
+        Ok(())
+    });
+}
+
+#[test]
+fn given_get_schedules_from_config_id_when_multiple_schedule_on_one_device_should_return_multiple_schedules(
+) {
+    get_database_connection().test_transaction::<_, Error, _>(|connection| {
+        let config = create_configuration("Sensor A".to_string(), 10, connection);
+
+        let schedule_a =
+            create_schedule("* * * * * *".to_string(), "turn_on".to_string(), connection);
+        let schedule_b = create_schedule(
+            "* * * * * * 1".to_string(),
+            "turn_on".to_string(),
+            connection,
+        );
+
+        link_configuration_to_schedule(schedule_a.id, config.id, connection);
+        link_configuration_to_schedule(schedule_b.id, config.id, connection);
+
+        let schedules = get_schedules_from_config_id(config.id, connection);
+
+        assert_eq!(schedules.len(), 2);
+
+        assert_eq!(
+            schedules
+                .iter()
+                .any(|schedule| schedule.id == schedule_a.id),
+            true
+        );
+
+        assert_eq!(
+            schedules
+                .iter()
+                .any(|schedule| schedule.id == schedule_b.id),
             true
         );
 
