@@ -17,8 +17,8 @@ in
   stdenv.mkDerivation {
     name = "Garden Gateway";
     buildInputs = [
+      rustup
         rust
-        rustup
         rust-analyzer
         pkgconfig 
         openssl 
@@ -35,11 +35,8 @@ in
       python310
       cargo
       ripgrep
+      nerdfonts
     ];
     # Set Environment Variables
     RUST_BACKTRACE = 1;
-    shellHook = ''
-      make
-      make copy_env_template
-     '';
   }
