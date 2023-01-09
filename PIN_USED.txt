@@ -1,2 +1,3 @@
-BCM: 4 GPIO -> Water Pump
+BCM: 04 GPIO -> Water Pump
+BCM: 11 GPIO -> Water Detector
 BCM: 17 GPIO -> Relay
