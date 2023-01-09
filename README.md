@@ -13,6 +13,9 @@ It was tested on Debian Buster (Raspberry Pi OS)
 ## Requirements
 
 * [nix](https://github.com/NixOS/nixpkgs)
+  * `nix-shell` in the project
+
+OR
 
 * `cargo`
 * `rust`
