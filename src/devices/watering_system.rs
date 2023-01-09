@@ -1,6 +1,5 @@
 use rust_gpiozero::{InputDevice, OutputDevice};
 
-use core::panic;
 use std::{collections::HashMap, time::Duration};
 
 use crate::helpers::println_now;
