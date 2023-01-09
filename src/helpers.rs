@@ -7,10 +7,11 @@ use uuid::Uuid;
 use crate::{
     constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
     database::helpers::{
-        get_all_configurations, get_database_connection, get_schedules_from_config_id,
+        get_all_configurations, get_all_schedules, get_configurations_by_schedule_id,
+        get_database_connection, get_schedules_from_config_id,
     },
     devices::{build_device, Device},
-    models::Configuration,
+    models::{Configuration, Schedule},
 };
 
 const DATETIME_FORMAT: &str = "%b %-d, %-I:%M:%s";
@@ -27,13 +28,13 @@ pub fn println_now(action: &str, board: &str) {
     print!("Time in UTC: {}", now_utc.format(DATETIME_FORMAT));
 }
 
-fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) -> Vec<Uuid> {
+fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
     // TODO Implement with new tables
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
-    let schedules = get_schedules_from_config_id(configuration.id, database_connection);
 
+    let configurations = get_configurations_by_schedule_id(schedule.id, database_connection);
     let mut job_ids = Vec::new();
-    for schedule in schedules {
+    for configuration in configurations {
         let cron_schedule_str = schedule.cron_string.as_str();
         // HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
 
@@ -68,10 +69,10 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) 
 
 pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
     let mut job_ids: Vec<Uuid> = Vec::new();
-    let configurations: Vec<Configuration> = get_all_configurations(&mut get_database_connection());
+    let schedules = get_all_schedules(&mut get_database_connection());
 
-    for config in configurations {
-        for job_id in add_job_to_scheduler(&scheduler, config) {
+    for schedule in schedules {
+        for job_id in add_job_to_scheduler(&scheduler, schedule) {
             job_ids.push(job_id);
         }
     }

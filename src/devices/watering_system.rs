@@ -82,4 +82,3 @@ impl WaterDetector {
         self.input_device.is_active()
     }
 }
-
