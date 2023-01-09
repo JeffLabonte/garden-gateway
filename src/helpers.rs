@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
+use diesel::SqliteConnection;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
 
 use crate::{
     constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
     database::helpers::{
-        get_all_configurations, get_database_connection, retrieve_schedules_from_config_id,
+        get_all_configurations, get_database_connection, get_schedules_from_config_id,
     },
-    devices::relay_power::RelayPowerBar,
     devices::{build_device, Device},
     models::Configuration,
 };
@@ -29,7 +29,8 @@ pub fn println_now(action: &str, board: &str) {
 
 fn add_job_to_scheduler(scheduler: &JobScheduler, configuration: Configuration) -> Vec<Uuid> {
     // TODO Implement with new tables
-    let schedules = retrieve_schedules_from_config_id(configuration.id);
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    let schedules = get_schedules_from_config_id(configuration.id, database_connection);
 
     let mut job_ids = Vec::new();
     for schedule in schedules {
