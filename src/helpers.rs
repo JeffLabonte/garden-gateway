@@ -35,8 +35,8 @@ pub fn println_now(action: &str, board: &str) {
 fn get_device_pins_from_configuration(
     configuration: Configuration,
     already_configured_devices: &mut Vec<Configuration>,
+    database_connection: &mut SqliteConnection,
 ) -> HashMap<String, u8> {
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let mut dependencies_configurations =
         get_configuration_dependencies_from_config_id(configuration.id, database_connection);
 
@@ -69,7 +69,6 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
 
     for configuration in configurations {
         let cron_schedule_str = schedule.cron_string.as_str();
-        HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
 
         // let device: Box<dyn Device> = build_device(configuration.sensor_name, pins);
         println!("This schedule will run at {}", cron_schedule_str);
@@ -111,4 +110,38 @@ pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
     }
 
     job_ids
+}
+
+#[cfg(test)]
+mod test {
+    use crate::database::helpers::get_database_connection;
+    use crate::models::Configuration;
+    use crate::schema::configurations;
+    use diesel::prelude::*;
+    use diesel::result::Error;
+
+    use std::collections::HashMap;
+
+    use super::get_device_pins_from_configuration;
+
+    #[test]
+    fn given_get_device_pins_from_config_when_using_water_detector_should_return_two_key() {
+        get_database_connection().test_transaction::<_, Error, _>(|connection| {
+            let water_detector_configuration = configurations::table
+                .filter(configurations::sensor_name.eq("water_detector"))
+                .first::<Configuration>(connection)
+                .expect("Error Loading Configurations");
+
+            let mut already_configured_devices: Vec<Configuration> = Vec::new();
+            let device_pins: HashMap<String, u8> = get_device_pins_from_configuration(
+                water_detector_configuration,
+                &mut already_configured_devices,
+                connection,
+            );
+
+            assert_eq!(device_pins.len(), 2);
+
+            Ok(())
+        });
+    }
 }
