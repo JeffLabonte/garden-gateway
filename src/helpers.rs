@@ -114,6 +114,7 @@ pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
 
 #[cfg(test)]
 mod test {
+    use crate::constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY};
     use crate::database::helpers::get_database_connection;
     use crate::models::Configuration;
     use crate::schema::configurations;
@@ -140,6 +141,18 @@ mod test {
             );
 
             assert_eq!(device_pins.len(), 2);
+            assert_eq!(
+                device_pins
+                    .keys()
+                    .any(|pin_key| pin_key == WATER_DETECTOR_PIN_KEY),
+                true
+            );
+            assert_eq!(
+                device_pins
+                    .keys()
+                    .any(|pin_key| pin_key == WATER_PUMP_PIN_KEY),
+                true
+            );
 
             Ok(())
         });
