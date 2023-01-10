@@ -2,15 +2,15 @@ use rust_gpiozero::{InputDevice, OutputDevice};
 
 use std::{collections::HashMap, time::Duration};
 
-use crate::helpers::println_now;
+use crate::{
+    constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY},
+    helpers::println_now,
+};
 
 use super::{
     constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP},
     Device,
 };
-
-const WATER_PUMP_PIN_KEY: &str = "water_pump_pin";
-const WATER_DETECTOR_PIN_KEY: &str = "water_detector_pin";
 
 pub struct WateringSystem {
     water_pump: WaterPump,
