@@ -5,10 +5,14 @@ use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
 
 use crate::{
-    constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
+    constants::{
+        RELAY_BAR_PIN_KEY, RELAY_POWER_SENSOR_NAME, TURN_OFF_ACTION, TURN_ON_ACTION,
+        WATER_DETECTOR_PIN_KEY, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_PIN_KEY,
+        WATER_PUMP_SENSOR_NAME,
+    },
     database::helpers::{
-        get_all_configurations, get_all_schedules, get_configurations_by_schedule_id,
-        get_database_connection, get_schedules_from_config_id,
+        get_all_configurations, get_all_schedules, get_configuration_dependencies_from_config_id,
+        get_configurations_by_schedule_id, get_database_connection, get_schedules_from_config_id,
     },
     devices::{build_device, Device},
     models::{Configuration, Schedule},
@@ -28,15 +32,44 @@ pub fn println_now(action: &str, board: &str) {
     print!("Time in UTC: {}", now_utc.format(DATETIME_FORMAT));
 }
 
+fn get_device_pins_from_configuration(
+    configuration: Configuration,
+    already_configured_devices: &mut Vec<Configuration>,
+) -> HashMap<String, u8> {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    let mut dependencies_configurations =
+        get_configuration_dependencies_from_config_id(configuration.id, database_connection);
+
+    let mut device_pins: HashMap<String, u8> = HashMap::new();
+    dependencies_configurations.push(configuration);
+
+    for configuration in dependencies_configurations {
+        let hashmap_key = match configuration.sensor_name.as_str() {
+            WATER_PUMP_SENSOR_NAME => WATER_PUMP_PIN_KEY,
+            WATER_DETECTOR_SENSOR_NAME => WATER_DETECTOR_PIN_KEY,
+            RELAY_POWER_SENSOR_NAME => RELAY_BAR_PIN_KEY,
+            _ => panic!("Sensor is not supported"),
+        };
+
+        device_pins.insert(hashmap_key.to_string(), configuration.bcm_pin as u8);
+        already_configured_devices.push(configuration);
+    }
+
+    device_pins
+}
+
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
     // TODO Implement with new tables
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
 
     let configurations = get_configurations_by_schedule_id(schedule.id, database_connection);
     let mut job_ids = Vec::new();
+
+    let already_configured_devices: Vec<Configuration> = Vec::new();
+
     for configuration in configurations {
         let cron_schedule_str = schedule.cron_string.as_str();
-        // HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
+        HashMap::from([("relay_power_pin", configuration.bcm_pin as u8)]);
 
         // let device: Box<dyn Device> = build_device(configuration.sensor_name, pins);
         println!("This schedule will run at {}", cron_schedule_str);
