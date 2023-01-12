@@ -32,15 +32,15 @@ pub fn println_now(action: &str, board: &str) {
     print!("Time in UTC: {}", now_utc.format(DATETIME_FORMAT));
 }
 
-fn get_device_pins_from_configuration(
+fn get_device_pins_from_configuration<'a>(
     configuration: Configuration,
     already_configured_devices: &mut Vec<Configuration>,
     database_connection: &mut SqliteConnection,
-) -> HashMap<String, u8> {
+) -> HashMap<&'a str, u8> {
     let mut dependencies_configurations =
         get_configuration_dependencies_from_config_id(configuration.id, database_connection);
 
-    let mut device_pins: HashMap<String, u8> = HashMap::new();
+    let mut device_pins: HashMap<&str, u8> = HashMap::new();
     dependencies_configurations.push(configuration);
 
     for configuration in dependencies_configurations {
@@ -51,7 +51,7 @@ fn get_device_pins_from_configuration(
             _ => panic!("Sensor is not supported"),
         };
 
-        device_pins.insert(hashmap_key.to_string(), configuration.bcm_pin as u8);
+        device_pins.insert(hashmap_key, configuration.bcm_pin as u8);
         already_configured_devices.push(configuration);
     }
 
@@ -65,19 +65,24 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
     let configurations = get_configurations_by_schedule_id(schedule.id, database_connection);
     let mut job_ids = Vec::new();
 
-    let already_configured_devices: Vec<Configuration> = Vec::new();
+    let mut already_configured_devices: Vec<Configuration> = Vec::new();
 
-    for configuration in configurations {
+    for configuration in &configurations {
         let cron_schedule_str = schedule.cron_string.as_str();
 
-        // let device: Box<dyn Device> = build_device(configuration.sensor_name, pins);
+        let device_pins = get_device_pins_from_configuration(
+            configuration,
+            &mut already_configured_devices,
+            database_connection,
+        );
         println!("This schedule will run at {}", cron_schedule_str);
 
+        let mut device = build_device(configuration.sensor_name, device_pins);
         match schedule.action.as_str() {
             TURN_ON_ACTION => {
                 println!("Adding turn_on for configuration {}", 0);
                 let job = Job::new(cron_schedule_str, move |_, _| {
-                    // let pins: HashMap<&str, u8> =
+                    device.turn_on();
                 })
                 .unwrap();
                 job_ids.push(scheduler.add(job).unwrap());
