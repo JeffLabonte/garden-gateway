@@ -9,6 +9,7 @@ use super::{
     Device,
 };
 
+#[derive(Debug)]
 pub struct RelayPowerBar {
     relay_power_device: OutputDevice,
 }
