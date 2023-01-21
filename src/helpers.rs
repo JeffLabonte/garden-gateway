@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     constants::{
-        RELAY_BAR_PIN_KEY, RELAY_POWER_SENSOR_NAME, TURN_OFF_ACTION, TURN_ON_ACTION,
+        RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME, TURN_OFF_ACTION, TURN_ON_ACTION,
         WATER_DETECTOR_PIN_KEY, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_PIN_KEY,
         WATER_PUMP_SENSOR_NAME,
     },
@@ -14,7 +14,7 @@ use crate::{
         get_all_configurations, get_all_schedules, get_configuration_dependencies_from_config_id,
         get_configurations_by_schedule_id, get_database_connection, get_schedules_from_config_id,
     },
-    devices::{build_device, Device},
+    devices::build_device,
     models::{Configuration, Schedule},
 };
 
