@@ -11,8 +11,8 @@ use crate::{
         WATER_PUMP_SENSOR_NAME,
     },
     database::helpers::{
-        get_all_configurations, get_all_schedules, get_configuration_dependencies_from_config_id,
-        get_configurations_by_schedule_id, get_database_connection, get_schedules_from_config_id,
+        get_all_schedules, get_configuration_dependencies_from_config_id,
+        get_configurations_by_schedule_id, get_database_connection,
     },
     devices::build_device,
     models::{Configuration, Schedule},
