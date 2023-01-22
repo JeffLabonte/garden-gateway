@@ -1,23 +1,32 @@
 # garden-gateway
 
 [![CI](https://github.com/JeffLabonte/garden-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffLabonte/garden-gateway/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/JeffLabonte/garden-gateway/branch/main/graph/badge.svg?token=4SXT504A3H)](https://codecov.io/gh/JeffLabonte/garden-gateway)
 
 Note that this is still a WORK IN PROGRESS project. I am learning Rust while doing this project.
 
 ## Getting Started
 
-This project currently runs only on Raspberry PI.
+This project currently runs only on Raspberry PIs.
 
-It was tested on Debian Buster (Raspberry Pi OS)
+It was tested on Debian Buster (Raspberry Pi OS).
+
+If you are running Ubuntu or any derivates, you can run `make setup-ubuntu` to install the dependencies for you.
+
+If you are running ArchLinux or any derivates, you can run `make setup-arch`
+
+If you run NixOS or Nix, you can run `nix-shell` and enjoy!
 
 ## Requirements
 
-* ![nix](https://github.com/NixOS/nixpkgs)
+* [nix](https://github.com/NixOS/nixpkgs)
+  * `nix-shell` in the project
+
+OR
 
 * `cargo`
 * `rust`
 * `sqlite3-dev`
-  * `sudo apt install libsqlite3-dev`
 
 ### Create .env file
 

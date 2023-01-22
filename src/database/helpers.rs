@@ -1,5 +1,5 @@
 use crate::models::Configuration;
-use crate::schema::configurations;
+use crate::schema::{configuration_dependencies, configurations};
 use crate::DATABASE_CONNECTION;
 use crate::{
     models::Schedule,
@@ -35,6 +35,23 @@ pub fn get_configurations_by_schedule_id(
         .select(configurations::all_columns)
         .load::<Configuration>(database_connection)
         .expect("Error Loading Configurations")
+}
+
+pub fn get_configuration_dependencies_from_config_id(
+    config_id: i32,
+    database_connection: &mut SqliteConnection,
+) -> Vec<Configuration> {
+    let target_configuration_ids = configuration_dependencies::table
+        .filter(configuration_dependencies::dsl::source_configuration_id.eq(config_id))
+        .select(configuration_dependencies::target_configuration_id)
+        .load::<i32>(database_connection)
+        .expect("Error loading configuration dependencies");
+
+    configurations::table
+        .filter(configurations::dsl::id.eq_any(target_configuration_ids))
+        .select(configurations::all_columns)
+        .load::<Configuration>(database_connection)
+        .expect("Error loading configurations")
 }
 
 pub fn get_all_configurations(database_connection: &mut SqliteConnection) -> Vec<Configuration> {

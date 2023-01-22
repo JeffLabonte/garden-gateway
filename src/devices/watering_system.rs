@@ -1,17 +1,16 @@
 use rust_gpiozero::{InputDevice, OutputDevice};
 
-use core::panic;
 use std::{collections::HashMap, time::Duration};
 
-use crate::helpers::println_now;
+use crate::{
+    constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY},
+    helpers::println_now,
+};
 
 use super::{
     constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP},
     Device,
 };
-
-const WATER_PUMP_PIN_KEY: &str = "water_pump_pin";
-const WATER_DETECTOR_PIN_KEY: &str = "water_detector_pin";
 
 pub struct WateringSystem {
     water_pump: WaterPump,
@@ -27,7 +26,7 @@ pub struct WaterPump {
 }
 
 impl WateringSystem {
-    pub fn new(sensor_pins: HashMap<&str, u8>) -> WateringSystem {
+    pub fn new(sensor_pins: HashMap<String, u8>) -> WateringSystem {
         let water_pump_pin: u8 = *sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap();
         let water_detector_pin: u8 = *sensor_pins.get(WATER_DETECTOR_PIN_KEY).unwrap();
         let water_pump = WaterPump::new(water_pump_pin);
@@ -83,4 +82,3 @@ impl WaterDetector {
         self.input_device.is_active()
     }
 }
-

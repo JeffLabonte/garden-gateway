@@ -1,6 +1,14 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    configuration_dependencies (id) {
+        id -> Integer,
+        source_configuration_id -> Integer,
+        target_configuration_id -> Integer,
+    }
+}
+
+diesel::table! {
     configurations (id) {
         id -> Integer,
         sensor_name -> Text,
@@ -28,6 +36,7 @@ diesel::joinable!(schedule_configurations -> configurations (configuration_id));
 diesel::joinable!(schedule_configurations -> schedules (schedule_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    configuration_dependencies,
     configurations,
     schedule_configurations,
     schedules,

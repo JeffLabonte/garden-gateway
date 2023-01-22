@@ -17,7 +17,6 @@ with nixpkgs;
 stdenv.mkDerivation {
   name = "Garden Gateway";
   buildInputs = [
-    rustup
     rust
     rust-analyzer
     cargo-tarpaulin
@@ -26,17 +25,14 @@ stdenv.mkDerivation {
     sqlite
     rustc
     gnumake
-    git
-    git-lfs
     clippy
     rustfmt
   ];
   packages = with nixpkgs; [
     clippy
-    python310
     cargo
-    ripgrep
-    nerdfonts
+    git
+    git-lfs
   ];
   # Set Environment Variables
   RUST_BACKTRACE = 1;

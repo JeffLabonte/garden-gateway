@@ -6,7 +6,7 @@ setup-ubuntu:
 	make setup
 
 setup-arch:
-	yay -S sqlite
+	sudo pacman -S sqlite
 	make setup
 
 setup-nixos: 
@@ -19,4 +19,5 @@ copy_schedule_template:
 	cp --backup templates/import_schedule.json.template import_schedule.json
 
 test: setup
-	DATABASE_URL=test_gateway_garden.sqlite sh -c 'cargo tarpaulin' && rm test_gateway_garden.sqlite
+	DATABASE_URL=test_gateway_garden.sqlite sh -c 'cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml' && rm test_gateway_garden.sqlite
+
