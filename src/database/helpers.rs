@@ -1,5 +1,4 @@
-use crate::models::{Configuration, ConfigurationDependency};
-use crate::schema::schedule_configurations::configuration_id;
+use crate::models::Configuration;
 use crate::schema::{configuration_dependencies, configurations};
 use crate::DATABASE_CONNECTION;
 use crate::{

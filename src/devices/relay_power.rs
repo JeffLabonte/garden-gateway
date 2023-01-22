@@ -2,20 +2,21 @@ use std::collections::HashMap;
 
 use rust_gpiozero::OutputDevice;
 
-use crate::helpers::println_now;
+use crate::{constants::RELAY_POWER_PIN_KEY, helpers::println_now};
 
 use super::{
     constants::{RELAY_POWER_BAR, TURN_OFF_STRING, TURN_ON_STRING},
     Device,
 };
 
+#[derive(Debug)]
 pub struct RelayPowerBar {
     relay_power_device: OutputDevice,
 }
 
 impl RelayPowerBar {
-    pub fn new(sensor_pins: HashMap<&str, u8>) -> RelayPowerBar {
-        let relay_power_pin: u8 = *sensor_pins.get(&"relay_power_pin").unwrap();
+    pub fn new(sensor_pins: HashMap<String, u8>) -> RelayPowerBar {
+        let relay_power_pin: u8 = *sensor_pins.get(RELAY_POWER_PIN_KEY).unwrap();
         let relay_power_device = OutputDevice::new(relay_power_pin);
         RelayPowerBar { relay_power_device }
     }

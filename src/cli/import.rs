@@ -60,7 +60,7 @@ fn is_input_valid(imported_schedules: &Vec<ImportedSchedule>) -> bool {
     use crate::schema::configurations::dsl::{configurations, id};
     use diesel::dsl::exists;
 
-    let mut database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
+    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     for imported_schedule in imported_schedules {
         let schedule_clone = imported_schedule.clone();
         if schedule_clone.action.is_empty() {
