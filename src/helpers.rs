@@ -145,9 +145,9 @@ mod test {
                 .first::<Configuration>(connection)
                 .expect("Error Loading Configurations");
 
-            let mut already_configured_devices: Vec<Configuration> = Vec::new();
+            let mut already_configured_devices: Vec<i32> = Vec::new();
             let device_pins: HashMap<String, u8> = get_device_pins_from_configuration(
-                water_detector_configuration,
+                &water_detector_configuration,
                 &mut already_configured_devices,
                 connection,
             );
