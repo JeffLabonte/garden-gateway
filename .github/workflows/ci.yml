@@ -15,10 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
       - uses: cachix/install-nix-action@v17
         with:
           nix_path: nixpkgs=channel:nixos-unstable
@@ -28,3 +24,7 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Run tests
         run: nix-shell --run "make test"
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
