@@ -6,7 +6,7 @@ setup-ubuntu:
 	make setup
 
 setup-arch:
-	yay -S sqlite
+	sudo pacman -S sqlite
 	make setup
 
 setup-nixos: 
