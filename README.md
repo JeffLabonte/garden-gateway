@@ -1,6 +1,7 @@
 # garden-gateway
 
 [![CI](https://github.com/JeffLabonte/garden-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffLabonte/garden-gateway/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/JeffLabonte/garden-gateway/branch/main/graph/badge.svg?token=4SXT504A3H)](https://codecov.io/gh/JeffLabonte/garden-gateway)
 
 Note that this is still a WORK IN PROGRESS project. I am learning Rust while doing this project.
 
