@@ -7,9 +7,15 @@ Note that this is still a WORK IN PROGRESS project. I am learning Rust while doi
 
 ## Getting Started
 
-This project currently runs only on Raspberry PI.
+This project currently runs only on Raspberry PIs.
 
-It was tested on Debian Buster (Raspberry Pi OS)
+It was tested on Debian Buster (Raspberry Pi OS).
+
+If you are running Ubuntu or any derivates, you can run `make setup-ubuntu` to install the dependencies for you.
+
+If you are running ArchLinux or any derivates, you can run `make setup-arch`
+
+If you run NixOS or Nix, you can run `nix-shell` and enjoy!
 
 ## Requirements
 
@@ -21,7 +27,6 @@ OR
 * `cargo`
 * `rust`
 * `sqlite3-dev`
-  * `sudo apt install libsqlite3-dev`
 
 ### Create .env file
 
