@@ -41,3 +41,25 @@ pub fn run_action(context: Context) -> bool {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        cli::{Actions, CLIArgs},
+        context::Context,
+    };
+
+    use super::run_action;
+
+    #[test]
+    fn test_given_run_action_when_run_in_arguments_should_execute_run() {
+        let arguments: CLIArgs = CLIArgs {
+            action: Actions::Run {},
+        };
+        let mock_context = Context { arguments };
+
+        let run_sucessfully: bool = run_action(mock_context);
+
+        assert_eq!(run_sucessfully, true);
+    }
+}
