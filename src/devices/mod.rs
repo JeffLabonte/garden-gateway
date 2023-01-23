@@ -62,4 +62,16 @@ mod test {
             "alloc::boxed::Box<dyn gateway::devices::Device+core::marker::Send+core::marker::Sync>"
         );
     }
+
+    #[test]
+    fn test_given_buid_device_when_passing_invalid_sensor_name_should_raise_panic() {
+        let result = std::panic::catch_unwind(|| {
+            let invalid_sensor_name = String::from("Foo");
+            let sensor_pins: HashMap<String, u8> = HashMap::new();
+
+            build_device(&invalid_sensor_name, sensor_pins);
+        });
+
+        assert!(result.is_err());
+    }
 }
