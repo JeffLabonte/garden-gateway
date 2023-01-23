@@ -56,5 +56,10 @@ mod test {
             .entry(RELAY_POWER_PIN_KEY.to_string())
             .or_insert(17 as u8);
         let relay_power_bar = build_device(sensor_name, sensor_pins);
+
+        assert_eq!(
+            relay_power_bar.type_name(),
+            "alloc::boxed::Box<dyn gateway::devices::Device+core::marker::Send+core::marker::Sync>"
+        );
     }
 }
