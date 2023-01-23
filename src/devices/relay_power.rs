@@ -4,13 +4,10 @@ use rust_gpiozero::OutputDevice;
 
 use crate::{constants::RELAY_POWER_PIN_KEY, helpers::println_now};
 
-use super::{
-    constants::{RELAY_POWER_BAR},
-    Device,
-};
+use super::{constants::RELAY_POWER_BAR, Device};
 
 #[cfg(not(test))]
-use super::constants::{TURN_OFF_STRING, TURN_ON_STRING}
+use super::constants::{TURN_OFF_STRING, TURN_ON_STRING};
 
 #[cfg(not(test))]
 #[derive(Debug)]
