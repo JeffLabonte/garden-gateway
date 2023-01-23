@@ -1,30 +1,32 @@
+#[cfg(not(test))]
+use super::constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP};
+use super::Device;
+#[cfg(not(test))]
+use crate::constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY};
+#[cfg(not(test))]
+use crate::helpers::println_now;
+#[cfg(not(test))]
 use rust_gpiozero::{InputDevice, OutputDevice};
-
+#[cfg(not(test))]
 use std::{collections::HashMap, time::Duration};
 
-use crate::{
-    constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY},
-    helpers::println_now,
-};
-
-use super::{
-    constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP},
-    Device,
-};
-
+#[cfg(not(test))]
 pub struct WateringSystem {
     water_pump: WaterPump,
     water_detector: WaterDetector,
 }
 
+#[cfg(not(test))]
 pub struct WaterDetector {
     input_device: InputDevice,
 }
 
+#[cfg(not(test))]
 pub struct WaterPump {
     gpio_device: OutputDevice,
 }
 
+#[cfg(not(test))]
 impl WateringSystem {
     pub fn new(sensor_pins: HashMap<String, u8>) -> WateringSystem {
         let water_pump_pin: u8 = *sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap();
@@ -38,6 +40,7 @@ impl WateringSystem {
     }
 }
 
+#[cfg(not(test))]
 impl Device for WateringSystem {
     fn turn_on(&mut self) {
         //
@@ -55,6 +58,7 @@ impl Device for WateringSystem {
     }
 }
 
+#[cfg(not(test))]
 impl WaterPump {
     pub fn new(gpio_pin: u8) -> WaterPump {
         let gpio_device = OutputDevice::new(gpio_pin);
@@ -72,6 +76,7 @@ impl WaterPump {
     }
 }
 
+#[cfg(not(test))]
 impl WaterDetector {
     pub fn new(bcm_pin: u8) -> WaterDetector {
         let input_device: InputDevice = InputDevice::new(bcm_pin);
@@ -80,5 +85,64 @@ impl WaterDetector {
 
     pub fn has_water(&mut self) -> bool {
         self.input_device.is_active()
+    }
+}
+
+/*
+*
+*   Mock Structure for test purpuses
+*
+*   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+*/
+
+#[cfg(test)]
+pub struct WateringSystem {
+    water_pump: WaterPump,
+    water_detector: WaterDetector,
+}
+
+#[cfg(test)]
+pub struct WaterDetector {}
+
+#[cfg(test)]
+pub struct WaterPump {}
+
+#[cfg(test)]
+impl WateringSystem {
+    pub fn new(sensor_pins: HashMap<String, u8>) -> WateringSystem {
+        WateringSystem {
+            water_pump: WaterPump::new(*sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap()),
+            water_detector: WaterDetector::new(*sensor_pins.get(WATER_DETECTOR_PIN_KEY).unwrap()),
+        }
+    }
+}
+
+#[cfg(test)]
+impl Device for WateringSystem {
+    fn turn_on(&mut self) {}
+    fn turn_off(&mut self) {}
+}
+
+#[cfg(test)]
+impl WaterPump {
+    pub fn new(gpio_pin: u8) -> WaterPump {
+        assert!(gpio_pin > 0);
+        WaterPump {}
+    }
+
+    pub fn turn_on(&mut self) {}
+
+    pub fn turn_off(&mut self) {}
+}
+
+#[cfg(test)]
+impl WaterDetector {
+    pub fn new(bcm_pin: u8) -> WaterDetector {
+        assert!(bcm_pin > 0);
+        WaterDetector {}
+    }
+
+    pub fn has_water(&mut self) -> bool {
+        false
     }
 }
