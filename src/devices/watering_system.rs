@@ -1,14 +1,10 @@
-#[cfg(not(test))]
 use super::constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP};
 use super::Device;
-#[cfg(not(test))]
 use crate::constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY};
-#[cfg(not(test))]
 use crate::helpers::println_now;
-#[cfg(not(test))]
 use rust_gpiozero::{InputDevice, OutputDevice};
-#[cfg(not(test))]
-use std::{collections::HashMap, time::Duration};
+use std::collections::HashMap;
+use std::time::Duration;
 
 #[cfg(not(test))]
 pub struct WateringSystem {
