@@ -17,7 +17,10 @@ pub struct CLIArgs {
 
 #[derive(Subcommand)]
 pub enum Actions {
-    #[clap(arg_required_else_help = true)]
+    #[clap(
+        arg_required_else_help = true,
+        help = "Helper to interact with the table configurations in the database"
+    )]
     Config {
         #[clap(subcommand)]
         sub_action: SubActions,
