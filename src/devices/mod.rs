@@ -36,10 +36,9 @@ mod test {
     use mockall::predicate::*;
     use mockall::*;
 
-    use crate::constants::RELAY_POWER_PIN_KEY;
+    use crate::constants::{RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME};
 
     use super::build_device;
-    use super::constants::RELAY_POWER_BAR;
     use super::relay_power::RelayPowerBar;
 
     #[automock]
@@ -52,7 +51,7 @@ mod test {
     #[test]
     fn test_given_build_device_when_passing_valid_parameter_w_relay_powerbar_should_return_box_w_relay_powerbar(
     ) {
-        let sensor_name = RELAY_POWER_BAR;
+        let sensor_name = RELAY_POWER_SENSOR_NAME;
         let mut sensor_pins: HashMap<String, u8> = HashMap::new();
         sensor_pins
             .entry(RELAY_POWER_PIN_KEY.to_string())
