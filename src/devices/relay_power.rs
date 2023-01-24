@@ -3,7 +3,10 @@ use std::sync::Mutex;
 use lazy_static::lazy_static;
 use rust_gpiozero::OutputDevice;
 
-use crate::{constants::RELAY_POWER_PIN_KEY, helpers::println_now};
+use crate::{
+    constants::{RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME},
+    helpers::println_now,
+};
 
 use super::{constants::RELAY_POWER_BAR, get_device_pin_number, Device};
 
@@ -12,8 +15,9 @@ use super::constants::{TURN_OFF_STRING, TURN_ON_STRING};
 
 #[cfg(not(test))]
 lazy_static! {
-    pub static ref RELAY_POWER_DEVICE: Mutex<OutputDevice> =
-        Mutex::new(OutputDevice::new(get_device_pin_number(RELAY_POWER_BAR)));
+    pub static ref RELAY_POWER_DEVICE: Mutex<OutputDevice> = Mutex::new(OutputDevice::new(
+        get_device_pin_number(RELAY_POWER_SENSOR_NAME)
+    ));
 }
 
 #[derive(Debug)]
