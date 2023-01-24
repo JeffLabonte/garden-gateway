@@ -4,8 +4,16 @@ pub mod watering_system;
 
 use std::collections::HashMap;
 
-use crate::constants::{
-    RELAY_POWER_SENSOR_NAME, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_SENSOR_NAME,
+use diesel::prelude::*;
+use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
+
+use crate::{
+    cli::configs::get_configs,
+    constants::{RELAY_POWER_SENSOR_NAME, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_SENSOR_NAME},
+    database::helpers::get_database_connection,
+    models::Configuration,
+    schema,
+    schema::configurations,
 };
 
 use self::{relay_power::RelayPowerBar, watering_system::WateringSystem};
@@ -20,12 +28,22 @@ pub fn build_device(
     sensor_pins: HashMap<String, u8>,
 ) -> Box<dyn Device + Send + Sync> {
     match sensor_name {
-        RELAY_POWER_SENSOR_NAME => Box::new(RelayPowerBar::new(sensor_pins)),
+        RELAY_POWER_SENSOR_NAME => Box::new(RelayPowerBar {}),
         WATER_DETECTOR_SENSOR_NAME | WATER_PUMP_SENSOR_NAME => {
             Box::new(WateringSystem::new(sensor_pins))
         }
         _ => panic!("Unknown action"),
     }
+}
+
+pub fn get_device_pin_number(sensor_name: &str) -> u8 {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    let sensor_configuration = configurations::table
+        .filter(schema::configurations::dsl::sensor_name.eq(sensor_name))
+        .first::<Configuration>(database_connection)
+        .expect("Error with the database");
+
+    sensor_configuration.bcm_pin as u8
 }
 
 #[cfg(test)]
