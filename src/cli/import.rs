@@ -56,11 +56,13 @@ fn is_unique_with_db(
     false
 }
 
-fn is_input_valid(imported_schedules: &Vec<ImportedSchedule>) -> bool {
+fn is_input_valid(
+    imported_schedules: &Vec<ImportedSchedule>,
+    database_connection: &mut SqliteConnection,
+) -> bool {
     use crate::schema::configurations::dsl::{configurations, id};
     use diesel::dsl::exists;
 
-    let database_connection: &mut SqliteConnection = &mut DATABASE_CONNECTION.lock().unwrap();
     for imported_schedule in imported_schedules {
         let schedule_clone = imported_schedule.clone();
         if schedule_clone.action.is_empty() {
@@ -80,9 +82,11 @@ fn is_input_valid(imported_schedules: &Vec<ImportedSchedule>) -> bool {
     true
 }
 
-fn validate_input(schedules: Vec<ImportedSchedule>) -> Result<(), String> {
+fn validate_input(
+    schedules: Vec<ImportedSchedule>,
+    database_connection: &mut SqliteConnection,
+) -> Result<(), String> {
     // TODO Use a list of function to loop on
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     if !is_input_unique(&schedules) {
         return Err("The Schedules you are trying to import are not unique".to_string());
     }
@@ -93,7 +97,7 @@ fn validate_input(schedules: Vec<ImportedSchedule>) -> Result<(), String> {
         );
     }
 
-    if !is_input_valid(&schedules) {
+    if !is_input_valid(&schedules, database_connection) {
         return Err("Invalid data in the configurations".to_string());
     }
 
@@ -165,7 +169,7 @@ fn import_schedule(
 pub fn import_schedule_from_json(file: PathBuf) -> bool {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let imported_schedules = read_json_schedule(file);
-    match validate_input(imported_schedules.clone()) {
+    match validate_input(imported_schedules.clone(), database_connection) {
         Ok(_) => import_schedule(&imported_schedules, database_connection),
         Err(err) => {
             println!("{}", err);
