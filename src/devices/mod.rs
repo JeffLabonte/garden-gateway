@@ -4,7 +4,9 @@ pub mod watering_system;
 
 use std::collections::HashMap;
 
-use crate::constants::{WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_SENSOR_NAME};
+use crate::constants::{
+    RELAY_POWER_SENSOR_NAME, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_SENSOR_NAME,
+};
 
 use self::{relay_power::RelayPowerBar, watering_system::WateringSystem};
 
@@ -18,7 +20,7 @@ pub fn build_device(
     sensor_pins: HashMap<String, u8>,
 ) -> Box<dyn Device + Send + Sync> {
     match sensor_name {
-        RELAY_BAR_SENSOR_NAME => Box::new(RelayPowerBar::new(sensor_pins)),
+        RELAY_POWER_SENSOR_NAME => Box::new(RelayPowerBar::new(sensor_pins)),
         WATER_DETECTOR_SENSOR_NAME | WATER_PUMP_SENSOR_NAME => {
             Box::new(WateringSystem::new(sensor_pins))
         }
