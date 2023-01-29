@@ -1,37 +1,39 @@
 use super::constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP};
 use super::Device;
-use crate::constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY};
+use crate::constants::{WATER_DETECTOR_PIN_KEY, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_PIN_KEY};
+use crate::devices::get_device_pin_number;
 use crate::helpers::println_now;
+use lazy_static::lazy_static;
 use rust_gpiozero::{InputDevice, OutputDevice};
 use std::collections::HashMap;
+use std::sync::Mutex;
 use std::time::Duration;
 
-#[cfg(not(test))]
+lazy_static! {
+    static ref WATER_DETECTOR_DEVICE: Mutex<OutputDevice> = Mutex::new(OutputDevice::new(
+        get_device_pin_number(WATER_DETECTOR_SENSOR_NAME)
+    ));
+}
+
 pub struct WateringSystem {
     water_pump: WaterPump,
     water_detector: WaterDetector,
 }
 
-#[cfg(not(test))]
-pub struct WaterDetector {
-    input_device: InputDevice,
-}
+pub struct WaterDetector {}
 
-#[cfg(not(test))]
-pub struct WaterPump {
-    gpio_device: OutputDevice,
-}
+pub struct WaterPump {}
 
 #[cfg(not(test))]
 impl WateringSystem {
     pub fn new(sensor_pins: HashMap<String, u8>) -> WateringSystem {
-        let water_pump_pin: u8 = *sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap();
-        let water_detector_pin: u8 = *sensor_pins.get(WATER_DETECTOR_PIN_KEY).unwrap();
-        let water_pump = WaterPump::new(water_pump_pin);
-        let water_detector = WaterDetector::new(water_detector_pin);
+        //let water_pump_pin: u8 = *sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap();
+        //let water_detector_pin: u8 = *sensor_pins.get(WATER_DETECTOR_PIN_KEY).unwrap();
+        //let water_pump = WaterPump::new(water_pump_pin);
+        //let water_detector = WaterDetector::new(water_detector_pin);
         WateringSystem {
-            water_pump,
-            water_detector,
+            water_pump: WaterPump {},
+            water_detector: WaterDetector {},
         }
     }
 }
@@ -56,11 +58,6 @@ impl Device for WateringSystem {
 
 #[cfg(not(test))]
 impl WaterPump {
-    pub fn new(gpio_pin: u8) -> WaterPump {
-        let gpio_device = OutputDevice::new(gpio_pin);
-        WaterPump { gpio_device }
-    }
-
     pub fn turn_on(&mut self) {
         println_now(TURN_ON_STRING, WATER_PUMP);
         self.gpio_device.on();
@@ -90,18 +87,6 @@ impl WaterDetector {
 *
 *   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 */
-
-#[cfg(test)]
-pub struct WateringSystem {
-    water_pump: WaterPump,
-    water_detector: WaterDetector,
-}
-
-#[cfg(test)]
-pub struct WaterDetector {}
-
-#[cfg(test)]
-pub struct WaterPump {}
 
 #[cfg(test)]
 impl WateringSystem {
