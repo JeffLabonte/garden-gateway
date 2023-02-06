@@ -1,8 +1,11 @@
 use diesel::prelude::*;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use dotenv::dotenv;
 use std::{env, thread, time::Duration};
 
 pub mod helpers;
+
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -14,5 +17,13 @@ pub fn establish_connection() -> SqliteConnection {
         connection = SqliteConnection::establish(&database_url);
     }
 
-    connection.unwrap()
+    run_migrations(connection.unwrap())
+}
+
+fn run_migrations(mut database_connection: SqliteConnection) -> SqliteConnection {
+    database_connection
+        .run_pending_migrations(MIGRATIONS)
+        .unwrap();
+
+    database_connection
 }

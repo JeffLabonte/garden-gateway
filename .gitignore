@@ -130,3 +130,5 @@ dmypy.json
 *sqlite
 import_schedule.json
 *~
+*.profraw
+*.xml

@@ -1,5 +1,7 @@
 use crate::cli::import::ImportedSchedule;
-use crate::schema::{configurations, schedule_configurations, schedules};
+use crate::schema::{
+    configuration_dependencies, configurations, schedule_configurations, schedules,
+};
 
 #[derive(Queryable, Debug)]
 pub struct Configuration {
@@ -44,6 +46,17 @@ pub struct ScheduleConfiguration {
 pub struct NewScheduleConfiguration {
     pub schedule_id: i32,
     pub configuration_id: i32,
+}
+
+#[derive(Identifiable, Queryable, Debug)]
+#[diesel(table_name = configuration_dependencies)]
+#[diesel(belongs_to(Configuration, foreign_key = source_configuration_id))]
+#[diesel(belongs_to(Configuration, foreign_key = target_configuration_id))]
+#[diesel(primary_key(source_configuration_id, target_configuration_id))]
+pub struct ConfigurationDependency {
+    pub id: i32,
+    pub source_configuration_id: i32,
+    pub target_configuration_id: i32,
 }
 
 impl NewSchedule {

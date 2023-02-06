@@ -5,7 +5,7 @@ use super::{
     schedules::list_schedules, Actions, SubActions,
 };
 
-pub fn run_action(mut context: Context) -> bool {
+pub fn run_action(context: Context) -> bool {
     let arguments = context.arguments;
 
     match arguments.action {
@@ -21,7 +21,7 @@ pub fn run_action(mut context: Context) -> bool {
                 print!("Setting: {} -> {}", key, value);
                 false
             }
-            SubActions::List {} => list_schedules(), // TODO List schedules
+            SubActions::List {} => list_schedules(),
         },
         Actions::Run {} => loop {
             match run() {
@@ -39,5 +39,27 @@ pub fn run_action(mut context: Context) -> bool {
             println!("Running test");
             true
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        cli::{Actions, CLIArgs},
+        context::Context,
+    };
+
+    use super::run_action;
+
+    #[test]
+    fn test_given_run_action_when_run_in_arguments_should_execute_run() {
+        let arguments: CLIArgs = CLIArgs {
+            action: Actions::Run {},
+        };
+        let mock_context = Context { arguments };
+
+        let run_sucessfully: bool = run_action(mock_context);
+
+        assert_eq!(run_sucessfully, true);
     }
 }

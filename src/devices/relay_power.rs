@@ -1,31 +1,44 @@
-use std::collections::HashMap;
+use std::sync::Mutex;
 
+use lazy_static::lazy_static;
 use rust_gpiozero::OutputDevice;
 
-use crate::helpers::println_now;
+use crate::{
+    constants::{RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME},
+    helpers::println_now,
+};
 
-use super::{constants::{TURN_ON_STRING, RELAY_POWER_BAR, TURN_OFF_STRING}, Device};
+use super::{constants::RELAY_POWER_BAR, get_device_pin_number, Device};
 
+#[cfg(not(test))]
+use super::constants::{TURN_OFF_STRING, TURN_ON_STRING};
 
-pub struct RelayPowerBar {
-    relay_power_device: OutputDevice,
+#[cfg(not(test))]
+lazy_static! {
+    pub static ref RELAY_POWER_DEVICE: Mutex<OutputDevice> = Mutex::new(OutputDevice::new(
+        get_device_pin_number(RELAY_POWER_SENSOR_NAME)
+    ));
 }
 
+#[derive(Debug)]
+pub struct RelayPowerBar {}
 
+#[cfg(not(test))]
 impl Device for RelayPowerBar {
-    fn new(sensor_pins: HashMap<&str, u8>) -> RelayPowerBar {
-        let relay_power_pin : u8 = *sensor_pins.get(&"relay_power_pin").unwrap();
-        let relay_power_device = OutputDevice::new(relay_power_pin);
-        RelayPowerBar { relay_power_device }
-    }
-
     fn turn_on(&mut self) {
         println_now(TURN_ON_STRING, RELAY_POWER_BAR);
-        self.relay_power_device.off();
+        RELAY_POWER_DEVICE.lock().unwrap().off();
     }
 
     fn turn_off(&mut self) {
         println_now(TURN_OFF_STRING, RELAY_POWER_BAR);
-        self.relay_power_device.on();
+        RELAY_POWER_DEVICE.lock().unwrap().on();
     }
+}
+
+#[cfg(test)]
+impl Device for RelayPowerBar {
+    fn turn_on(&mut self) {}
+
+    fn turn_off(&mut self) {}
 }
