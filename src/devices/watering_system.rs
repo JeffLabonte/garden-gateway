@@ -1,43 +1,44 @@
+use super::constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP};
+use super::Device;
+use crate::constants::{
+    WATER_DETECTOR_PIN_KEY, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_PIN_KEY, WATER_PUMP_SENSOR_NAME,
+};
+use crate::devices::get_device_pin_number;
+use crate::helpers::println_now;
+use lazy_static::lazy_static;
 use rust_gpiozero::{InputDevice, OutputDevice};
+use std::collections::HashMap;
+use std::sync::Mutex;
+use std::time::Duration;
 
-use std::{collections::HashMap, time::Duration};
-
-use crate::{
-    constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY},
-    helpers::println_now,
-};
-
-use super::{
-    constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP},
-    Device,
-};
+lazy_static! {
+    static ref WATER_DETECTOR_DEVICE: Mutex<InputDevice> = Mutex::new(InputDevice::new(
+        get_device_pin_number(WATER_DETECTOR_SENSOR_NAME)
+    ));
+    static ref WATER_PUMP_DEVICE: Mutex<OutputDevice> = Mutex::new(OutputDevice::new(
+        get_device_pin_number(WATER_PUMP_SENSOR_NAME)
+    ));
+}
 
 pub struct WateringSystem {
     water_pump: WaterPump,
     water_detector: WaterDetector,
 }
 
-pub struct WaterDetector {
-    input_device: InputDevice,
-}
+pub struct WaterDetector {}
 
-pub struct WaterPump {
-    gpio_device: OutputDevice,
-}
+pub struct WaterPump {}
 
 impl WateringSystem {
-    pub fn new(sensor_pins: HashMap<String, u8>) -> WateringSystem {
-        let water_pump_pin: u8 = *sensor_pins.get(WATER_PUMP_PIN_KEY).unwrap();
-        let water_detector_pin: u8 = *sensor_pins.get(WATER_DETECTOR_PIN_KEY).unwrap();
-        let water_pump = WaterPump::new(water_pump_pin);
-        let water_detector = WaterDetector::new(water_detector_pin);
+    pub fn new() -> WateringSystem {
         WateringSystem {
-            water_pump,
-            water_detector,
+            water_pump: WaterPump {},
+            water_detector: WaterDetector {},
         }
     }
 }
 
+#[cfg(not(test))]
 impl Device for WateringSystem {
     fn turn_on(&mut self) {
         //
@@ -55,30 +56,49 @@ impl Device for WateringSystem {
     }
 }
 
+#[cfg(not(test))]
 impl WaterPump {
-    pub fn new(gpio_pin: u8) -> WaterPump {
-        let gpio_device = OutputDevice::new(gpio_pin);
-        WaterPump { gpio_device }
-    }
-
     pub fn turn_on(&mut self) {
         println_now(TURN_ON_STRING, WATER_PUMP);
-        self.gpio_device.on();
+        WATER_PUMP_DEVICE.lock().unwrap().on();
     }
 
     pub fn turn_off(&mut self) {
         println_now(TURN_OFF_STRING, WATER_PUMP);
-        self.gpio_device.off();
+        WATER_PUMP_DEVICE.lock().unwrap().off();
     }
 }
 
+#[cfg(not(test))]
 impl WaterDetector {
-    pub fn new(bcm_pin: u8) -> WaterDetector {
-        let input_device: InputDevice = InputDevice::new(bcm_pin);
-        WaterDetector { input_device }
-    }
-
     pub fn has_water(&mut self) -> bool {
-        self.input_device.is_active()
+        WATER_DETECTOR_DEVICE.lock().unwrap().is_active()
+    }
+}
+
+/*
+*
+*   Mock Structure for test purpuses
+*
+*   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+*/
+
+#[cfg(test)]
+impl Device for WateringSystem {
+    fn turn_on(&mut self) {}
+    fn turn_off(&mut self) {}
+}
+
+#[cfg(test)]
+impl WaterPump {
+    pub fn turn_on(&mut self) {}
+
+    pub fn turn_off(&mut self) {}
+}
+
+#[cfg(test)]
+impl WaterDetector {
+    pub fn has_water(&mut self) -> bool {
+        false
     }
 }

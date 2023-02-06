@@ -11,28 +11,44 @@ This project currently runs only on Raspberry PIs.
 
 It was tested on Debian Buster (Raspberry Pi OS).
 
+## Installing the dependencies to Run code
+
 If you are running Ubuntu or any derivates, you can run `make setup-ubuntu` to install the dependencies for you.
 
 If you are running ArchLinux or any derivates, you can run `make setup-arch`
 
-If you run NixOS or Nix, you can run `nix-shell` and enjoy!
-
-## Requirements
-
-* [nix](https://github.com/NixOS/nixpkgs)
-  * `nix-shell` in the project
-
-OR
-
-* `cargo`
-* `rust`
-* `sqlite3-dev`
+If you run NixOS or [Nix](https://github.com/NixOS/nixpkgs), you can run `nix-shell` and enjoy!
 
 ### Create .env file
 
 1. Run `make copy_template`
 2. Edit `.env` using your favorite editor
 3. Update `DATABASE_URL`
+
+## Usage
+
+### CLI
+
+
+```
+cargo run help
+Garden Gateway CLI
+CLI to interact with Garden Gateway code.
+
+USAGE:
+    gateway <SUBCOMMAND>
+
+    OPTIONS:
+        -h, --help    Print help information
+
+        SUBCOMMANDS:
+            config
+            help        Print this message or the help of the given subcommand(s)
+            import
+            run
+            schedule
+            test
+```
 
 ### Integrated Sensors/Devices
 
