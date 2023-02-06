@@ -41,31 +41,6 @@ fn get_hashmap_key_from_sensor_name(sensor_name: String) -> String {
     }
 }
 
-fn get_device_pins_from_configuration(
-    configuration: &Configuration,
-    already_configured_devices: &mut Vec<i32>,
-    database_connection: &mut SqliteConnection,
-) -> HashMap<String, u8> {
-    let dependencies_configurations =
-        get_configuration_dependencies_from_config_id(configuration.id, database_connection);
-
-    let mut device_pins: HashMap<String, u8> = HashMap::new();
-    for config in dependencies_configurations {
-        // TODO Create a function of thhis
-        let hashmap_key = get_hashmap_key_from_sensor_name(config.sensor_name);
-        device_pins.insert(hashmap_key, config.bcm_pin as u8);
-
-        already_configured_devices.push(config.id);
-    }
-
-    let hashmap_key = get_hashmap_key_from_sensor_name(configuration.sensor_name.clone());
-    device_pins.insert(hashmap_key, configuration.bcm_pin as u8);
-
-    already_configured_devices.push(configuration.id);
-
-    device_pins
-}
-
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
     // TODO Implement with new tables
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
@@ -73,20 +48,13 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
     let configurations = get_configurations_by_schedule_id(schedule.id, database_connection);
     let mut job_ids = Vec::new();
 
-    let mut already_configured_devices: Vec<i32> = Vec::new();
-
     for configuration in configurations {
         let cron_schedule_str = schedule.cron_string.clone();
         let sensor_name = configuration.sensor_name.clone();
 
-        let device_pins = get_device_pins_from_configuration(
-            &configuration,
-            &mut already_configured_devices,
-            database_connection,
-        );
         println!("This schedule will run at {}", cron_schedule_str);
 
-        let mut device = build_device(&sensor_name, device_pins);
+        let mut device = build_device(&sensor_name);
         match schedule.action.as_str() {
             TURN_ON_ACTION => {
                 println!("Adding turn_on for configuration {}", 0);
@@ -122,51 +90,4 @@ pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
     }
 
     job_ids
-}
-
-#[cfg(test)]
-mod test {
-    use crate::constants::{WATER_DETECTOR_PIN_KEY, WATER_PUMP_PIN_KEY};
-    use crate::database::helpers::get_database_connection;
-    use crate::models::Configuration;
-    use crate::schema::configurations;
-    use diesel::prelude::*;
-    use diesel::result::Error;
-
-    use std::collections::HashMap;
-
-    use super::get_device_pins_from_configuration;
-
-    #[test]
-    fn given_get_device_pins_from_config_when_using_water_detector_should_return_two_key() {
-        get_database_connection().test_transaction::<_, Error, _>(|connection| {
-            let water_detector_configuration = configurations::table
-                .filter(configurations::sensor_name.eq("water_detector"))
-                .first::<Configuration>(connection)
-                .expect("Error Loading Configurations");
-
-            let mut already_configured_devices: Vec<i32> = Vec::new();
-            let device_pins: HashMap<String, u8> = get_device_pins_from_configuration(
-                &water_detector_configuration,
-                &mut already_configured_devices,
-                connection,
-            );
-
-            assert_eq!(device_pins.len(), 2);
-            assert_eq!(
-                device_pins
-                    .keys()
-                    .any(|pin_key| pin_key == WATER_DETECTOR_PIN_KEY),
-                true
-            );
-            assert_eq!(
-                device_pins
-                    .keys()
-                    .any(|pin_key| pin_key == WATER_PUMP_PIN_KEY),
-                true
-            );
-
-            Ok(())
-        });
-    }
 }
