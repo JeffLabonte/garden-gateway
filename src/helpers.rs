@@ -41,31 +41,6 @@ fn get_hashmap_key_from_sensor_name(sensor_name: String) -> String {
     }
 }
 
-fn get_device_pins_from_configuration(
-    configuration: &Configuration,
-    already_configured_devices: &mut Vec<i32>,
-    database_connection: &mut SqliteConnection,
-) -> HashMap<String, u8> {
-    let dependencies_configurations =
-        get_configuration_dependencies_from_config_id(configuration.id, database_connection);
-
-    let mut device_pins: HashMap<String, u8> = HashMap::new();
-    for config in dependencies_configurations {
-        // TODO Create a function of thhis
-        let hashmap_key = get_hashmap_key_from_sensor_name(config.sensor_name);
-        device_pins.insert(hashmap_key, config.bcm_pin as u8);
-
-        already_configured_devices.push(config.id);
-    }
-
-    let hashmap_key = get_hashmap_key_from_sensor_name(configuration.sensor_name.clone());
-    device_pins.insert(hashmap_key, configuration.bcm_pin as u8);
-
-    already_configured_devices.push(configuration.id);
-
-    device_pins
-}
-
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
     // TODO Implement with new tables
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
