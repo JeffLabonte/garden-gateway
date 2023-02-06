@@ -66,7 +66,7 @@ mod test {
 
         assert_eq!(
             relay_power_bar.type_name(),
-            "alloc::boxed::Box<dyn gateway::devices::Device+core::marker::Send+core::marker::Sync>"
+            "alloc::boxed::Box<dyn gateway::devices::Device + core::marker::Send + core::marker::Sync>"
         );
     }
 
