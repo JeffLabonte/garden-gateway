@@ -2,13 +2,10 @@ mod constants;
 pub mod relay_power;
 pub mod watering_system;
 
-use std::collections::HashMap;
-
 use diesel::prelude::*;
 use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
 
 use crate::{
-    cli::configs::get_configs,
     constants::{RELAY_POWER_SENSOR_NAME, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_SENSOR_NAME},
     database::helpers::get_database_connection,
     models::Configuration,
@@ -23,15 +20,10 @@ pub trait Device {
     fn turn_off(&mut self);
 }
 
-pub fn build_device(
-    sensor_name: &str,
-    sensor_pins: HashMap<String, u8>,
-) -> Box<dyn Device + Send + Sync> {
+pub fn build_device(sensor_name: &str) -> Box<dyn Device + Send + Sync> {
     match sensor_name {
         RELAY_POWER_SENSOR_NAME => Box::new(RelayPowerBar {}),
-        WATER_DETECTOR_SENSOR_NAME | WATER_PUMP_SENSOR_NAME => {
-            Box::new(WateringSystem::new(sensor_pins))
-        }
+        WATER_DETECTOR_SENSOR_NAME | WATER_PUMP_SENSOR_NAME => Box::new(WateringSystem::new()),
         _ => panic!("Unknown action"),
     }
 }
@@ -54,7 +46,7 @@ mod test {
     use mockall::predicate::*;
     use mockall::*;
 
-    use crate::constants::{RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME};
+    use crate::constants::RELAY_POWER_SENSOR_NAME;
 
     use super::build_device;
     use super::relay_power::RelayPowerBar;
@@ -70,11 +62,7 @@ mod test {
     fn test_given_build_device_when_passing_valid_parameter_w_relay_powerbar_should_return_box_w_relay_powerbar(
     ) {
         let sensor_name = RELAY_POWER_SENSOR_NAME;
-        let mut sensor_pins: HashMap<String, u8> = HashMap::new();
-        sensor_pins
-            .entry(RELAY_POWER_PIN_KEY.to_string())
-            .or_insert(17 as u8);
-        let relay_power_bar = build_device(sensor_name, sensor_pins);
+        let relay_power_bar = build_device(sensor_name);
 
         assert_eq!(
             relay_power_bar.type_name(),
@@ -86,9 +74,8 @@ mod test {
     fn test_given_buid_device_when_passing_invalid_sensor_name_should_raise_panic() {
         let result = std::panic::catch_unwind(|| {
             let invalid_sensor_name = String::from("Foo");
-            let sensor_pins: HashMap<String, u8> = HashMap::new();
 
-            build_device(&invalid_sensor_name, sensor_pins);
+            build_device(&invalid_sensor_name);
         });
 
         assert!(result.is_err());
