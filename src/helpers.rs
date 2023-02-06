@@ -48,20 +48,13 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
     let configurations = get_configurations_by_schedule_id(schedule.id, database_connection);
     let mut job_ids = Vec::new();
 
-    let mut already_configured_devices: Vec<i32> = Vec::new();
-
     for configuration in configurations {
         let cron_schedule_str = schedule.cron_string.clone();
         let sensor_name = configuration.sensor_name.clone();
 
-        let device_pins = get_device_pins_from_configuration(
-            &configuration,
-            &mut already_configured_devices,
-            database_connection,
-        );
         println!("This schedule will run at {}", cron_schedule_str);
 
-        let mut device = build_device(&sensor_name, device_pins);
+        let mut device = build_device(&sensor_name);
         match schedule.action.as_str() {
             TURN_ON_ACTION => {
                 println!("Adding turn_on for configuration {}", 0);
