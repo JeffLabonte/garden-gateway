@@ -1,21 +1,14 @@
-use std::collections::HashMap;
-
 use diesel::SqliteConnection;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
 
 use crate::{
-    constants::{
-        RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME, TURN_OFF_ACTION, TURN_ON_ACTION,
-        WATER_DETECTOR_PIN_KEY, WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_PIN_KEY,
-        WATER_PUMP_SENSOR_NAME,
-    },
+    constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
     database::helpers::{
-        get_all_schedules, get_configuration_dependencies_from_config_id,
-        get_configurations_by_schedule_id, get_database_connection,
+        get_all_schedules, get_configurations_by_schedule_id, get_database_connection,
     },
     devices::build_device,
-    models::{Configuration, Schedule},
+    models::Schedule,
 };
 
 const DATETIME_FORMAT: &str = "%b %-d, %-I:%M:%s";
@@ -30,15 +23,6 @@ pub fn println_now(action: &str, board: &str) {
         board,
     );
     print!("Time in UTC: {}", now_utc.format(DATETIME_FORMAT));
-}
-
-fn get_hashmap_key_from_sensor_name(sensor_name: String) -> String {
-    match sensor_name.as_str() {
-        WATER_PUMP_SENSOR_NAME => WATER_PUMP_PIN_KEY.to_string(),
-        WATER_DETECTOR_SENSOR_NAME => WATER_DETECTOR_PIN_KEY.to_string(),
-        RELAY_POWER_SENSOR_NAME => RELAY_POWER_PIN_KEY.to_string(),
-        _ => panic!("Sensor is not supported"),
-    }
 }
 
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
