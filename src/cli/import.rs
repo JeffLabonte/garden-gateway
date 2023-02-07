@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crate::database::helpers::get_database_connection;
-use crate::{models::*, DATABASE_CONNECTION};
+use crate::models::*;
 use std::collections::HashSet;
 use std::fs::File;
 use std::path::PathBuf;

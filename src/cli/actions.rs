@@ -35,7 +35,10 @@ pub fn run_action(context: Context) -> bool {
             };
         },
         Actions::Import { schedule_json } => import_schedule_from_json(schedule_json),
-        Actions::Test { sensor, action } => {
+        Actions::Test {
+            sensor: _,
+            action: _,
+        } => {
             println!("Running test");
             true
         }
