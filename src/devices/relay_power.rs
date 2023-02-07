@@ -3,10 +3,7 @@ use std::sync::Mutex;
 use lazy_static::lazy_static;
 use rust_gpiozero::OutputDevice;
 
-use crate::{
-    constants::{RELAY_POWER_PIN_KEY, RELAY_POWER_SENSOR_NAME},
-    helpers::println_now,
-};
+use crate::{constants::RELAY_POWER_SENSOR_NAME, helpers::println_now};
 
 use super::{constants::RELAY_POWER_BAR, get_device_pin_number, Device};
 
