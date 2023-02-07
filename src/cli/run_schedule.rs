@@ -26,13 +26,13 @@ pub async fn run() -> bool {
                     }
                 },
                 Err(e) => {
-                    println!("Couldn't retrieve the time till next job: {}", e);
+                    println!("Couldn't retrieve the time till next job: {e}");
                     run_again = true;
                     break;
                 }
             },
             Err(e) => {
-                println!("Something went wrong during runtime: {}", e);
+                println!("Something went wrong during runtime: {e}");
                 run_again = true;
                 break;
             }

@@ -19,16 +19,16 @@ pub struct ImportedSchedule {
 fn read_json_schedule(file: PathBuf) -> Vec<ImportedSchedule> {
     let json_file = match File::open(file) {
         Ok(f) => f,
-        Err(e) => panic!("Unable to read file: {}", e),
+        Err(e) => panic!("Unable to read file: {e}"),
     };
     match serde_json::from_reader(json_file) {
         Ok(v) => v,
-        Err(e) => panic!("Unable to deserialize JSON file: {}", e),
+        Err(e) => panic!("Unable to deserialize JSON file: {e}"),
     }
 }
 
-fn is_input_unique(schedules: &Vec<ImportedSchedule>) -> bool {
-    let original_schedules = schedules.clone();
+fn is_input_unique(schedules: &[ImportedSchedule]) -> bool {
+    let original_schedules = schedules.to_owned();
     let unique_schedules: HashSet<ImportedSchedule> =
         original_schedules.clone().into_iter().collect();
 
@@ -36,7 +36,7 @@ fn is_input_unique(schedules: &Vec<ImportedSchedule>) -> bool {
 }
 
 fn is_unique_with_db(
-    imported_schedules: &Vec<ImportedSchedule>,
+    imported_schedules: &[ImportedSchedule],
     database_connection: &mut SqliteConnection,
 ) -> bool {
     use crate::schema::schedules::dsl::{action, cron_string, schedules};
@@ -57,7 +57,7 @@ fn is_unique_with_db(
 }
 
 fn is_input_valid(
-    imported_schedules: &Vec<ImportedSchedule>,
+    imported_schedules: &[ImportedSchedule],
     database_connection: &mut SqliteConnection,
 ) -> bool {
     use crate::schema::configurations::dsl::{configurations, id};
@@ -116,7 +116,7 @@ fn import_schedule(
 
         match cron::Schedule::from_str(schedule_clone.cron_string.as_str()) {
             Err(e) => {
-                eprintln!("Something went wrong during import: {}", e);
+                eprintln!("Something went wrong during import: {e}");
                 return false;
             }
             Ok(_) => {
@@ -147,14 +147,14 @@ fn import_schedule(
                             {
                                 Ok(_) => continue,
                                 Err(e) => {
-                                    eprintln!("Unable to insert NewScheduleConfiguration: {}", e);
+                                    eprintln!("Unable to insert NewScheduleConfiguration: {e}");
                                     return false;
                                 }
                             }
                         }
                     }
                     Err(e) => {
-                        eprintln!("Unexpected error with database: {}", e);
+                        eprintln!("Unexpected error with database: {e}");
                         return false;
                     }
                 }
@@ -172,7 +172,7 @@ pub fn import_schedule_from_json(file: PathBuf) -> bool {
     match validate_input(imported_schedules.clone(), database_connection) {
         Ok(_) => import_schedule(&imported_schedules, database_connection),
         Err(err) => {
-            println!("{}", err);
+            println!("{err}");
             false
         }
     }
@@ -210,11 +210,11 @@ mod tests {
 
                 match result {
                     Ok(_) => (),
-                    Err(e) => eprintln!("{}", e),
+                    Err(e) => eprintln!("{e}"),
                 };
             }
             Err(e) => {
-                eprintln!("{}", e);
+                eprintln!("{e}");
             }
         }
 

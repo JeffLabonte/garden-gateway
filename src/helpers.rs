@@ -14,15 +14,11 @@ use crate::{
 const DATETIME_FORMAT: &str = "%b %-d, %-I:%M:%s";
 
 pub fn println_now(action: &str, board: &str) {
-    let now = chrono::Local::now();
-    let now_utc = chrono::Utc::now();
-    println!(
-        "{} - Running: {} pin to {}",
-        now.format(DATETIME_FORMAT),
-        action,
-        board,
-    );
-    print!("Time in UTC: {}", now_utc.format(DATETIME_FORMAT));
+    let now_formated = chrono::Local::now().format(DATETIME_FORMAT);
+    let now_utc_formatted = chrono::Utc::now().format(DATETIME_FORMAT);
+
+    println!("{now_formated} - Running: {action} pin to {board}");
+    print!("Time in UTC: {now_utc_formatted}");
 }
 
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
@@ -36,12 +32,11 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
         let cron_schedule_str = schedule.cron_string.clone();
         let sensor_name = configuration.sensor_name.clone();
 
-        println!("This schedule will run at {}", cron_schedule_str);
+        println!("This schedule will run at {cron_schedule_str}");
 
         let mut device = build_device(&sensor_name);
         match schedule.action.as_str() {
             TURN_ON_ACTION => {
-                println!("Adding turn_on for configuration {}", 0);
                 let job = Job::new(cron_schedule_str.as_str(), move |_, _| {
                     device.turn_on();
                 })
@@ -49,7 +44,6 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
                 job_ids.push(scheduler.add(job).unwrap());
             }
             TURN_OFF_ACTION => {
-                println!("Adding turn_off for configuration {}", 0);
                 let job = Job::new(cron_schedule_str.as_str(), move |_, _| {
                     device.turn_off();
                 })
@@ -68,7 +62,7 @@ pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
     let schedules = get_all_schedules(&mut get_database_connection());
 
     for schedule in schedules {
-        for job_id in add_job_to_scheduler(&scheduler, schedule) {
+        for job_id in add_job_to_scheduler(scheduler, schedule) {
             job_ids.push(job_id);
         }
     }

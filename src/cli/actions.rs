@@ -11,16 +11,14 @@ pub fn run_action(context: Context) -> bool {
     match arguments.action {
         Actions::Config { sub_action } => match sub_action {
             SubActions::Set { key, value } => {
-                let setting_values = format!("Setting: {} -> {}", key, value);
-                print!("{}", setting_values.as_str());
+                print!("Setting: {key} -> {value}");
                 false
             }
             SubActions::List {} => list_configs(),
         },
         Actions::Schedule { sub_action } => match sub_action {
             SubActions::Set { key, value } => {
-                let setting_values = format!("Setting: {} -> {}", key, value);
-                print!("{}", setting_values.as_str());
+                print!("Setting: {key} -> {value}");
                 false
             }
             SubActions::List {} => list_schedules(),
