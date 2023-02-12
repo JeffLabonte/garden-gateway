@@ -3,6 +3,7 @@ pub mod configs;
 pub mod import;
 mod run_schedule;
 pub mod schedules;
+mod validators;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
