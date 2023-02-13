@@ -7,10 +7,8 @@ use crate::{
 };
 use diesel::prelude::*;
 
-pub fn get_schedules_from_config_id(
-    config_id: i32,
-    database_connection: &mut SqliteConnection,
-) -> Vec<Schedule> {
+pub fn get_schedules_from_config_id(config_id: i32) -> Vec<Schedule> {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     schedules::table
         .inner_join(
             schedule_configurations::table
@@ -22,10 +20,8 @@ pub fn get_schedules_from_config_id(
         .expect("Unable to load schedules")
 }
 
-pub fn get_configurations_by_schedule_id(
-    schedule_id: i32,
-    database_connection: &mut SqliteConnection,
-) -> Vec<Configuration> {
+pub fn get_configurations_by_schedule_id(schedule_id: i32) -> Vec<Configuration> {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     configurations::table
         .inner_join(
             schedule_configurations::table
@@ -37,10 +33,8 @@ pub fn get_configurations_by_schedule_id(
         .expect("Error Loading Configurations")
 }
 
-pub fn get_configuration_dependencies_from_config_id(
-    config_id: i32,
-    database_connection: &mut SqliteConnection,
-) -> Vec<Configuration> {
+pub fn get_configuration_dependencies_from_config_id(config_id: i32) -> Vec<Configuration> {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let target_configuration_ids = configuration_dependencies::table
         .filter(configuration_dependencies::dsl::source_configuration_id.eq(config_id))
         .select(configuration_dependencies::target_configuration_id)
@@ -54,16 +48,18 @@ pub fn get_configuration_dependencies_from_config_id(
         .expect("Error loading configurations")
 }
 
-pub fn get_all_configurations(database_connection: &mut SqliteConnection) -> Vec<Configuration> {
+pub fn get_all_configurations() -> Vec<Configuration> {
     use crate::schema::configurations::dsl::configurations;
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
 
     configurations
         .load::<Configuration>(database_connection)
         .expect("Error loading configurations")
 }
 
-pub fn get_all_schedules(database_connection: &mut SqliteConnection) -> Vec<Schedule> {
+pub fn get_all_schedules() -> Vec<Schedule> {
     use crate::schema::schedules::dsl::schedules;
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
 
     schedules
         .load::<Schedule>(database_connection)
