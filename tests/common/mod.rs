@@ -58,3 +58,26 @@ pub fn link_configuration_to_schedule(schedule_id: i32, configuration_id: i32) {
         .execute(database_connection)
         .expect("Unable to create schedule configuration");
 }
+
+pub fn get_configuration_by_sensor_name(sensor_name: String) -> Configuration {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    configurations::table
+        .filter(configurations::dsl::sensor_name.eq(sensor_name))
+        .first::<Configuration>(database_connection)
+        .expect("Error loading water detector config")
+}
+
+pub fn teardown_configuration() {
+    execute_truncate(String::from("configurations"));
+}
+
+pub fn teardown_schedule() {
+    execute_truncate(String::from("schedules"))
+}
+
+fn execute_truncate(table: String) {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+
+    let result = sql_query(format!("TRUNCATE TABLE IF EXISTS {table} CASCADE"));
+    result.execute(database_connection).unwrap();
+}
