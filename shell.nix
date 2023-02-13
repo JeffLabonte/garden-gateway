@@ -27,6 +27,7 @@ stdenv.mkDerivation {
     gnumake
     clippy
     rustfmt
+    lldb
   ];
   packages = with nixpkgs; [
     clippy

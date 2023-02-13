@@ -1,15 +1,13 @@
-use diesel::prelude::*;
+use diesel::{prelude::*, sql_query};
 use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
+use gateway::database::helpers::get_database_connection;
 use gateway::models::{
     Configuration, NewConfiguration, NewSchedule, NewScheduleConfiguration, Schedule,
 };
-use gateway::schema::{self, schedules};
+use gateway::schema::{self, configurations, schedules};
 
-pub fn create_configuration(
-    sensor_name: String,
-    device_pin: i32,
-    database_connection: &mut SqliteConnection,
-) -> Configuration {
+pub fn create_configuration(sensor_name: String, device_pin: i32) -> Configuration {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let new_configuration: NewConfiguration = NewConfiguration {
         sensor_name,
         bcm_pin: device_pin,
@@ -29,11 +27,8 @@ pub fn create_configuration(
         .unwrap()
 }
 
-pub fn create_schedule(
-    cron: String,
-    action: String,
-    database_connection: &mut SqliteConnection,
-) -> Schedule {
+pub fn create_schedule(cron: String, action: String) -> Schedule {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
     let new_schedule: NewSchedule = NewSchedule {
         cron_string: cron.to_string(),
         action,
@@ -50,11 +45,9 @@ pub fn create_schedule(
         .unwrap()
 }
 
-pub fn link_configuration_to_schedule(
-    schedule_id: i32,
-    configuration_id: i32,
-    database_connection: &mut SqliteConnection,
-) {
+pub fn link_configuration_to_schedule(schedule_id: i32, configuration_id: i32) {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+
     let new_schedule_configuration = NewScheduleConfiguration {
         schedule_id,
         configuration_id,
@@ -64,4 +57,27 @@ pub fn link_configuration_to_schedule(
         .values(new_schedule_configuration)
         .execute(database_connection)
         .expect("Unable to create schedule configuration");
+}
+
+pub fn get_configuration_by_sensor_name(sensor_name: String) -> Configuration {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+    configurations::table
+        .filter(configurations::dsl::sensor_name.eq(sensor_name))
+        .first::<Configuration>(database_connection)
+        .expect("Error loading water detector config")
+}
+
+pub fn teardown_configuration() {
+    execute_truncate(String::from("configurations"));
+}
+
+pub fn teardown_schedule() {
+    execute_truncate(String::from("schedules"))
+}
+
+fn execute_truncate(table: String) {
+    let database_connection: &mut SqliteConnection = &mut get_database_connection();
+
+    let result = sql_query(format!("TRUNCATE TABLE IF EXISTS {table} CASCADE"));
+    result.execute(database_connection).unwrap();
 }

@@ -18,14 +18,11 @@ pub fn println_now(action: &str, board: &str) {
     let now_utc_formatted = chrono::Utc::now().format(DATETIME_FORMAT);
 
     println!("{now_formated} - Running: {action} pin to {board}");
-    print!("Time in UTC: {now_utc_formatted}");
+    println!("Time in UTC: {now_utc_formatted}");
 }
 
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
-    // TODO Implement with new tables
-    let database_connection: &mut SqliteConnection = &mut get_database_connection();
-
-    let configurations = get_configurations_by_schedule_id(schedule.id, database_connection);
+    let configurations = get_configurations_by_schedule_id(schedule.id);
     let mut job_ids = Vec::new();
 
     for configuration in configurations {
@@ -59,7 +56,7 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
 
 pub fn populate_job_ids(scheduler: &JobScheduler) -> Vec<Uuid> {
     let mut job_ids: Vec<Uuid> = Vec::new();
-    let schedules = get_all_schedules(&mut get_database_connection());
+    let schedules = get_all_schedules();
 
     for schedule in schedules {
         for job_id in add_job_to_scheduler(scheduler, schedule) {
