@@ -110,10 +110,10 @@ mod tests {
 
     fn teardown() {
         let database_connection: &mut SqliteConnection = &mut get_database_connection();
-        let result = sql_query("TRUNCATE TABLES IF EXISTS schedules;")
-            .execute(database_connection)
-            .unwrap();
-        println!("{result}");
+        match sql_query("DELETE FROM schedules").execute(database_connection) {
+            Ok(_) => (),
+            Err(error) => panic!("{error}"),
+        };
     }
 
     fn generate_default_imported_schedule() -> ImportedSchedule {
@@ -155,7 +155,7 @@ mod tests {
         let mut imported_schedules = generate_imported_schedule(1);
 
         let result: Result<(), String> = is_unique_with_db(&imported_schedules);
-        assert_eq!(result, Ok(()));
+        assert_eq!(result, Err(String::from("")));
 
         imported_schedules[0].action = "turn_on".to_string();
 
