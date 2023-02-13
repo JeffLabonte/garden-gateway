@@ -35,6 +35,7 @@ pub fn is_input_valid(imported_schedules: &[ImportedSchedule]) -> Result<(), Str
 pub fn is_unique_with_db(imported_schedules: &[ImportedSchedule]) -> Result<(), String> {
     use crate::schema::schedules::dsl::{action, cron_string, schedules};
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
+
     for imported_schedule in imported_schedules {
         let schedule = imported_schedule.clone();
         let db_schedules = schedules
@@ -68,7 +69,6 @@ mod tests {
     use crate::database::helpers::get_database_connection;
     use crate::models::{NewSchedule, NewScheduleConfiguration};
     use crate::schema::{schedule_configurations, schedules};
-    use diesel::result::Error;
     use diesel::sql_query;
     use test_case::test_case;
 
