@@ -4,6 +4,7 @@ use diesel::prelude::*;
 use diesel::SqliteConnection;
 
 use crate::database::helpers::get_database_connection;
+use crate::exception::constants::UNIQUE_CONSTRAINT_DB_EXCEPTION_MESSAGE;
 use crate::models::Schedule;
 
 use super::import::ImportedSchedule;
@@ -49,7 +50,7 @@ pub fn is_unique_with_db(imported_schedules: &[ImportedSchedule]) -> Result<(), 
         }
     }
 
-    Err(String::from(""))
+    Err(UNIQUE_CONSTRAINT_DB_EXCEPTION_MESSAGE.to_string())
 }
 
 pub fn is_input_unique(schedules: &[ImportedSchedule]) -> Result<(), String> {
@@ -155,7 +156,10 @@ mod tests {
         let mut imported_schedules = generate_imported_schedule(1);
 
         let result: Result<(), String> = is_unique_with_db(&imported_schedules);
-        assert_eq!(result, Err(String::from("")));
+        assert_eq!(
+            result,
+            Err(UNIQUE_CONSTRAINT_DB_EXCEPTION_MESSAGE.to_string())
+        );
 
         imported_schedules[0].action = "turn_on".to_string();
 
