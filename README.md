@@ -3,7 +3,7 @@
 [![CI](https://github.com/JeffLabonte/garden-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffLabonte/garden-gateway/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JeffLabonte/garden-gateway/branch/main/graph/badge.svg?token=4SXT504A3H)](https://codecov.io/gh/JeffLabonte/garden-gateway)
 
-Note that this is still a WORK IN PROGRESS project. I am learning Rust while doing this project.
+**Note that this is still a WORK IN PROGRESS project. It is under heavy development, so a lot will change. You might have to reset your configurations once in a while until I have a 100% working prototype at home and documented my setup.**
 
 ## Getting Started
 
