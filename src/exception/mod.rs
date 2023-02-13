@@ -1,5 +1,7 @@
 use std::fmt::{Display, Formatter, Result};
 
+use self::constants::UNIQUE_CONSTRAINT_DB_EXCEPTION_MESSAGE;
+
 mod constants;
 
 trait BaseException {
@@ -10,7 +12,7 @@ pub struct UniqueConstraintDbException {}
 
 impl BaseException for UniqueConstraintDbException {
     fn get_message(&self) -> String {
-        self.message.clone()
+        UNIQUE_CONSTRAINT_DB_EXCEPTION_MESSAGE.to_string()
     }
 }
 
