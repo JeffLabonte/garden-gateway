@@ -1,12 +1,9 @@
-use diesel::SqliteConnection;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
 
 use crate::{
     constants::{TURN_OFF_ACTION, TURN_ON_ACTION},
-    database::helpers::{
-        get_all_schedules, get_configurations_by_schedule_id, get_database_connection,
-    },
+    database::helpers::{get_all_schedules, get_configurations_by_schedule_id},
     devices::build_device,
     models::Schedule,
 };
