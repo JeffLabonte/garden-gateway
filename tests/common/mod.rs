@@ -78,6 +78,6 @@ pub fn teardown_schedule() {
 fn execute_truncate(table: String) {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
 
-    let result = sql_query(format!("TRUNCATE TABLE IF EXISTS {table} CASCADE"));
+    let result = sql_query(format!("DELETE FROM {table}"));
     result.execute(database_connection).unwrap();
 }

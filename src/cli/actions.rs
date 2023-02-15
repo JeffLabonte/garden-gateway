@@ -47,12 +47,16 @@ pub fn run_action(context: Context) -> bool {
 
 #[cfg(test)]
 mod test {
+    use diesel::sql_query;
+
     use crate::{
-        cli::{Actions, CLIArgs},
+        cli::{actions::run_action, Actions, CLIArgs},
         context::Context,
     };
 
-    use super::run_action;
+    fn setup_test() {
+        sql_query("DELETE ");
+    }
 
     #[test]
     fn test_given_run_action_when_run_in_arguments_should_execute_run() {

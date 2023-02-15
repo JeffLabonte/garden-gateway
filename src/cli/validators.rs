@@ -5,6 +5,7 @@ use diesel::SqliteConnection;
 
 use crate::database::helpers::get_database_connection;
 use crate::exception::constants::UNIQUE_CONSTRAINT_DB_EXCEPTION_MESSAGE;
+use crate::exception::constants::UNIQUE_CONSTRAINT_INPUT_INVALID_MESSAGE;
 use crate::models::Schedule;
 
 use super::import::ImportedSchedule;
@@ -60,7 +61,7 @@ pub fn is_input_unique(schedules: &[ImportedSchedule]) -> Result<(), String> {
 
     match original_schedules.len() == unique_schedules.len() {
         true => Ok(()),
-        false => Err(String::from("THis")),
+        false => Err(UNIQUE_CONSTRAINT_INPUT_INVALID_MESSAGE.to_string()),
     }
 }
 
@@ -68,10 +69,14 @@ pub fn is_input_unique(schedules: &[ImportedSchedule]) -> Result<(), String> {
 mod tests {
     use super::*;
     use crate::database::helpers::get_database_connection;
+    use crate::exception::constants::UNIQUE_CONSTRAINT_INPUT_INVALID_MESSAGE;
     use crate::models::{NewSchedule, NewScheduleConfiguration};
     use crate::schema::{schedule_configurations, schedules};
+    use crate::test::teardown;
     use diesel::sql_query;
     use test_case::test_case;
+
+    const DEFAULT_CRON_STRING: &str = "* * * * *";
 
     fn setup() {
         let database_connection: &mut SqliteConnection = &mut get_database_connection();
@@ -79,9 +84,9 @@ mod tests {
         let configuration_id: i32 = 1;
         let default_schedule = NewSchedule {
             action: "turn_off".to_string(),
-            cron_string: "* * * * *".to_string(),
+            cron_string: DEFAULT_CRON_STRING.to_string(),
         };
-        match diesel::insert_or_ignore_into(schedules::table)
+        match diesel::insert_into(schedules::table)
             .values(&default_schedule)
             .execute(database_connection)
         {
@@ -98,28 +103,20 @@ mod tests {
 
                 match result {
                     Ok(_) => (),
-                    Err(e) => eprintln!("{e}"),
+                    Err(e) => panic!("{e}"),
                 };
             }
             Err(e) => {
-                eprintln!("{e}");
+                panic!("{e}");
             }
         }
 
         ()
     }
 
-    fn teardown() {
-        let database_connection: &mut SqliteConnection = &mut get_database_connection();
-        match sql_query("DELETE FROM schedules").execute(database_connection) {
-            Ok(_) => (),
-            Err(error) => panic!("{error}"),
-        };
-    }
-
     fn generate_default_imported_schedule() -> ImportedSchedule {
         ImportedSchedule {
-            cron_string: String::from("* * * * *"),
+            cron_string: DEFAULT_CRON_STRING.to_string(),
             action: String::from("turn_off"),
             configurations: vec![1],
         }
@@ -136,7 +133,7 @@ mod tests {
     }
 
     #[test_case(true, Ok(()); "When unique expect valid")]
-    #[test_case(false, Err(String::from("Hey")) ; "When not unique expect invalid")]
+    #[test_case(false, Err(String::from(UNIQUE_CONSTRAINT_INPUT_INVALID_MESSAGE)) ; "When not unique expect invalid")]
     fn import_schedules_must_be_unique(
         is_schedule_unique: bool,
         expected_result: Result<(), String>,
@@ -148,12 +145,13 @@ mod tests {
 
         let result: Result<(), String> = is_input_unique(&imported_schedules);
         assert_eq!(result, expected_result);
+        teardown();
     }
 
     #[test]
     fn imported_schedules_not_unique_with_db_should_be_invalid() {
-        setup();
         let mut imported_schedules = generate_imported_schedule(1);
+        setup();
 
         let result: Result<(), String> = is_unique_with_db(&imported_schedules);
         assert_eq!(
