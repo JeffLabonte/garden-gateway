@@ -1,3 +1,5 @@
+use std::panic;
+
 use diesel::{prelude::*, sql_query};
 use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
 use gateway::database::helpers::get_database_connection;
@@ -80,4 +82,16 @@ fn execute_truncate(table: String) {
 
     let result = sql_query(format!("DELETE FROM {table}"));
     result.execute(database_connection).unwrap();
+}
+
+pub fn execute_test<T>(test: T) -> ()
+where
+    T: FnOnce() -> () + panic::UnwindSafe,
+{
+    let result = panic::catch_unwind(|| test());
+
+    teardown_configuration();
+    teardown_configuration();
+
+    assert!(result.is_ok());
 }
