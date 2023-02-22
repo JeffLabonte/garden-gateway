@@ -21,6 +21,5 @@ copy_env_template:
 copy_schedule_template:
 	cp --backup templates/import_schedule.json.template import_schedule.json
 
-test: setup
+test: setup setup-test
 	DATABASE_URL=test_gateway_garden.sqlite sh -c 'cargo tarpaulin --all-features --workspace --timeout 120 --out Xml -- --test-threads=1' && rm test_gateway_garden.sqlite
-
