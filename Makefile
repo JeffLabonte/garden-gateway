@@ -1,6 +1,9 @@
 setup:
 	cargo install diesel_cli --no-default-features --features sqlite
 
+setup-test:
+	cargo install cargo-tarpaulin
+
 setup-ubuntu:
 	sudo apt install libsqlite3-dev -y
 	make setup
