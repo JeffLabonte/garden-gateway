@@ -8,16 +8,6 @@ use crate::{
     models::Schedule,
 };
 
-const DATETIME_FORMAT: &str = "%b %-d, %-I:%M:%s";
-
-pub fn println_now(action: &str, board: &str) {
-    let now_formated = chrono::Local::now().format(DATETIME_FORMAT);
-    let now_utc_formatted = chrono::Utc::now().format(DATETIME_FORMAT);
-
-    println!("{now_formated} - Running: {action} pin to {board}");
-    println!("Time in UTC: {now_utc_formatted}");
-}
-
 fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uuid> {
     let configurations = get_configurations_by_schedule_id(schedule.id);
     let mut job_ids = Vec::new();
