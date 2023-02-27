@@ -15,7 +15,7 @@ use crate::common::{execute_test, get_configuration_by_sensor_name};
 fn given_get_all_configurations_when_has_five_configurations_then_should_return_five_configs() {
     execute_test(|| {
         let configurations = get_all_configurations();
-        assert_eq!(configurations.len(), 3);
+        assert_eq!(configurations.len(), 0);
 
         let sensor_a_configuration = create_configuration("Sensor A".to_string(), 61);
         let sensor_b_configuration = create_configuration("Sensor B".to_string(), 62);
@@ -77,6 +77,7 @@ fn given_get_confgurations_from_schedule_id_when_two_configuration_linked_config
         link_configuration_to_schedule(schedule.id, sensor_b_configuration.id);
 
         let configurations = get_configurations_by_schedule_id(schedule.id);
+        eprintln!("{:?}", configurations);
         assert_eq!(configurations.len(), 2);
 
         assert_eq!(

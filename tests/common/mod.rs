@@ -77,10 +77,14 @@ pub fn teardown_schedule() {
     execute_truncate(String::from("schedules"))
 }
 
+pub fn teardown_configuration_dependencies() {
+    execute_truncate(String::from("configuration_dependencies"));
+}
+
 fn execute_truncate(table: String) {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
 
-    let result = sql_query(format!("DELETE FROM {table}"));
+    let result = sql_query(format!("DELETE FROM {table};"));
     result.execute(database_connection).unwrap();
 }
 
@@ -88,10 +92,15 @@ pub fn execute_test<T>(test: T) -> ()
 where
     T: FnOnce() -> () + panic::UnwindSafe,
 {
+    teardown_configuration_dependencies();
+    teardown_configuration();
+    teardown_schedule();
+
     let result = panic::catch_unwind(|| test());
 
+    teardown_configuration_dependencies();
     teardown_configuration();
-    teardown_configuration();
+    teardown_schedule();
 
     assert!(result.is_ok());
 }
