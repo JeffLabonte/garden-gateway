@@ -84,7 +84,7 @@ pub fn teardown_configuration_dependencies() {
 fn execute_truncate(table: String) {
     let database_connection: &mut SqliteConnection = &mut get_database_connection();
 
-    let result = sql_query(format!("DELETE FROM {table};"));
+    let result = sql_query(format!("DELETE FROM {}", table));
     result.execute(database_connection).unwrap();
 }
 
