@@ -5,13 +5,20 @@
         "configurations": [1]
     },
     {
-        "cron_string" : "*/30 * 19-23 * * * *",
+        "cron_string" : "*/30 * 20-23 * * * *",
         "action": "turn_off",
         "configurations": [1]
     },
     {
-        "cron_string" : "*/30 * 0-7 * * * *",
+        "cron_string" : "*/30 * 0-6 * * * *",
         "action": "turn_off",
         "configurations": [1]
+    },
+    {
+        "cron_string": "* * */4 * * * *",
+        "action": "turn_on",
+        "configurations": [
+            2
+        ]
     }
 ]
