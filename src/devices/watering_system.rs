@@ -1,8 +1,6 @@
-use super::constants::{TURN_OFF_STRING, TURN_ON_STRING, WATER_PUMP};
 use super::Device;
 use crate::constants::{WATER_DETECTOR_SENSOR_NAME, WATER_PUMP_SENSOR_NAME};
 use crate::devices::get_device_pin_number;
-use crate::helpers::println_now;
 use lazy_static::lazy_static;
 use rust_gpiozero::{InputDevice, OutputDevice};
 use std::sync::Mutex;
@@ -42,10 +40,8 @@ impl Device for WateringSystem {
         // Let the water pump run untill the water detector detects water.
         //
         while !self.water_detector.has_water() {
-            println_now(TURN_ON_STRING, WATER_PUMP_SENSOR_NAME);
             self.water_pump.turn_on();
             std::thread::sleep(Duration::from_secs(1));
-            println_now(TURN_OFF_STRING, WATER_PUMP_SENSOR_NAME);
             self.water_pump.turn_off();
         }
     }
@@ -58,12 +54,10 @@ impl Device for WateringSystem {
 #[cfg(not(test))]
 impl WaterPump {
     pub fn turn_on(&mut self) {
-        println_now(TURN_ON_STRING, WATER_PUMP);
         WATER_PUMP_DEVICE.lock().unwrap().on();
     }
 
     pub fn turn_off(&mut self) {
-        println_now(TURN_OFF_STRING, WATER_PUMP);
         WATER_PUMP_DEVICE.lock().unwrap().off();
     }
 }
