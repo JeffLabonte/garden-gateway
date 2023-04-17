@@ -5,7 +5,7 @@
       "profile": "complete" 
     },
     "ghcr.io/akhildevelops/devcontainer-features/apt:0": {
-      "PACKAGES": "curl,neofetch,zsh,git,tree,neovim"
+      "PACKAGES": "curl,neofetch,zsh,git,tree,neovim,direnv"
     },
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   }
