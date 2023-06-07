@@ -18,6 +18,7 @@ pub async fn run() -> bool {
             Ok(_) => match scheduler.time_till_next_job() {
                 Ok(v) => match v {
                     Some(_) => {
+                        print!(".");
                         std::thread::sleep(Duration::from_millis(500));
                     }
                     None => {
@@ -38,6 +39,6 @@ pub async fn run() -> bool {
             }
         };
     }
-
+    println!("GO - Run again: {}", run_again);
     run_again
 }

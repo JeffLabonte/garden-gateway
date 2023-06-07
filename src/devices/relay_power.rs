@@ -19,10 +19,12 @@ pub struct RelayPowerBar {}
 #[cfg(not(test))]
 impl Device for RelayPowerBar {
     fn turn_on(&mut self) {
+        println!("Turning on Relay");
         RELAY_POWER_DEVICE.lock().unwrap().off();
     }
 
     fn turn_off(&mut self) {
+        println!("Turning OFF Relay");
         RELAY_POWER_DEVICE.lock().unwrap().on();
     }
 }

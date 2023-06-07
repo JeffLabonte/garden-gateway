@@ -39,14 +39,21 @@ impl Device for WateringSystem {
         //
         // Let the water pump run untill the water detector detects water.
         //
-        while !self.water_detector.has_water() {
+        if !self.water_detector.has_water() {
+            println!("Turning pump on for 5 seconds");
             self.water_pump.turn_on();
-            std::thread::sleep(Duration::from_secs(1));
-            self.water_pump.turn_off();
+            std::thread::sleep(Duration::from_secs(5));
+            if self.water_detector.has_water() {
+                println!("Still need more");
+                self.water_pump.turn_off();
+            }
+        } else {
+            println!("Enough Water");
         }
     }
 
     fn turn_off(&mut self) {
+        println!("turning it off");
         self.water_pump.turn_off();
     }
 }

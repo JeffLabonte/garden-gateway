@@ -22,6 +22,7 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
         match schedule.action.as_str() {
             TURN_ON_ACTION => {
                 let job = Job::new(cron_schedule_str.as_str(), move |_, _| {
+                    println!("I will turn on");
                     device.turn_on();
                 })
                 .unwrap();
@@ -29,6 +30,7 @@ fn add_job_to_scheduler(scheduler: &JobScheduler, schedule: Schedule) -> Vec<Uui
             }
             TURN_OFF_ACTION => {
                 let job = Job::new(cron_schedule_str.as_str(), move |_, _| {
+                    println!("I will turn OFF");
                     device.turn_off();
                 })
                 .unwrap();
