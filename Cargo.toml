@@ -21,7 +21,7 @@ tokio-cron-scheduler = "*"
 tokio = { version = "1", features = ["full"] }
 serde = "1.0"
 serde_json = "1.0"
-chrono = "0.4.26"
+chrono = "0.4.27"
 lazy_static = "1.4.0"
 diesel_migrations = { version = "2.0.0", features = ["sqlite"] }
 log = "0.4"
