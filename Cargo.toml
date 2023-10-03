@@ -16,7 +16,7 @@ rust_gpiozero = "0.2.1"
 lapin = "2.3.1"
 diesel = { version = "2.0.4", features = ["sqlite"] }
 dotenv = "0.15.0"
-clap = { version = "3.2", features = ["derive"] }
+clap = { version = "4.0", features = ["derive"] }
 tokio-cron-scheduler = "*"
 tokio = { version = "1", features = ["full"] }
 serde = "1.0"
