@@ -404,17 +404,6 @@ dependencies = [
 
 [[package]]
 name = "cron"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ee7e5cc3c6b73959cef3412d3a185225eefd926286b4ea55be8bea0bd27d10f"
-dependencies = [
- "chrono",
- "nom",
- "once_cell",
-]
-
-[[package]]
-name = "cron"
 version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ff76b51e4c068c52bfd2866e1567bee7c567ae8f24ada09fd4307019e25eab7"
@@ -653,7 +642,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
- "cron 0.12.0",
+ "cron",
  "diesel",
  "diesel_cli",
  "diesel_migrations",
@@ -1651,15 +1640,14 @@ dependencies = [
 
 [[package]]
 name = "tokio-cron-scheduler"
-version = "0.7.6"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7234a86e3b6c9b889c0f0fda06199cf166db3089419ea4134d7ed457d351c946"
+checksum = "a4c2e3a88f827f597799cf70a6f673074e62f3fc5ba5993b2873345c618a29af"
 dependencies = [
  "chrono",
- "cron 0.10.1",
+ "cron",
  "num-derive",
  "num-traits",
- "time",
  "tokio",
  "tracing",
  "uuid",
