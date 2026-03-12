@@ -26,7 +26,7 @@ lazy_static = "1.4.0"
 diesel_migrations = { version = "2.0.0", features = ["sqlite"] }
 log = "0.4"
 
-cron = "0.12.0"
+cron = "0.15.0"
 [dependencies.uuid]
 version = "1.16.0"
 features = [
